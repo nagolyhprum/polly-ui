@@ -171,7 +171,7 @@ function Screen(canvas) {
     while (this.found && !this.found.onClick) {
       this.found = this.found.parent;
     }
-    if (this.found) {
+    if (this.found && this.found !== this) {
       this.found.onClick();
     }
   };
@@ -555,10 +555,13 @@ const LanguagePicker = function(state) {
     })
     container(WRAP, WRAP, () => {
       src(icons_back_white)
+      anchor(0, .5)
+      position(0, (child, parent) => parent.height / 2)
       onClick(back)
     })
   })
-  container(MATCH, (child, parent) => parent.height - ((20 * 2 + LINE_SPACING) + (16 * 2) + (16 * 2 + 12) + (16 * 2)), () => {
+  const FILL = (child, parent) => parent.height - ((20 * 2 + LINE_SPACING) + (16 * 2) + (16 * 2 + 12) + (16 * 2))
+  container(MATCH, FILL, () => {
     background("white")
     shadow()
   })
