@@ -13,12 +13,24 @@ canvas {
   </style>
 </head>
 <body>
-  <canvas height="667" width="375" style="background:gray;"></canvas>
+  <canvas width="375" height="667" style="background:gray;"></canvas>
 <script>
 
-const logos_lexicon_white = new Image()
-logos_lexicon_white.src =
-  encodeURI(`data:image/svg+xml;,<?xml version="1.0" standalone="yes"?>
+const LINE_SPACING = 8
+
+function svg(input) {
+  const image = new Image()
+  image.src = encodeURI(`data:image/svg+xml;,${input}`.replace(/\s+/g, ' '))
+  return image
+}
+
+const icons_back_white = svg(`
+  <svg height="32" width="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#ffffff" d="M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z"/>
+  </svg>
+`)
+
+const logos_lexicon_white = svg(`
   <svg width="117" height="114" viewBox="0 0 117 114" xmlns="http://www.w3.org/2000/svg">
       <path fill="#FFFFFF"
           d="M60.8,111.49C91.52,111.49 116.42,86.53 116.42,55.75C116.42,24.96 91.52,0 60.8,0C30.09,0 5.19,24.96 5.19,55.75C5.19,63.71 6.86,71.28 9.86,78.13C12.67,84.55 9.86,103.81 0,112.59C4.89,117.47 31.58,103.65 37.58,106.41C44.65,109.67 52.52,111.49 60.8,111.49Z"
@@ -39,7 +51,8 @@ logos_lexicon_white.src =
           d="M42,85C47.49,88.94 54.22,91.26 61.49,91.26L61.49,91.26C68.12,91.26 74.31,89.33 79.51,86"
           stroke="#2196F3" stroke-linecap="round"
           stroke-linejoin="round" stroke-width="3"/>
-  </svg>`.replace(/\s+/g, ' '))
+  </svg>`
+)
 
 const canvas = document.getElementsByTagName("canvas")[0];
 const PERCENT = percent => (child, parent, dim) => {
@@ -81,18 +94,19 @@ const WRAP = (function() {
         const max = Math.max(...child.children.map(gc => gc.bounds[DIMENSIONS[dim]] + gc.bounds[dim])) - child.bounds[DIMENSIONS[dim]] + space
         if(Math.abs(max - child.bounds[dim]) > 1) {
           child.bounds[dim] = max
-          screen.render()
+          child.screen.render()
         }
       })
       return child.bounds[dim]
     } else if (child.text.display) {
       if (dim === "width") {
         context.font = `${child.text.size}px sans-serif`;
-        const width = context.measureText(child.text.display).width;
+        const width = Math.max(...child.text.display.split("\n").map(display => context.measureText(display).width))
         return width + getLeftRight(child.margin) + getLeftRight(child.padding);
       } else if (dim === "height") {
+        const count = child.text.display.split("\n").length
         return (
-          child.text.size +
+          child.text.size * count + LINE_SPACING * (count - 1) +
           getTopBottom(child.margin) +
           getTopBottom(child.padding)
         );
@@ -172,6 +186,7 @@ Screen.prototype = {
       //padding
       //background
       //onClick
+      screen:this,
       parent,
       x: 0,
       y: 0,
@@ -236,8 +251,11 @@ Screen.prototype = {
     this.active.anchorX = x;
     this.active.anchorY = y;
   },
-  round() {
-    this.active.round = true;
+  round(round = true) {
+    this.active.round = round;
+  },
+  shadow(shadow = true) {
+    this.active.shadow = shadow;
   },
   center() {
     this.position((_, parent) => parent.width / 2, (_, parent) => parent.height / 2);
@@ -280,11 +298,15 @@ Screen.prototype = {
     }
     this.render()
   },
-  linear(spacing = 0) {
+  linear(spacing = 0, direction = 'vertical') {
     this.active.render = function(child) {
       const index = this.children.indexOf(child)
       if(index > 0) {
-        child.y = this.children[index - 1].bounds.y + this.children[index - 1].bounds.height - this.bounds.y + spacing
+        if(direction === 'vertical') {
+          child.y = this.children[index - 1].bounds.y + this.children[index - 1].bounds.height - this.bounds.y + spacing
+        } else {
+          child.x = this.children[index - 1].bounds.x + this.children[index - 1].bounds.width - this.bounds.x + spacing
+        }
       }
     }
   },
@@ -306,7 +328,7 @@ Screen.prototype = {
     }
   },
   render() {
-    //console.log("rendering")
+    console.log("rendering")
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     this.children.forEach(child =>
       this.renderChild(
@@ -329,6 +351,21 @@ Screen.prototype = {
     this.context.translate(-hw, -hh)
     const margin = child.margin || [0, 0, 0, 0]
     const padding = child.padding || [0, 0, 0, 0]
+    this.context.globalAlpha = this.context.globalAlpha * child.alpha
+    const rw = width - getLeftRight(margin);
+    const rh = height - getTopBottom(margin);
+    if(child.shadow) {
+      const shadow = 2
+      this.context.shadowColor = 'rgba(0, 0, 0, .7)';
+      this.context.shadowBlur = shadow;
+      this.context.shadowOffsetX = shadow;
+      this.context.shadowOffsetY = shadow;
+    } else {
+      this.context.shadowColor = 'transparent';
+      this.context.shadowBlur = 0;
+      this.context.shadowOffsetX = 0;
+      this.context.shadowOffsetY = 0;
+    }
     //DEBUG HERE
     if(true) {
       //padding
@@ -357,20 +394,17 @@ Screen.prototype = {
       }
       //outline
       this.context.strokeStyle = "rgba(255, 255, 255, .7)"
-      this.context.setLineDash([5, 10])
+      this.context.setLineDash([2, 4])
       this.context.strokeRect(0, 0, width, height)
       this.context.setLineDash([])
     }
     //STOP DEBUG
-    const rw = width - getLeftRight(margin);
-    const rh = height - getTopBottom(margin);
     const transform = this.context.currentTransform || this.context.getTransform()
     child.bounds.x = transform.e
     child.bounds.y = transform.f
     child.bounds.width = width
     child.bounds.height = height
     this.context.translate(margin[3], margin[0]);
-    this.context.globalAlpha = this.context.globalAlpha * child.alpha
     roundRect(
       this.context,
       0,
@@ -380,23 +414,26 @@ Screen.prototype = {
       child.round ? Math.min(rw, rh) / 2 : 0,
       child.background || "transparent"
     );
-    if(child.image && child.image.complete) {
-      this.context.drawImage(child.image, 0, 0, rw, rh)
-    }
     if (this.click && this.context.isPointInPath(this.click.x, this.click.y)) {
       this.found = child;
+    }
+    if(child.image && child.image.complete) {
+      this.context.drawImage(child.image, 0, 0, rw, rh)
     }
     this.context.translate(padding[3], padding[0]);
     if (child.text.display) {
       this.context.fillStyle = child.text.color;
       this.context.font = `${child.text.size}px sans-serif`;
-      this.context.textBaseline = "middle";
+      this.context.textBaseline = "top";
       this.context.textAlign = "center";
-      this.context.fillText(
-        child.text.display,
-        width / 2 - margin[3] - padding[3],
-        height / 2 - margin[0] - padding[0]
-      );
+      const lines = child.text.display.split("\n")
+      lines.forEach((line, index) => {
+        this.context.fillText(
+          line,
+          rw / 2 - padding[3],
+          index * (LINE_SPACING + child.text.size)
+        );
+      })
     }
     const bounds = {
       width : width - getLeftRight(padding) - getLeftRight(margin),
@@ -417,6 +454,11 @@ Screen.prototype = {
   }
 };
 
+const medium_20 = {
+  weight : "medium",
+  size : 20
+}
+
 const bold_34 = {
   weight : "bold",
   size : 34
@@ -426,44 +468,24 @@ const bold_20 = {
   size : 20
 }
 
-const screen = new Screen(canvas);
-
 const Home = function (state) {
-
   const {
     container,
     background,
     padding,
-    margin,
     position,
     text,
     round,
     onClick,
     anchor,
     start,
-    back,
-    center,
     src,
     style,
     linear
   } = this;
 
-  const next = (function() {
-    let value = 3
-    alter = 3
-    return () => {
-      value += alter
-      if(alter > 0) {
-        alter = -1
-      } else {
-        alter = 3
-      }
-      return value
-    }
-  })()
-
   background("#2196f3")
-  container(PERCENT(50), WRAP, function () {
+  container(PERCENT(40), WRAP, function () {
     anchor(.5, .5)
     position(PERCENT(50), PERCENT(25))
     src(logos_lexicon_white)
@@ -493,7 +515,7 @@ const Home = function (state) {
       round()
       background("#673ab7")
       onClick(() => {
-        console.log("GET STARTED")
+        start(LanguagePicker, state)
       })
     })
     container(MATCH, WRAP, () => {
@@ -506,7 +528,49 @@ const Home = function (state) {
   })
 }
 
-screen.start(Home, {});
+const LanguagePicker = function(state) {
+  const {
+    background,
+    padding,
+    container,
+    src,
+    linear,
+    text,
+    anchor,
+    position,
+    style,
+    shadow,
+    back,
+    onClick
+  } = this
+  padding(16)
+  background("#2196f3")
+  linear(16)
+  container(MATCH, WRAP, () => {
+    container(MATCH, WRAP, () => {
+      text("What language do\nyou speak natively?")
+      anchor(0, .5)
+      position(0, PERCENT(50))
+      style(medium_20)
+    })
+    container(WRAP, WRAP, () => {
+      src(icons_back_white)
+      onClick(back)
+    })
+  })
+  container(MATCH, (child, parent) => parent.height - ((20 * 2 + LINE_SPACING) + (16 * 2) + (16 * 2 + 12) + (16 * 2)), () => {
+    background("white")
+    shadow()
+  })
+  container(WRAP, WRAP, () => {
+    padding(16)
+    text("REQUEST A LANGUAGE")
+    anchor(1, 0)
+    position((child, parent) => parent.width, 0)
+  })
+}
+
+new Screen(canvas).start(Home, {});
 
 </script>
 </body>
