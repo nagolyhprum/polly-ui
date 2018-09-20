@@ -1,0 +1,513 @@
+<!doctype html>
+<html>
+<head>
+  <style>
+html,
+body,
+canvas {
+  padding: 0;
+  border: 0;
+  margin: 0;
+  background : gray;
+}
+  </style>
+</head>
+<body>
+  <canvas height="667" width="375" style="background:gray;"></canvas>
+<script>
+
+const logos_lexicon_white = new Image()
+logos_lexicon_white.src =
+  encodeURI(`data:image/svg+xml;,<?xml version="1.0" standalone="yes"?>
+  <svg width="117" height="114" viewBox="0 0 117 114" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#FFFFFF"
+          d="M60.8,111.49C91.52,111.49 116.42,86.53 116.42,55.75C116.42,24.96 91.52,0 60.8,0C30.09,0 5.19,24.96 5.19,55.75C5.19,63.71 6.86,71.28 9.86,78.13C12.67,84.55 9.86,103.81 0,112.59C4.89,117.47 31.58,103.65 37.58,106.41C44.65,109.67 52.52,111.49 60.8,111.49Z"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill="#DCEFFD"
+          d="M61,111C91.65,111 116.5,86.15 116.5,55.5C116.5,24.85 91.65,0 61,0"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill="#D8D8D8"
+          d="M36,46.41a25.35,25.41 0,1 0,50.71 0a25.35,25.41 0,1 0,-50.71 0z"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill="#2196F3"
+          d="M47,46.94a13.9,13.94 0,1 0,27.81 0a13.9,13.94 0,1 0,-27.81 0z"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill="#FFFFFF"
+          d="M52,42.92a4.91,4.92 0,1 0,9.81 0a4.91,4.92 0,1 0,-9.81 0z"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill="#00000000"
+          d="M42,85C47.49,88.94 54.22,91.26 61.49,91.26L61.49,91.26C68.12,91.26 74.31,89.33 79.51,86"
+          stroke="#2196F3" stroke-linecap="round"
+          stroke-linejoin="round" stroke-width="3"/>
+  </svg>`.replace(/\s+/g, ' '))
+
+const canvas = document.getElementsByTagName("canvas")[0];
+const PERCENT = percent => (child, parent, dim) => {
+  let other = dim
+  switch(other) {
+    case 'x' : other = 'width'; break;
+    case 'y' : other = 'height'; break;
+  }
+  return parent[other] * percent / 100;
+}
+const MATCH = (child, parent, dim) => {
+  return parent[dim];
+}
+const WRAP = (function() {
+  const DIMENSIONS = {
+    width : 'x',
+    height : 'y',
+    x : 'width',
+    y : 'height'
+  }
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+  return (child, parent, dim) => {
+    if(child.image) {
+      if(child.width === WRAP && child.height === WRAP) {
+        return child.image[dim]
+      } else if(dim === 'width' && child.width === WRAP && child.height !== WRAP) {
+        const height = getValue(child, parent, 'height')
+        return (height / child.image.height) * child.image.width
+      } else if(dim === 'height' && child.width !== WRAP && child.height === WRAP) {
+        const width = getValue(child, parent, 'width')
+        return (width / child.image.width) * child.image.height
+      }
+    } else if (child.children.length) {
+      setTimeout(() => {
+        const left = (child.margin ? child.margin[3] : 0) + (child.padding ? child.padding[3] : 0)
+        const top = (child.margin ? child.margin[0] : 0) + (child.padding ? child.padding[0] : 0)
+        const space = (dim === "width" ? getLeftRight(child.padding) + getLeftRight(child.margin) - left : getTopBottom(child.padding) + getTopBottom(child.margin) - top)
+        const max = Math.max(...child.children.map(gc => gc.bounds[DIMENSIONS[dim]] + gc.bounds[dim])) - child.bounds[DIMENSIONS[dim]] + space
+        if(Math.abs(max - child.bounds[dim]) > 1) {
+          child.bounds[dim] = max
+          screen.render()
+        }
+      })
+      return child.bounds[dim]
+    } else if (child.text.display) {
+      if (dim === "width") {
+        context.font = `${child.text.size}px sans-serif`;
+        const width = context.measureText(child.text.display).width;
+        return width + getLeftRight(child.margin) + getLeftRight(child.padding);
+      } else if (dim === "height") {
+        return (
+          child.text.size +
+          getTopBottom(child.margin) +
+          getTopBottom(child.padding)
+        );
+      }
+    }
+  };
+})();
+
+function roundRect(context, x, y, width, height, radius, fill, stroke) {
+  radius = { tl: radius, tr: radius, br: radius, bl: radius };
+  context.beginPath();
+  context.moveTo(x + radius.tl, y);
+  context.lineTo(x + width - radius.tr, y);
+  context.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+  context.lineTo(x + width, y + height - radius.br);
+  context.quadraticCurveTo(
+    x + width,
+    y + height,
+    x + width - radius.br,
+    y + height
+  );
+  context.lineTo(x + radius.bl, y + height);
+  context.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+  context.lineTo(x, y + radius.tl);
+  context.quadraticCurveTo(x, y, x + radius.tl, y);
+  context.closePath();
+  context.fillStyle = fill;
+  context.fill();
+}
+
+const getValue = (child, parent, dim) => {
+  if (typeof child[dim] === "function") {
+    return child[dim](child, parent, dim);
+  } else {
+    return child[dim];
+  }
+};
+
+const getTopBottom = r => {
+  return r ? r[0] + r[2] : 0;
+};
+
+const getLeftRight = r => {
+  return r ? r[1] + r[3] : 0;
+};
+
+function Screen(canvas) {
+  this.children = [];
+  this.active = this;
+  this.canvas = canvas;
+  canvas.bounds = { x : 0, y : 0, width : canvas.width, height : canvas.height}
+  this.context = canvas.getContext("2d");
+  this.bind();
+
+  canvas.onclick = e => {
+    const bounds = canvas.getBoundingClientRect();
+    const x = e.pageX - bounds.left;
+    const y = e.pageY - bounds.top;
+    this.click = { x, y };
+    this.found = null;
+    this.render();
+    while (this.found && !this.found.onClick) {
+      this.found = this.found.parent;
+    }
+    if (this.found) {
+      this.found.onClick();
+    }
+  };
+}
+
+Screen.prototype = {
+  container(width, height, render) {
+    const parent = this.active;
+    const child = {
+      //round
+      //margin
+      //padding
+      //background
+      //onClick
+      parent,
+      x: 0,
+      y: 0,
+      scale : 1,
+      alpha : 1,
+      bounds : {
+        x : 0,
+        y : 0,
+        width : 0,
+        height : 0
+      },
+      anchorX: 0,
+      anchorY: 0,
+      width,
+      height,
+      children: [],
+      text: {
+        //display
+        size: 12,
+        color: "white",
+        weight : 'normal'
+      }
+    };
+    parent.children.push(child);
+    this.active = child;
+    render();
+    this.active = parent;
+  },
+  style(text) {
+    if(text.size) {
+      this.active.text.size = text.size
+    }
+  },
+  position(x, y) {
+    this.active.x = x;
+    this.active.y = y;
+  },
+  margin(...margin) {
+    if(margin.length === 1) {
+      this.active.margin = [margin[0], margin[0], margin[0], margin[0]]
+    } else {
+      this.active.margin = margin;
+    }
+  },
+  padding(...padding) {
+    if(padding.length === 1) {
+      this.active.padding = [padding[0], padding[0], padding[0], padding[0]]
+    } else {
+      this.active.padding = padding;
+    }
+  },
+  background(background) {
+    this.active.background = background;
+  },
+  onClick(onClick) {
+    this.active.onClick = onClick;
+  },
+  text(display) {
+    this.active.text.display = display;
+  },
+  anchor(x, y) {
+    this.active.anchorX = x;
+    this.active.anchorY = y;
+  },
+  round() {
+    this.active.round = true;
+  },
+  center() {
+    this.position((_, parent) => parent.width / 2, (_, parent) => parent.height / 2);
+    this.anchor(0.5, 0.5);
+  },
+  src(image) {
+    this.active.image = image;
+  },
+  animate(child, from, to, ms, cb) {
+    const start = Date.now()
+    const handler = (now = Date.now()) => {
+      const weight =  Math.min((now - start) / ms, 1)
+      Object.keys(from).forEach(key => {
+        child[key] = from[key] + (to[key] - from[key]) * weight
+      })
+      if(weight === 1) {
+        clearInterval(interval)
+        cb && cb()
+      }
+      this.render()
+    }
+    handler(start)
+    const interval = setInterval(handler, 1000 / 60)
+  },
+  start(view, state) {
+    this.container(MATCH, MATCH, () => {
+      this.background("white")
+      view.call(this, state)
+    })
+    if(this.children.length > 1) {
+      this.animate(this.children[this.children.length - 1], {
+        alpha : .25,
+        x : this.canvas.width,
+        scale : .25
+      }, {
+        alpha : 1,
+        x : 0,
+        scale : 1
+      }, 300)
+    }
+    this.render()
+  },
+  linear(spacing = 0) {
+    this.active.render = function(child) {
+      const index = this.children.indexOf(child)
+      if(index > 0) {
+        child.y = this.children[index - 1].bounds.y + this.children[index - 1].bounds.height - this.bounds.y + spacing
+      }
+    }
+  },
+  back() {
+    if(this.children.length > 1) {
+      this.animate(this.children[this.children.length - 1], {
+        alpha : 1,
+        x : 0,
+        scale : 1
+      }, {
+        alpha : .25,
+        x : this.canvas.width,
+        scale : .25
+      }, 300, () => {
+        this.children.pop()
+      })
+    } else {
+      console.log("TODO")
+    }
+  },
+  render() {
+    //console.log("rendering")
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    this.children.forEach(child =>
+      this.renderChild(
+        { width: this.canvas.width, height: this.canvas.height },
+        child
+      )
+    );
+  },
+  renderChild(parent, child) {
+    this.context.save();
+    const width = getValue(child, parent, "width");
+    const height = getValue(child, parent, "height");
+    const x = getValue(child, parent, "x") - width * child.anchorX;
+    const y = getValue(child, parent, "y") - height * child.anchorY;
+    const hw = width / 2
+    const hh = height / 2
+    this.context.translate(x, y);
+    this.context.translate(hw, hh)
+    this.context.scale(child.scale, child.scale)
+    this.context.translate(-hw, -hh)
+    const margin = child.margin || [0, 0, 0, 0]
+    const padding = child.padding || [0, 0, 0, 0]
+    //DEBUG HERE
+    if(true) {
+      //padding
+      if(padding) {
+        this.context.fillStyle = "rgba(0, 255, 0, .7)"
+        //top
+        this.context.fillRect(margin[3], margin[0], width - (margin[3] + margin[1]), padding[0])
+        //left
+        this.context.fillRect(margin[3], margin[0] + padding[0], padding[3], height - (margin[0] + margin[2] + padding[0]))
+        //right
+        this.context.fillRect(width - margin[1] - padding[1], margin[0] + padding[0], padding[1], height - (margin[0] + margin[2] + padding[0]))
+        //bottom
+        this.context.fillRect(margin[3] + padding[3], height - margin[2] - padding[2], width - (margin[3] + padding[3] + margin[1] + padding[1]), padding[2])
+      }
+      //margin
+      if(margin) {
+        this.context.fillStyle = "rgba(0, 0, 255, .7)"
+        //top
+        this.context.fillRect(0, 0, width, margin[0])
+        //left
+        this.context.fillRect(0, margin[0], margin[3], height - margin[0])
+        //right
+        this.context.fillRect(width - margin[1], margin[0], margin[1], height - margin[0])
+        //bottom
+        this.context.fillRect(margin[3], height - margin[2], width - margin[1] - margin[3], margin[2])
+      }
+      //outline
+      this.context.strokeStyle = "rgba(255, 255, 255, .7)"
+      this.context.setLineDash([5, 10])
+      this.context.strokeRect(0, 0, width, height)
+      this.context.setLineDash([])
+    }
+    //STOP DEBUG
+    const rw = width - getLeftRight(margin);
+    const rh = height - getTopBottom(margin);
+    const transform = this.context.currentTransform || this.context.getTransform()
+    child.bounds.x = transform.e
+    child.bounds.y = transform.f
+    child.bounds.width = width
+    child.bounds.height = height
+    this.context.translate(margin[3], margin[0]);
+    this.context.globalAlpha = this.context.globalAlpha * child.alpha
+    roundRect(
+      this.context,
+      0,
+      0,
+      rw,
+      rh,
+      child.round ? Math.min(rw, rh) / 2 : 0,
+      child.background || "transparent"
+    );
+    if(child.image && child.image.complete) {
+      this.context.drawImage(child.image, 0, 0, rw, rh)
+    }
+    if (this.click && this.context.isPointInPath(this.click.x, this.click.y)) {
+      this.found = child;
+    }
+    this.context.translate(padding[3], padding[0]);
+    if (child.text.display) {
+      this.context.fillStyle = child.text.color;
+      this.context.font = `${child.text.size}px sans-serif`;
+      this.context.textBaseline = "middle";
+      this.context.textAlign = "center";
+      this.context.fillText(
+        child.text.display,
+        width / 2 - margin[3] - padding[3],
+        height / 2 - margin[0] - padding[0]
+      );
+    }
+    const bounds = {
+      width : width - getLeftRight(padding) - getLeftRight(margin),
+      height : height - getTopBottom(padding) - getTopBottom(margin)
+    }
+    child.children.forEach(gc => {
+      child.render && child.render(gc)
+      this.renderChild(bounds, gc)
+    });
+    this.context.restore();
+  },
+  bind() {
+    for (var i in this) {
+      if (typeof this[i] === "function") {
+        this[i] = this[i].bind(this);
+      }
+    }
+  }
+};
+
+const bold_34 = {
+  weight : "bold",
+  size : 34
+}
+const bold_20 = {
+  weight : "bold",
+  size : 20
+}
+
+const screen = new Screen(canvas);
+
+const Home = function (state) {
+
+  const {
+    container,
+    background,
+    padding,
+    margin,
+    position,
+    text,
+    round,
+    onClick,
+    anchor,
+    start,
+    back,
+    center,
+    src,
+    style,
+    linear
+  } = this;
+
+  const next = (function() {
+    let value = 3
+    alter = 3
+    return () => {
+      value += alter
+      if(alter > 0) {
+        alter = -1
+      } else {
+        alter = 3
+      }
+      return value
+    }
+  })()
+
+  background("#2196f3")
+  container(PERCENT(50), WRAP, function () {
+    anchor(.5, .5)
+    position(PERCENT(50), PERCENT(25))
+    src(logos_lexicon_white)
+  })
+  container(WRAP, WRAP, () => {
+    linear(16)
+    anchor(.5, .5)
+    position(PERCENT(50), PERCENT(50))
+    container(WRAP, WRAP, () => {
+      anchor(.5, 0)
+      position(PERCENT(50), 0)
+      text("Lexicon")
+      style(bold_34)
+    })
+    container(WRAP, WRAP, () => {
+      text("Your language learning buddy")
+      style(bold_20)
+    })
+  })
+  container(PERCENT(50), WRAP, () => {
+    linear(16)
+    anchor(.5, .5)
+    position(PERCENT(50), PERCENT(75))
+    container(MATCH, WRAP, () => {
+      padding(16)
+      text("GET STARTED")
+      round()
+      background("#673ab7")
+      onClick(() => {
+        console.log("GET STARTED")
+      })
+    })
+    container(MATCH, WRAP, () => {
+      padding(16)
+      text("LOGIN")
+      onClick(() => {
+        console.log("LOGIN")
+      })
+    })
+  })
+}
+
+screen.start(Home, {});
+
+</script>
+</body>
+</html>
