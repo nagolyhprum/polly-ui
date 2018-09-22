@@ -388,18 +388,43 @@ Screen.prototype = {
   scrollable() {
     const active = this.active
     active.overflow = false
-    let last
+    let lastMouse, lastTs = Date.now(), dx = 0, dy = 0
+    setInterval(() => {
+      const now = Date.now()
+      const dt = (now - lastTs) / 1000
+      lastTs = now
+      dx /= 1.2
+      if(Math.abs(dx) < 1) {
+        dx = 0
+      }
+      dy /= 1.2
+      if(Math.abs(dy) < 1) {
+        dy = 0
+      }
+      if(!lastMouse && (dx || dy)) {
+        update()
+        this.render()
+      }
+    }, 1000 / 60)
+    const update = () => {
+      const right = Math.max(...active.children.map(child => child.bounds.x + child.bounds.width)) - (active.bounds.x + active.bounds.width + active.scrollX)
+      const bottom = Math.max(...active.children.map(child => child.bounds.y + child.bounds.height)) - (active.bounds.y + active.bounds.height + active.scrollY)
+      active.scrollX = Math.max(Math.min(active.scrollX + dx, 0), -right)
+      active.scrollY = Math.max(Math.min(active.scrollY + dy, 0), -bottom)
+    }
     active.onMouseMove = function(mouse) {
-      if(last) {
-        active.scrollY += mouse.y - last.y
-        last = mouse
+      if(lastMouse) {
+        dx = mouse.x - lastMouse.x
+        dy = mouse.y - lastMouse.y
+        update()
+        lastMouse = mouse
       }
     }
     active.onMouseDown = function(mouse) {
-      last = mouse
+      lastMouse = mouse
     }
     active.onMouseUp = active.onMouseOut = function(mouse) {
-      last = null
+      lastMouse = null
     }
   },
   renderChild(parent, child) {
@@ -417,14 +442,13 @@ Screen.prototype = {
     child.bounds.y = transform.f
     child.bounds.width = width
     child.bounds.height = height
-    // const intersection = {
-    //   left : Math.max(child.parent.bounds.x, child.bounds.x),
-    //   top : Math.max(child.parent.bounds.y, child.bounds.y)
-    // }
-    // intersection.right = Math.min(child.parent.bounds.x + child.parent.bounds.width, child.bounds.x + child.bounds.width)
-    // intersection.bottom = Math.min(child.parent.bounds.y + child.parent.bounds.height, child.bounds.y + child.bounds.height)
-    // console.log(intersection, child.bounds, child.parent.bounds, child)
-    // || intersection.bottom - intersection.top <= 0 || intersection.right - intersection.left <= 0
+    const intersection = {
+      left : Math.max(child.parent.bounds.x, child.bounds.x),
+      top : Math.max(child.parent.bounds.y, child.bounds.y)
+    }
+    intersection.right = Math.min(child.parent.bounds.x + child.parent.bounds.width, child.bounds.x + child.bounds.width)
+    intersection.bottom = Math.min(child.parent.bounds.y + child.parent.bounds.height, child.bounds.y + child.bounds.height)
+    const isInBounds = intersection.bottom - intersection.top > 0 && intersection.right - intersection.left > 0
     if(child.hidden) {
       return this.context.restore()
     }
@@ -491,7 +515,7 @@ Screen.prototype = {
     if(!child.overflow) {
       this.context.clip()
     }
-    if (this.mouse && this.context.isPointInPath(this.mouse.x, this.mouse.y)) {
+    if (this.mouse && isInBounds && this.context.isPointInPath(this.mouse.x, this.mouse.y)) {
       mouseOver.push(child);
     }
     this.context.translate(padding[3], padding[0]);
@@ -529,7 +553,7 @@ Screen.prototype = {
         }
       }
       child.render && child.render(gc)
-      mouseOver = mouseOver.concat(this.renderChild(bounds, gc))
+      mouseOver = isInBounds ? mouseOver.concat(this.renderChild(bounds, gc)) : this.renderChild(bounds, gc)
     });
     this.context.restore();
     return mouseOver
@@ -623,9 +647,9 @@ const Home = function (state) {
   })
 }
 
-const LANGUAGES = Array.from({ length : 32 }).map(() => ({
+const LANGUAGES = Array.from({ length : 32 }).map((_, i) => ({
   flag : languages_flag,
-  display : "Chinese (Mandarin)"
+  display : "Chinese (Mandarin) " + (i + 1)
 }))
 
 const LanguagePicker = function(state) {
