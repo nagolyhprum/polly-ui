@@ -4,18 +4,24 @@
   <style>
 html,
 body,
-canvas {
+canvas,
+input {
   padding: 0;
   border: 0;
   margin: 0;
-  background : gray;
+  background: transparent;
+  color: transparent;
+  outline: none;
+  position : absolute;
+  caret-color: black;
 }
   </style>
 </head>
 <body>
-  <canvas width="375" height="667" style="background:gray;"></canvas>
-  <canvas width="375" height="667" style="background:gray;"></canvas>
+  <canvas width="375" height="667"></canvas>
 <script>
+
+const slight_round = 4
 
 Array.prototype.contains = function(item) {
   return this.indexOf(item) !== -1
@@ -217,7 +223,7 @@ Screen.prototype = {
           }
         })
         return child.bounds[dim]
-      } else if (child.text.display) {
+      } else if (child.text.display || child.input) {
         if (dim === "width") {
           context.font = `${child.text.size}px sans-serif`;
           const width = Math.max(...child.text.display.split("\n").map(display => context.measureText(display).width))
@@ -237,7 +243,7 @@ Screen.prototype = {
   container(width, height, render) {
     const parent = this.active;
     const child = {
-      //round
+      round : 0,
       //margin
       //padding
       //background
@@ -264,7 +270,8 @@ Screen.prototype = {
         //display
         size: 12,
         color: "black",
-        weight : 'normal'
+        weight : 'normal',
+        align : "left"
       }
     };
     parent.children.push(child);
@@ -308,7 +315,7 @@ Screen.prototype = {
     this.active.anchorX = x;
     this.active.anchorY = y;
   },
-  round(round = true) {
+  round(round) {
     this.active.round = round;
   },
   shadow(shadow = true) {
@@ -323,6 +330,31 @@ Screen.prototype = {
   },
   textColor(textColor) {
     this.active.text.color = textColor
+  },
+  textAlign(align) {
+    this.active.text.align = align
+  },
+  input(input = "text") {
+    const view = this.active
+    view.input = input
+    view.onClick = () => {
+      this.textbox = this.textbox || document.createElement("input")
+      this.textbox.oninput = null
+      this.textbox.value = view.text.display
+      if(!this.textbox.parentNode) {
+        document.body.appendChild(this.textbox)
+      }
+      this.textbox.style.left = `${view.bounds.x}px`
+      this.textbox.style.top = `${view.bounds.y}px`
+      this.textbox.style.width = `${view.bounds.width}px`
+      this.textbox.style.height = `${view.bounds.height}px`
+      this.textbox.type = input
+      this.textbox.focus()
+      this.textbox.oninput = e => {
+        view.text.display = this.textbox.value
+        this.render()
+      }
+    }
   },
   animate(child, from, to, ms, cb) {
     const start = Date.now()
@@ -371,15 +403,19 @@ Screen.prototype = {
         x : this.bounds.width
       }, 300, () => {
         this.children.pop()
+        this.render()
       })
     } else {
       console.log("TODO")
     }
   },
+  weight(weight) {
+    this.active.weight = weight
+  },
   render() {
-    //console.log("rendering")
+    console.log("rendering")
     this.context.clearRect(0, 0, this.bounds.width, this.bounds.height)
-    return this.children.reduce((mouseOver, child) => mouseOver.concat(this.renderChild(
+    return this.children.reduce((mouseOver, child) => mouseOver.concat(this.renderView(
       { width: this.bounds.width, height: this.bounds.height },
       child
     )), []);
@@ -426,7 +462,8 @@ Screen.prototype = {
       lastMouse = null
     }
   },
-  renderChild(parent, child) {
+
+  renderView(parent, child) {
     let mouseOver = []
     this.context.save();
     const width = getValue(child, parent, "width");
@@ -456,8 +493,31 @@ Screen.prototype = {
     this.context.globalAlpha = this.context.globalAlpha * child.alpha
     const mw = width - getLeftRight(margin);
     const mh = height - getTopBottom(margin);
+    this.context.translate(margin[3], margin[0]);
+    if(child.shadow) {
+      const shadow = 2
+      this.context.shadowColor = 'rgba(0, 0, 0, .7)';
+      this.context.shadowBlur = shadow;
+      this.context.shadowOffsetX = shadow;
+      this.context.shadowOffsetY = shadow;
+    }
+    roundRect(
+      this.context,
+      0,
+      0,
+      mw,
+      mh,
+      getValue(child, parent, "round"),
+      child.background || "transparent"
+    );
+    this.context.shadowColor = 'transparent';
+    this.context.shadowBlur = 0;
+    this.context.shadowOffsetX = 0;
+    this.context.shadowOffsetY = 0;
     //DEBUG HERE
     if(true) {
+      this.context.save()
+      this.context.translate(-margin[3], -margin[0]);
       //padding
       if(padding) {
         this.context.fillStyle = "rgba(0, 255, 0, .7)"
@@ -487,29 +547,9 @@ Screen.prototype = {
       this.context.setLineDash([2, 4])
       this.context.strokeRect(0, 0, width, height)
       this.context.setLineDash([])
+      this.context.restore()
     }
     //STOP DEBUG
-    this.context.translate(margin[3], margin[0]);
-    if(child.shadow) {
-      const shadow = 2
-      this.context.shadowColor = 'rgba(0, 0, 0, .7)';
-      this.context.shadowBlur = shadow;
-      this.context.shadowOffsetX = shadow;
-      this.context.shadowOffsetY = shadow;
-    }
-    roundRect(
-      this.context,
-      0,
-      0,
-      mw,
-      mh,
-      child.round ? Math.min(mw, mh) / 2 : 0,
-      child.background || "transparent"
-    );
-    this.context.shadowColor = 'transparent';
-    this.context.shadowBlur = 0;
-    this.context.shadowOffsetX = 0;
-    this.context.shadowOffsetY = 0;
     if(!child.overflow) {
       this.context.clip()
     }
@@ -524,12 +564,17 @@ Screen.prototype = {
       this.context.fillStyle = child.text.color;
       this.context.font = `${child.text.size}px sans-serif`;
       this.context.textBaseline = "top";
-      this.context.textAlign = "center";
+      this.context.textAlign = child.text.align;
       const lines = child.text.display.split("\n")
       lines.forEach((line, index) => {
+        let x = 0
+        switch(this.context.textAlign) {
+          case "right" : x = width - getLeftRight(padding); break;
+          case "center" : x = mw / 2 - padding[3]; break;
+        }
         this.context.fillText(
-          line,
-          mw / 2 - padding[3],
+          child.input === "password" ? line.split("").map(it => '\u25CF').join("") : line,
+          x,
           index * (child.text.size + LINE_SPACING)
         );
       })
@@ -550,7 +595,7 @@ Screen.prototype = {
           gc.x = previous.bounds.x + previous.bounds.width - child.bounds.x + spacing - child.scrollX - padding[3] - margin[3]
         }
       }
-      mouseOver = isInBounds ? mouseOver.concat(this.renderChild(bounds, gc)) : this.renderChild(bounds, gc)
+      mouseOver = isInBounds ? mouseOver.concat(this.renderView(bounds, gc)) : this.renderView(bounds, gc)
       if(index > 0 && direction === 'vertical' && !child.spacing) {
         this.context.beginPath()
         this.context.moveTo(
@@ -565,6 +610,25 @@ Screen.prototype = {
         this.context.stroke()
       }
     });
+
+    const weight = child.children.reduce((weight, child) => {
+      return weight + (child.weight || 0)
+    }, 0)
+    if(weight) {
+      const space = child.children.reduce((space, child) => {
+        return space - (child.weight ? 0 : child.bounds.height)
+      }, height - child.spacing * (this.children.length) - getTopBottom(padding))
+      child.children.forEach(child => {
+        if(child.weight) {
+          const height = (child.weight / weight) * space
+          if(height !== child.height) {
+            child.height = height
+            this.render()
+          }
+        }
+      })
+    }
+
     this.context.restore();
     return mouseOver
   },
@@ -606,7 +670,8 @@ const Splash = function (state) {
     style,
     linear,
     textColor,
-    WRAP
+    WRAP,
+    textAlign
   } = this;
 
   background("#2196f3")
@@ -637,21 +702,23 @@ const Splash = function (state) {
     anchor(.5, .5)
     position(PERCENT(50), PERCENT(75))
     container(MATCH, WRAP, () => {
+      textAlign("center")
       padding(16)
       text("GET STARTED")
       textColor("white")
-      round()
+      round((child, parent) => Math.min(child.bounds.width / 2, child.bounds.height / 2))
       background("#673ab7")
       onClick(() => {
         start(LanguagePicker, state)
       })
     })
     container(MATCH, WRAP, () => {
+      textAlign("center")
       padding(16)
       text("LOGIN")
       textColor("white")
       onClick(() => {
-        console.log("LOGIN")
+        start(Login)
       })
     })
   })
@@ -664,6 +731,7 @@ const LANGUAGES = Array.from({ length : 32 }).map((_, i) => ({
 
 const LanguagePicker = function(state) {
   const {
+    round,
     background,
     padding,
     container,
@@ -679,7 +747,9 @@ const LanguagePicker = function(state) {
     scrollable,
     WRAP,
     textColor,
-    start
+    start,
+    textAlign,
+    weight
   } = this
   padding(16)
   background("#2196f3")
@@ -688,6 +758,7 @@ const LanguagePicker = function(state) {
     container(MATCH, WRAP, () => {
       textColor("white")
       text("What language do\nyou speak natively?")
+      textAlign("center")
       anchor(0, .5)
       position(0, PERCENT(50))
       style(medium_20)
@@ -699,9 +770,10 @@ const LanguagePicker = function(state) {
       onClick(back)
     })
   })
-  const FILL = (child, parent) => parent.height - ((20 * 2 + LINE_SPACING) + (16 * 2) + (16 * 2 + 12) + (16 * 2))
-  container(MATCH, FILL, () => {
+  container(MATCH, 0, () => {
+    weight(1)
     background("white")
+    round(slight_round)
     shadow()
     linear()
     scrollable()
@@ -745,6 +817,7 @@ const GOALS = [{
 
 const GoalPicker = function(state) {
   const {
+    round,
     margin,
     background,
     padding,
@@ -760,7 +833,8 @@ const GoalPicker = function(state) {
     onClick,
     scrollable,
     WRAP,
-    textColor
+    textColor,
+    textAlign
   } = this
   padding(16)
   background("#2196f3")
@@ -769,6 +843,7 @@ const GoalPicker = function(state) {
     container(MATCH, WRAP, () => {
       textColor("white")
       text("How quickly would you\nlike to learn?")
+      textAlign("center")
       anchor(0, .5)
       position(0, PERCENT(50))
       style(medium_20)
@@ -793,6 +868,7 @@ const GoalPicker = function(state) {
   })
   container(MATCH, WRAP, () => {
     background("white")
+    round(slight_round)
     shadow()
     linear()
     GOALS.forEach(goal => {
@@ -810,8 +886,104 @@ const GoalPicker = function(state) {
   })
 }
 
+const Login = function(state) {
+  const {
+    round,
+    margin,
+    background,
+    padding,
+    container,
+    src,
+    linear,
+    text,
+    anchor,
+    position,
+    style,
+    shadow,
+    back,
+    onClick,
+    scrollable,
+    WRAP,
+    textColor,
+    textAlign,
+    input
+  } = this
+  padding(16)
+  background("#2196f3")
+  linear(16)
+  container(MATCH, WRAP, () => {
+    linear(16, "horizontal")
+    container(WRAP, WRAP, () => {
+      src(icons_back_white)
+      anchor(0, .5)
+      position(0, (child, parent) => parent.height / 2)
+      onClick(back)
+    })
+    container(WRAP, WRAP, () => {
+      textColor("white")
+      text("Login")
+      anchor(0, .5)
+      position(0, PERCENT(50))
+      style(medium_20)
+    })
+  })
+  container(MATCH, WRAP, () => {
+    background("white")
+    round(slight_round)
+    padding(16)
+    linear(16)
+    container(MATCH, WRAP, () => {
+      // \u25CF
+      // \u2022
+      text("Username")
+      input()
+    })
+    container(MATCH, WRAP, () => {
+      text("Password")
+      input("password")
+    })
+    container(MATCH, WRAP, () => {
+      text("Login")
+      round((child, parent) => Math.min(child.bounds.width / 2, child.bounds.height / 2))
+      background("#673ab7")
+      padding(16)
+      textColor("white")
+      textAlign("center")
+    })
+    container(MATCH, WRAP, () => {
+      container(MATCH, 1, () => {
+        position(0, PERCENT(50))
+        anchor(0, .5)
+        background("black")
+      })
+      container(WRAP, WRAP, () => {
+        position(PERCENT(50), 0)
+        anchor(.5, 0)
+        text("OR")
+        background("white")
+        padding(0, 16, 0, 16)
+      })
+    })
+    container(MATCH, WRAP, () => {
+      textAlign("center")
+      text("CONNECT WITH GOOGLE")
+      round((child, parent) => Math.min(child.bounds.width / 2, child.bounds.height / 2))
+      background("#673ab7")
+      padding(16)
+      textColor("white")
+    })
+    container(MATCH, WRAP, () => {
+      textAlign("center")
+      text("CONNECT WITH FACEBOOK")
+      round((child, parent) => Math.min(child.bounds.width / 2, child.bounds.height / 2))
+      background("#673ab7")
+      padding(16)
+      textColor("white")
+    })
+  })
+}
+
 new Screen(document.getElementsByTagName("canvas")[0]).start(Splash, {});
-new Screen(document.getElementsByTagName("canvas")[1]).start(Splash, {});
 
 </script>
 </body>
