@@ -16,6 +16,10 @@ canvas {
   <canvas width="375" height="667" style="background:gray;"></canvas>
 <script>
 
+Array.prototype.contains = function(item) {
+  return this.indexOf(item) !== -1
+}
+
 const LINE_SPACING = 8
 
 function svg(input) {
@@ -54,6 +58,21 @@ const logos_lexicon_white = svg(`
   </svg>`
 )
 
+const languages_flag = svg(`
+  <svg height="24"
+       width="24" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#F3625B"
+          d="M0,16a16,16 0,1 0,32 0a16,16 0,1 0,-32 0z"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill="#FFC400"
+          d="M16,21.27l-5.56,2.73l1.06,-5.79l-4.5,-4.1l6.22,-0.84l2.78,-5.27l2.78,5.27l6.22,0.84l-4.5,4.1l1.06,5.79z"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill-opacity="0.2" fill="#000000"
+          d="M16,32C24.84,32 32,24.84 32,16C32,7.16 24.84,0 16,0"
+          stroke-opacity="0.2" stroke="#00000000" stroke-width="1"/>
+  </svg>
+`)
+
 const canvas = document.getElementsByTagName("canvas")[0];
 const PERCENT = percent => (child, parent, dim) => {
   let other = dim
@@ -66,54 +85,6 @@ const PERCENT = percent => (child, parent, dim) => {
 const MATCH = (child, parent, dim) => {
   return parent[dim];
 }
-const WRAP = (function() {
-  const DIMENSIONS = {
-    width : 'x',
-    height : 'y',
-    x : 'width',
-    y : 'height'
-  }
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d");
-  return (child, parent, dim) => {
-    if(child.image) {
-      if(child.width === WRAP && child.height === WRAP) {
-        return child.image[dim]
-      } else if(dim === 'width' && child.width === WRAP && child.height !== WRAP) {
-        const height = getValue(child, parent, 'height')
-        return (height / child.image.height) * child.image.width
-      } else if(dim === 'height' && child.width !== WRAP && child.height === WRAP) {
-        const width = getValue(child, parent, 'width')
-        return (width / child.image.width) * child.image.height
-      }
-    } else if (child.children.length) {
-      setTimeout(() => {
-        const left = (child.margin ? child.margin[3] : 0) + (child.padding ? child.padding[3] : 0)
-        const top = (child.margin ? child.margin[0] : 0) + (child.padding ? child.padding[0] : 0)
-        const space = (dim === "width" ? getLeftRight(child.padding) + getLeftRight(child.margin) - left : getTopBottom(child.padding) + getTopBottom(child.margin) - top)
-        const max = Math.max(...child.children.map(gc => gc.bounds[DIMENSIONS[dim]] + gc.bounds[dim])) - child.bounds[DIMENSIONS[dim]] + space
-        if(Math.abs(max - child.bounds[dim]) > 1) {
-          child.bounds[dim] = max
-          child.screen.render()
-        }
-      })
-      return child.bounds[dim]
-    } else if (child.text.display) {
-      if (dim === "width") {
-        context.font = `${child.text.size}px sans-serif`;
-        const width = Math.max(...child.text.display.split("\n").map(display => context.measureText(display).width))
-        return width + getLeftRight(child.margin) + getLeftRight(child.padding);
-      } else if (dim === "height") {
-        const count = child.text.display.split("\n").length
-        return (
-          child.text.size * count + LINE_SPACING * (count - 1) +
-          getTopBottom(child.margin) +
-          getTopBottom(child.padding)
-        );
-      }
-    }
-  };
-})();
 
 function roundRect(context, x, y, width, height, radius, fill, stroke) {
   radius = { tl: radius, tr: radius, br: radius, bl: radius };
@@ -157,27 +128,113 @@ function Screen(canvas) {
   this.children = [];
   this.active = this;
   this.canvas = canvas;
-  canvas.bounds = { x : 0, y : 0, width : canvas.width, height : canvas.height}
+  this.bounds = { x : 0, y : 0, width : canvas.width, height : canvas.height}
   this.context = canvas.getContext("2d");
   this.bind();
 
-  canvas.onclick = e => {
+  const getMouse = (e, name) => {
     const bounds = canvas.getBoundingClientRect();
-    const x = e.pageX - bounds.left;
-    const y = e.pageY - bounds.top;
-    this.click = { x, y };
-    this.found = null;
-    this.render();
-    while (this.found && !this.found.onClick) {
-      this.found = this.found.parent;
+    return {
+      x : e.pageX - bounds.left,
+      y : e.pageY - bounds.top,
+      name
     }
-    if (this.found && this.found !== this) {
-      this.found.onClick();
+  }
+
+  this.last = []
+  const call = (e, name) => {
+    this.mouse = getMouse(e, name);
+    let mouseOver = this.render();
+    this.last.forEach(view => {
+      if(!mouseOver.contains(view)) {
+        view.onMouseOut && view.onMouseOut(Object.assign({}, this.mouse, { name : "onMouseOut" }))
+      }
+    })
+    mouseOver.forEach(view => {
+      if(!this.last.contains(view)) {
+        view.onMouseIn && view.onMouseIn(Object.assign({}, this.mouse, { name : "onMouseIn" }))
+      }
+    })
+    this.last = mouseOver
+    let view = mouseOver[mouseOver.length - 1]
+    while (view && !view[name]) {
+      view = view.parent;
     }
+    if(view && view !== this) {
+      view[name](this.mouse)
+    }
+  }
+
+  canvas.onmousedown = e => {
+    call(e, "onMouseDown")
+  }
+
+  canvas.onmousemove = e => {
+    call(e, "onMouseMove")
+  }
+
+  canvas.onmouseup = e => {
+    call(e, "onMouseUp")
+  }
+
+  canvas.onclick = e => {
+    call(e, "onClick")
   };
 }
 
 Screen.prototype = {
+  WRAP: (function() {
+    const DIMENSIONS = {
+      width : 'x',
+      height : 'y',
+      x : 'width',
+      y : 'height'
+    }
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
+    return function (child, parent, dim) {
+      if(child.image) {
+        if(child.width === this.WRAP && child.height === this.WRAP) {
+          return child.image[dim]
+        } else if(dim === 'width' && child.width === this.WRAP && child.height !== this.WRAP) {
+          const height = getValue(child, parent, 'height')
+          return (height / child.image.height) * child.image.width
+        } else if(dim === 'height' && child.width !== this.WRAP && child.height === this.WRAP) {
+          const width = getValue(child, parent, 'width')
+          return (width / child.image.width) * child.image.height
+        }
+      } else if (child.children.length) {
+        setTimeout(() => {
+          const left = (child.margin ? child.margin[3] : 0) + (child.padding ? child.padding[3] : 0)
+          const top = (child.margin ? child.margin[0] : 0) + (child.padding ? child.padding[0] : 0)
+          const space = (dim === "width" ? getLeftRight(child.padding) + getLeftRight(child.margin) - left : getTopBottom(child.padding) + getTopBottom(child.margin) - top)
+          const max = Math.max(...child.children.map(gc => gc.bounds[DIMENSIONS[dim]] + gc.bounds[dim])) - child.bounds[DIMENSIONS[dim]] + space
+          if(Math.abs(max - child.bounds[dim]) > 1) {
+            child.bounds[dim] = max
+            clearTimeout(this.renderTimeout)
+            this.renderTimeout = setTimeout(() => {
+              this.render()
+            })
+          }
+        })
+        return child.bounds[dim]
+      } else if (child.text.display) {
+        if (dim === "width") {
+          context.font = `${child.text.size}px sans-serif`;
+          const width = Math.max(...child.text.display.split("\n").map(display => context.measureText(display).width))
+          return width + getLeftRight(child.margin) + getLeftRight(child.padding);
+        } else if (dim === "height") {
+          const count = child.text.display.split("\n").length
+          return (
+            child.text.size * count + LINE_SPACING * (count - 1) +
+            getTopBottom(child.margin) +
+            getTopBottom(child.padding)
+          );
+        }
+      }
+      return 0
+    };
+  })(),
   container(width, height, render) {
     const parent = this.active;
     const child = {
@@ -186,11 +243,10 @@ Screen.prototype = {
       //padding
       //background
       //onClick
-      screen:this,
+      overflow : true,
       parent,
       x: 0,
       y: 0,
-      scale : 1,
       alpha : 1,
       bounds : {
         x : 0,
@@ -198,6 +254,8 @@ Screen.prototype = {
         width : 0,
         height : 0
       },
+      scrollX : 0,
+      scrollY : 0,
       anchorX: 0,
       anchorY: 0,
       width,
@@ -206,7 +264,7 @@ Screen.prototype = {
       text: {
         //display
         size: 12,
-        color: "white",
+        color: "black",
         weight : 'normal'
       }
     };
@@ -264,14 +322,18 @@ Screen.prototype = {
   src(image) {
     this.active.image = image;
   },
+  textColor(textColor) {
+    this.active.text.color = textColor
+  },
   animate(child, from, to, ms, cb) {
     const start = Date.now()
     const handler = (now = Date.now()) => {
-      const weight =  Math.min((now - start) / ms, 1)
+      const percent =  Math.min((now - start) / ms, 1)
+      const weight = percent
       Object.keys(from).forEach(key => {
         child[key] = from[key] + (to[key] - from[key]) * weight
       })
-      if(weight === 1) {
+      if(percent === 1) {
         clearInterval(interval)
         cb && cb()
       }
@@ -288,38 +350,26 @@ Screen.prototype = {
     if(this.children.length > 1) {
       this.animate(this.children[this.children.length - 1], {
         alpha : .25,
-        x : this.canvas.width,
-        scale : .25
+        x : this.bounds.width
       }, {
         alpha : 1,
-        x : 0,
-        scale : 1
+        x : 0
       }, 300)
     }
     this.render()
   },
   linear(spacing = 0, direction = 'vertical') {
-    this.active.render = function(child) {
-      const index = this.children.indexOf(child)
-      if(index > 0) {
-        if(direction === 'vertical') {
-          child.y = this.children[index - 1].bounds.y + this.children[index - 1].bounds.height - this.bounds.y + spacing
-        } else {
-          child.x = this.children[index - 1].bounds.x + this.children[index - 1].bounds.width - this.bounds.x + spacing
-        }
-      }
-    }
+    this.active.spacing = spacing
+    this.active.direction = direction
   },
   back() {
     if(this.children.length > 1) {
       this.animate(this.children[this.children.length - 1], {
         alpha : 1,
-        x : 0,
-        scale : 1
+        x : 0
       }, {
         alpha : .25,
-        x : this.canvas.width,
-        scale : .25
+        x : this.bounds.width
       }, 300, () => {
         this.children.pop()
       })
@@ -329,15 +379,31 @@ Screen.prototype = {
   },
   render() {
     console.log("rendering")
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-    this.children.forEach(child =>
-      this.renderChild(
-        { width: this.canvas.width, height: this.canvas.height },
-        child
-      )
-    );
+    this.context.clearRect(0, 0, this.bounds.width, this.bounds.height)
+    return this.children.reduce((mouseOver, child) => mouseOver.concat(this.renderChild(
+      { width: this.bounds.width, height: this.bounds.height },
+      child
+    )), []);
+  },
+  scrollable() {
+    const active = this.active
+    active.overflow = false
+    let last
+    active.onMouseMove = function(mouse) {
+      if(last) {
+        active.scrollY += mouse.y - last.y
+        last = mouse
+      }
+    }
+    active.onMouseDown = function(mouse) {
+      last = mouse
+    }
+    active.onMouseUp = active.onMouseOut = function(mouse) {
+      last = null
+    }
   },
   renderChild(parent, child) {
+    let mouseOver = []
     this.context.save();
     const width = getValue(child, parent, "width");
     const height = getValue(child, parent, "height");
@@ -346,14 +412,27 @@ Screen.prototype = {
     const hw = width / 2
     const hh = height / 2
     this.context.translate(x, y);
-    this.context.translate(hw, hh)
-    this.context.scale(child.scale, child.scale)
-    this.context.translate(-hw, -hh)
+    const transform = this.context.currentTransform || this.context.getTransform()
+    child.bounds.x = transform.e
+    child.bounds.y = transform.f
+    child.bounds.width = width
+    child.bounds.height = height
+    // const intersection = {
+    //   left : Math.max(child.parent.bounds.x, child.bounds.x),
+    //   top : Math.max(child.parent.bounds.y, child.bounds.y)
+    // }
+    // intersection.right = Math.min(child.parent.bounds.x + child.parent.bounds.width, child.bounds.x + child.bounds.width)
+    // intersection.bottom = Math.min(child.parent.bounds.y + child.parent.bounds.height, child.bounds.y + child.bounds.height)
+    // console.log(intersection, child.bounds, child.parent.bounds, child)
+    // || intersection.bottom - intersection.top <= 0 || intersection.right - intersection.left <= 0
+    if(child.hidden) {
+      return this.context.restore()
+    }
     const margin = child.margin || [0, 0, 0, 0]
     const padding = child.padding || [0, 0, 0, 0]
     this.context.globalAlpha = this.context.globalAlpha * child.alpha
-    const rw = width - getLeftRight(margin);
-    const rh = height - getTopBottom(margin);
+    const mw = width - getLeftRight(margin);
+    const mh = height - getTopBottom(margin);
     if(child.shadow) {
       const shadow = 2
       this.context.shadowColor = 'rgba(0, 0, 0, .7)';
@@ -399,28 +478,26 @@ Screen.prototype = {
       this.context.setLineDash([])
     }
     //STOP DEBUG
-    const transform = this.context.currentTransform || this.context.getTransform()
-    child.bounds.x = transform.e
-    child.bounds.y = transform.f
-    child.bounds.width = width
-    child.bounds.height = height
     this.context.translate(margin[3], margin[0]);
     roundRect(
       this.context,
       0,
       0,
-      rw,
-      rh,
-      child.round ? Math.min(rw, rh) / 2 : 0,
+      mw,
+      mh,
+      child.round ? Math.min(mw, mh) / 2 : 0,
       child.background || "transparent"
     );
-    if (this.click && this.context.isPointInPath(this.click.x, this.click.y)) {
-      this.found = child;
+    if(!child.overflow) {
+      this.context.clip()
     }
-    if(child.image && child.image.complete) {
-      this.context.drawImage(child.image, 0, 0, rw, rh)
+    if (this.mouse && this.context.isPointInPath(this.mouse.x, this.mouse.y)) {
+      mouseOver.push(child);
     }
     this.context.translate(padding[3], padding[0]);
+    if(child.image && child.image.complete) {
+      this.context.drawImage(child.image, 0, 0, mw - getLeftRight(padding), mh - getTopBottom(padding))
+    }
     if (child.text.display) {
       this.context.fillStyle = child.text.color;
       this.context.font = `${child.text.size}px sans-serif`;
@@ -430,8 +507,8 @@ Screen.prototype = {
       lines.forEach((line, index) => {
         this.context.fillText(
           line,
-          rw / 2 - padding[3],
-          index * (LINE_SPACING + child.text.size)
+          mw / 2 - padding[3],
+          index * (child.text.size + LINE_SPACING)
         );
       })
     }
@@ -439,11 +516,23 @@ Screen.prototype = {
       width : width - getLeftRight(padding) - getLeftRight(margin),
       height : height - getTopBottom(padding) - getTopBottom(margin)
     }
-    child.children.forEach(gc => {
+    this.context.translate(child.scrollX, child.scrollY)
+    const direction = child.direction
+    const spacing = child.spacing
+    child.children.forEach((gc, index) => {
+      if(index > 0 && direction) {
+        const previous = child.children[index - 1]
+        if(direction === 'vertical') {
+          gc.y = previous.bounds.y + previous.bounds.height - child.bounds.y + spacing - child.scrollY
+        } else if(direction === 'horizontal') {
+          gc.x = previous.bounds.x + previous.bounds.width - child.bounds.x + spacing
+        }
+      }
       child.render && child.render(gc)
-      this.renderChild(bounds, gc)
+      mouseOver = mouseOver.concat(this.renderChild(bounds, gc))
     });
     this.context.restore();
+    return mouseOver
   },
   bind() {
     for (var i in this) {
@@ -481,7 +570,9 @@ const Home = function (state) {
     start,
     src,
     style,
-    linear
+    linear,
+    textColor,
+    WRAP
   } = this;
 
   background("#2196f3")
@@ -497,11 +588,13 @@ const Home = function (state) {
     container(WRAP, WRAP, () => {
       anchor(.5, 0)
       position(PERCENT(50), 0)
+      textColor("white")
       text("Lexicon")
       style(bold_34)
     })
     container(WRAP, WRAP, () => {
       text("Your language learning buddy")
+      textColor("white")
       style(bold_20)
     })
   })
@@ -512,6 +605,7 @@ const Home = function (state) {
     container(MATCH, WRAP, () => {
       padding(16)
       text("GET STARTED")
+      textColor("white")
       round()
       background("#673ab7")
       onClick(() => {
@@ -521,12 +615,18 @@ const Home = function (state) {
     container(MATCH, WRAP, () => {
       padding(16)
       text("LOGIN")
+      textColor("white")
       onClick(() => {
         console.log("LOGIN")
       })
     })
   })
 }
+
+const LANGUAGES = Array.from({ length : 32 }).map(() => ({
+  flag : languages_flag,
+  display : "Chinese (Mandarin)"
+}))
 
 const LanguagePicker = function(state) {
   const {
@@ -541,13 +641,17 @@ const LanguagePicker = function(state) {
     style,
     shadow,
     back,
-    onClick
+    onClick,
+    scrollable,
+    WRAP,
+    textColor
   } = this
   padding(16)
   background("#2196f3")
   linear(16)
   container(MATCH, WRAP, () => {
     container(MATCH, WRAP, () => {
+      textColor("white")
       text("What language do\nyou speak natively?")
       anchor(0, .5)
       position(0, PERCENT(50))
@@ -564,8 +668,25 @@ const LanguagePicker = function(state) {
   container(MATCH, FILL, () => {
     background("white")
     shadow()
+    linear()
+    scrollable()
+    LANGUAGES.forEach(language => {
+      container(MATCH, WRAP, () => {
+        padding(16)
+        linear(16, "horizontal")
+        container(WRAP, WRAP, () => {
+          src(language.flag)
+        })
+        container(WRAP, WRAP, () => {
+          anchor(0, .5)
+          position(0, (child, parent) => parent.height / 2)
+          text(language.display)
+        })
+      })
+    })
   })
   container(WRAP, WRAP, () => {
+    textColor("white")
     padding(16)
     text("REQUEST A LANGUAGE")
     anchor(1, 0)
