@@ -14,6 +14,7 @@ canvas {
 </head>
 <body>
   <canvas width="375" height="667" style="background:gray;"></canvas>
+  <canvas width="375" height="667" style="background:gray;"></canvas>
 <script>
 
 Array.prototype.contains = function(item) {
@@ -72,8 +73,6 @@ const languages_flag = svg(`
           stroke-opacity="0.2" stroke="#00000000" stroke-width="1"/>
   </svg>
 `)
-
-const canvas = document.getElementsByTagName("canvas")[0];
 const PERCENT = percent => (child, parent, dim) => {
   let other = dim
   switch(other) {
@@ -378,7 +377,7 @@ Screen.prototype = {
     }
   },
   render() {
-    console.log("rendering")
+    //console.log("rendering")
     this.context.clearRect(0, 0, this.bounds.width, this.bounds.height)
     return this.children.reduce((mouseOver, child) => mouseOver.concat(this.renderChild(
       { width: this.bounds.width, height: this.bounds.height },
@@ -457,18 +456,6 @@ Screen.prototype = {
     this.context.globalAlpha = this.context.globalAlpha * child.alpha
     const mw = width - getLeftRight(margin);
     const mh = height - getTopBottom(margin);
-    if(child.shadow) {
-      const shadow = 2
-      this.context.shadowColor = 'rgba(0, 0, 0, .7)';
-      this.context.shadowBlur = shadow;
-      this.context.shadowOffsetX = shadow;
-      this.context.shadowOffsetY = shadow;
-    } else {
-      this.context.shadowColor = 'transparent';
-      this.context.shadowBlur = 0;
-      this.context.shadowOffsetX = 0;
-      this.context.shadowOffsetY = 0;
-    }
     //DEBUG HERE
     if(true) {
       //padding
@@ -503,6 +490,13 @@ Screen.prototype = {
     }
     //STOP DEBUG
     this.context.translate(margin[3], margin[0]);
+    if(child.shadow) {
+      const shadow = 2
+      this.context.shadowColor = 'rgba(0, 0, 0, .7)';
+      this.context.shadowBlur = shadow;
+      this.context.shadowOffsetX = shadow;
+      this.context.shadowOffsetY = shadow;
+    }
     roundRect(
       this.context,
       0,
@@ -512,6 +506,10 @@ Screen.prototype = {
       child.round ? Math.min(mw, mh) / 2 : 0,
       child.background || "transparent"
     );
+    this.context.shadowColor = 'transparent';
+    this.context.shadowBlur = 0;
+    this.context.shadowOffsetX = 0;
+    this.context.shadowOffsetY = 0;
     if(!child.overflow) {
       this.context.clip()
     }
@@ -547,13 +545,25 @@ Screen.prototype = {
       if(index > 0 && direction) {
         const previous = child.children[index - 1]
         if(direction === 'vertical') {
-          gc.y = previous.bounds.y + previous.bounds.height - child.bounds.y + spacing - child.scrollY
+          gc.y = previous.bounds.y + previous.bounds.height - child.bounds.y + spacing - child.scrollY - padding[0] - margin[0]
         } else if(direction === 'horizontal') {
-          gc.x = previous.bounds.x + previous.bounds.width - child.bounds.x + spacing
+          gc.x = previous.bounds.x + previous.bounds.width - child.bounds.x + spacing - child.scrollX - padding[3] - margin[3]
         }
       }
-      child.render && child.render(gc)
       mouseOver = isInBounds ? mouseOver.concat(this.renderChild(bounds, gc)) : this.renderChild(bounds, gc)
+      if(index > 0 && direction === 'vertical' && !child.spacing) {
+        this.context.beginPath()
+        this.context.moveTo(
+          gc.bounds.x - child.bounds.x - padding[3] - margin[3],
+          gc.bounds.y - child.bounds.y - padding[0] - margin[0]
+        )
+        this.context.lineTo(
+          gc.bounds.x - child.bounds.x + gc.bounds.width - padding[3] - margin[3],
+          gc.bounds.y - child.bounds.y - padding[0] - margin[0]
+        )
+        this.context.strokeStyle = "rgba(0, 0, 0, .7)"
+        this.context.stroke()
+      }
     });
     this.context.restore();
     return mouseOver
@@ -581,7 +591,7 @@ const bold_20 = {
   size : 20
 }
 
-const Home = function (state) {
+const Splash = function (state) {
   const {
     container,
     background,
@@ -668,7 +678,8 @@ const LanguagePicker = function(state) {
     onClick,
     scrollable,
     WRAP,
-    textColor
+    textColor,
+    start
   } = this
   padding(16)
   background("#2196f3")
@@ -696,6 +707,9 @@ const LanguagePicker = function(state) {
     scrollable()
     LANGUAGES.forEach(language => {
       container(MATCH, WRAP, () => {
+        onClick(() => {
+          start(GoalPicker, {})
+        })
         padding(16)
         linear(16, "horizontal")
         container(WRAP, WRAP, () => {
@@ -718,7 +732,86 @@ const LanguagePicker = function(state) {
   })
 }
 
-new Screen(canvas).start(Home, {});
+const GOALS = [{
+  months : 15,
+  words : 3
+}, {
+  months : 10,
+  words : 6
+}, {
+  months : 5,
+  words : 9
+}]
+
+const GoalPicker = function(state) {
+  const {
+    margin,
+    background,
+    padding,
+    container,
+    src,
+    linear,
+    text,
+    anchor,
+    position,
+    style,
+    shadow,
+    back,
+    onClick,
+    scrollable,
+    WRAP,
+    textColor
+  } = this
+  padding(16)
+  background("#2196f3")
+  linear(16)
+  container(MATCH, WRAP, () => {
+    container(MATCH, WRAP, () => {
+      textColor("white")
+      text("How quickly would you\nlike to learn?")
+      anchor(0, .5)
+      position(0, PERCENT(50))
+      style(medium_20)
+    })
+    container(WRAP, WRAP, () => {
+      src(icons_back_white)
+      anchor(0, .5)
+      position(0, (child, parent) => parent.height / 2)
+      onClick(back)
+    })
+  })
+  container((child, parent) => parent.width / 2, WRAP, () => {
+    src(languages_flag)
+    position((child, parent) => parent.width / 2, 0)
+    anchor(.5, 0)
+  })
+  container(WRAP, WRAP, () => {
+    text("Chinese (Mandarin)")
+    textColor("white")
+    position((child, parent) => parent.width / 2, 0)
+    anchor(.5, 0)
+  })
+  container(MATCH, WRAP, () => {
+    background("white")
+    shadow()
+    linear()
+    GOALS.forEach(goal => {
+      container(MATCH, WRAP, () => {
+        padding(16)
+        linear(8)
+        container(WRAP, WRAP, () => {
+          text(`I want to be conversational in ${goal.months} months`)
+        })
+        container(WRAP, WRAP, () => {
+          text(`${goal.words} words per day`)
+        })
+      })
+    })
+  })
+}
+
+new Screen(document.getElementsByTagName("canvas")[0]).start(Splash, {});
+new Screen(document.getElementsByTagName("canvas")[1]).start(Splash, {});
 
 </script>
 </body>
