@@ -56,10 +56,51 @@ function svg(input) {
   return image
 }
 
+const sections_beginner = svg(`
+  <svg height="24"
+       width="24" viewBox="0 0 107 86" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#2196F3"
+          d="M53.57,50.15l0,11.4l3.42,0l0,-11.4z"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill="#BBDEFB"
+          d="M80.86,19.34C77.18,19.34 74.2,16.36 74.2,12.69C74.2,9.45 76.53,6.75 79.61,6.16C80.92,2.57 84.38,0 88.43,0C92.45,0 95.87,2.51 97.21,6.04C97.22,6.04 97.22,6.04 97.22,6.04C100.9,6.04 103.88,9.02 103.88,12.69C103.88,16.16 101.22,19.01 97.82,19.31L97.82,19.34L80.86,19.34Z"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill="#BBDEFB"
+          d="M6.97,39.79C3.29,39.79 0.3,36.81 0.3,33.14C0.3,29.9 2.63,27.19 5.71,26.61C7.03,23.02 10.48,20.45 14.54,20.45C18.55,20.45 21.98,22.96 23.32,26.49C23.32,26.49 23.32,26.49 23.32,26.49C27,26.49 29.98,29.47 29.98,33.14C29.98,36.61 27.32,39.46 23.93,39.76L23.93,39.79L6.97,39.79Z"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill="#BBDEFB"
+          d="M53.57,5.7C53.57,5.7 43.52,15.08 36.47,28.49C29.44,42.85 25.08,54.71 25.08,54.71L53.57,54.71L53.57,5.7Z"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill="#2196F3"
+          d="M53.57,5.7C53.57,5.7 60.51,21.84 66.11,31.91C72.08,42.41 84.34,56.99 84.34,56.99L53.57,56.99L53.57,5.7Z"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill="#00000000"
+          d="M21.2,78.7C21.2,78.7 22.68,84.34 27.93,84.34C33.17,84.34 35.27,78.7 35.27,78.7C35.27,78.7 37.23,84.34 42.51,84.34C47.79,84.34 49.64,78.7 49.64,78.7C49.64,78.7 50.91,84.34 56.66,84.34C62.42,84.34 63.91,78.7 63.91,78.7C63.91,78.7 65.78,84.34 71.12,84.34C76.46,84.34 78.09,78.7 78.09,78.7C78.09,78.7 79.93,84.34 85.2,84.34C90.47,84.34 92.08,78.7 92.08,78.7C92.08,78.7 93.07,84.34 98.94,84.34C104.81,84.34 105.53,79 105.53,78.7"
+          stroke="#2196F3" stroke-linecap="round"
+          stroke-linejoin="round" stroke-width="2"/>
+      <path fill="#2196F3"
+          d="M53.41,2.59L53.41,5.77L63.85,4.71C64.73,4.62 64.74,4.43 63.87,4.29L53.41,2.59Z"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill="#2196F3"
+          d="M18.24,61.55L84.92,61.55C88.38,61.55 92.83,63.82 94.87,66.61L100.3,74.09L25.08,74.09L18.24,61.55Z"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill="#00000000"
+          d="M27.71,68.39L80.35,68.39"
+          stroke="#BBDEFB" stroke-linecap="round" stroke-width="2"/>
+      <path fill="#00000000"
+          d="M83.89,68.39L86.01,68.39"
+          stroke="#BBDEFB" stroke-linecap="round" stroke-width="2"/>
+  </svg>
+`)
+
 const icons_back_white = svg(`
   <svg height="32" width="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
       <path fill="#ffffff" d="M20,11H7.83l5.59,-5.59L12,4l-8,8 8,8 1.41,-1.41L7.83,13H20v-2z"/>
   </svg>
+`)
+
+const icons_menu = svg(`
+  <svg height="32" width="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill="white" d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
 `)
 
 const logos_lexicon_white = svg(`
@@ -100,9 +141,18 @@ const languages_flag = svg(`
           stroke-opacity="0.2" stroke="#00000000" stroke-width="1"/>
   </svg>
 `)
-const PERCENT = percent => dim => view => ({
-  [dim] : view.parent.bounds[OPPOSITE_DIMENSIONS[DIMENSIONS[dim]]] * percent / 100
-})
+
+const streak_normal = svg(`
+  <svg height="24"
+       width="24" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#FFFFFF"
+          d="M8.877,13.763C11.018,13.763 12.754,12.059 12.754,9.956C12.754,8.805 12.234,7.773 11.412,7.075C9.212,6.036 9.031,4.96 9.031,4.038C8.403,4.713 6.991,5.556 6.991,8.92C6.991,8.92 6.299,8.577 6.167,7.233C5.713,7.668 5,8.889 5,9.956C5,12.059 6.736,13.763 8.877,13.763Z"
+          stroke="#00000000" stroke-width="1"/>
+      <path fill="#00000000"
+          d="M9,9m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"
+          stroke="#FFFFFF" stroke-width="1"/>
+  </svg>
+`)
 
 function equals(a, b) {
   if(a === b) {
@@ -262,6 +312,14 @@ Screen.prototype = {
       }
       return mouseOver
     }, [])
+  },
+  PERCENT(percent) {
+    return dim => view => {
+      const vp = this.getViewPortSize(view.parent)
+      return {
+        [dim] : vp[OPPOSITE_DIMENSIONS[DIMENSIONS[dim]]] * percent / 100
+      }
+    }
   },
   MATCH(dim) {
     return view => {
@@ -509,20 +567,22 @@ Screen.prototype = {
       console.log("TODO")
     }
   },
+  separator() {
+    this.active.separator = true
+  },
   linear(spacing = 0, direction = 'vertical') {
     this.active.managers.unshift(view => {
-      view.spacing = spacing
-      view.direction = direction
       const weight = view.children.reduce((weight, child) => weight + (child.weight || 0), 0)
       if(weight) {
+        const dim = direction === "vertical" ? "height" : "width"
         const vp = this.getViewPortSize(view)
-        const height = view.bounds.height
+        const span = view.bounds[dim]
         const space = view.children.reduce((space, child) => {
-          return space - (child.weight ? 0 : child.bounds.height)
-        }, vp.height - spacing * (view.children.length - 1))
+          return space - (child.weight ? 0 : child.bounds[dim])
+        }, vp[dim] - spacing * (view.children.length - 1))
         view.children.forEach(child => {
           if(child.weight) {
-            child.height = (child.weight / weight) * space
+            child[dim] = (child.weight / weight) * space
           }
         })
       }
@@ -729,7 +789,7 @@ Screen.prototype = {
       }
       view.children.forEach((child, index) => {
         this.renderView(child)
-        if(index > 0 && view.direction === 'vertical' && !view.spacing) {
+        if(index > 0 && view.separator) {
           this.context.beginPath()
           this.context.moveTo(
             child.bounds.x,
@@ -770,6 +830,9 @@ Screen.prototype = {
   }
 };
 
+const normal_12 = {
+  size : 12
+}
 const medium_20 = {
   weight : "medium",
   size : 20
@@ -800,6 +863,7 @@ const Splash = function (state) {
     textColor,
     WRAP,
     MATCH,
+    PERCENT,
     textAlign,
     button
   } = this;
@@ -849,7 +913,7 @@ const Splash = function (state) {
 
 const LANGUAGES = Array.from({ length : 32 }).map((_, i) => ({
   flag : languages_flag,
-  display : "Chinese (Mandarin) " + (i + 1)
+  display : "Chinese - Mandarin " + (i + 1)
 }))
 
 const LanguagePicker = function(state) {
@@ -875,7 +939,8 @@ const LanguagePicker = function(state) {
     textAlign,
     weight,
     button,
-    card
+    card,
+    separator
   } = this
   padding(16)
   background("#2196f3")
@@ -899,6 +964,7 @@ const LanguagePicker = function(state) {
     card()
     linear()
     scrollable()
+    separator()
     LANGUAGES.forEach((language, index) => {
       container(MATCH, WRAP, () => {
         onClick(() => {
@@ -938,6 +1004,7 @@ const GOALS = [{
 
 const GoalPicker = function(state) {
   const {
+    start,
     round,
     margin,
     background,
@@ -953,11 +1020,13 @@ const GoalPicker = function(state) {
     back,
     onClick,
     scrollable,
+    PERCENT,
     WRAP,
     MATCH,
     textColor,
     textAlign,
-    card
+    card,
+    separator
   } = this
   padding(16)
   background("#2196f3")
@@ -992,6 +1061,7 @@ const GoalPicker = function(state) {
   container(MATCH, WRAP, () => {
     card()
     linear()
+    separator()
     GOALS.forEach(goal => {
       container(MATCH, WRAP, () => {
         padding(16)
@@ -1001,6 +1071,9 @@ const GoalPicker = function(state) {
         })
         container(WRAP, WRAP, () => {
           text(`${goal.words} words per day`)
+        })
+        onClick(() => {
+          start(Overview)
         })
       })
     })
@@ -1030,7 +1103,8 @@ const Login = function(state) {
     textAlign,
     input,
     button,
-    card
+    card,
+    start
   } = this
   padding(16)
   background("#2196f3")
@@ -1066,6 +1140,9 @@ const Login = function(state) {
     container(MATCH, WRAP, () => {
       text("Login")
       button("#673ab7")
+      onClick(() => {
+        start(Overview)
+      })
     })
     container(MATCH, WRAP, () => {
       container(MATCH, 1, () => {
@@ -1084,17 +1161,148 @@ const Login = function(state) {
     container(MATCH, WRAP, () => {
       text("CONNECT WITH GOOGLE")
       button("#673ab7")
+      onClick(() => {
+        start(Overview)
+      })
     })
     container(MATCH, WRAP, () => {
       button("#673ab7")
       text("CONNECT WITH FACEBOOK")
+      onClick(() => {
+        start(Overview)
+      })
+    })
+  })
+}
+
+const SECTIONS = [{
+  icon : sections_beginner,
+  name : "Beginner"
+}, {
+  icon : sections_beginner,
+  name : "Beginner"
+}, {
+  icon : sections_beginner,
+  name : "Beginner"
+}]
+
+const Overview = function(state) {
+  const {
+    round,
+    margin,
+    background,
+    padding,
+    container,
+    src,
+    linear,
+    text,
+    anchor,
+    position,
+    style,
+    shadow,
+    back,
+    onClick,
+    scrollable,
+    WRAP,
+    MATCH,
+    PERCENT,
+    textColor,
+    textAlign,
+    input,
+    button,
+    card,
+    weight
+  } = this
+  background("#2196f3")
+  linear(0)
+  container(MATCH, WRAP, () => {
+    padding(16, 16, 0, 16)
+    linear(8, "horizontal")
+    container(WRAP, WRAP, () => {
+      src(icons_menu)
+    })
+    container(0, WRAP, () => {
+      position(0, .5)
+      anchor(0, .5)
+      weight(1)
+      textColor("white")
+      text("Chinese - Mandarin")
+      style(medium_20)
+    })
+    container(WRAP, PERCENT(50), () => {
+      src(languages_flag)
+      position(0, .5)
+      anchor(0, .5)
+    })
+    container(WRAP, WRAP, () => {
+      position(0, .5)
+      anchor(0, .5)
+      textColor("white")
+      text("100%")
+      style(normal_12)
+    })
+    container(WRAP, PERCENT(50), () => {
+      src(streak_normal)
+      position(0, .5)
+      anchor(0, .5)
+    })
+    container(WRAP, WRAP, () => {
+      position(0, .5)
+      anchor(0, .5)
+      textColor("white")
+      text("1")
+      style(normal_12)
+    })
+  })
+  container(MATCH, WRAP, () => {
+    linear(0, "horizontal")
+    container(0, WRAP, () => {
+      textColor("white")
+      padding(16)
+      weight(1)
+      text("LEARN")
+      style(normal_12)
+      textAlign("center")
+    })
+    container(0, WRAP, () => {
+      textColor("white")
+      padding(16)
+      weight(1)
+      text("LEARN")
+      style(normal_12)
+      textAlign("center")
+    })
+  })
+  container(MATCH, 0, () => {
+    weight(1)
+    linear()
+    scrollable()
+    background('#f1f9ff')
+    SECTIONS.forEach(section => {
+      container(MATCH, WRAP, () => {
+        padding(16)
+        linear(8)
+        container(PERCENT(25), WRAP, () => {
+          position(.5, 0)
+          anchor(.5, 0)
+          src(section.icon)
+        })
+        container(WRAP, WRAP, () => {
+          position(.5, 0)
+          anchor(.5, 0)
+          text(section.name)
+        })
+      })
+      container(MATCH, 100, () => {
+        card()
+      })
     })
   })
 }
 
 let screen
 setTimeout(() => {
-  screen = new Screen(document.getElementsByTagName("canvas")[0]).start(Splash);
+  screen = new Screen(document.getElementsByTagName("canvas")[0]).start(Overview);
 })
 
 </script>
