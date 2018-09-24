@@ -170,8 +170,8 @@ const reposition = view => {
   const padding = view.parent.padding instanceof Array ? view.parent.padding : EMPTY_ARRAY
   const margin = view.parent.margin instanceof Array ? view.parent.margin : EMPTY_ARRAY
   return {
-    x : view.parent.bounds.x + padding[3] + margin[3] + view.x,
-    y : view.parent.bounds.y + padding[0] + margin[0] + view.y
+    x : view.parent.bounds.x + padding[3] + margin[3] + view.x + (view.parent.scrollX || 0),
+    y : view.parent.bounds.y + padding[0] + margin[0] + view.y + (view.parent.scrollY || 0)
   }
 }
 
@@ -194,7 +194,8 @@ function Screen(canvas) {
 
   this.last = []
   const call = (e, name) => {
-    const mouseOver = this.mouseOver(getMouse(e, name), this);
+    const mouse = getMouse(e, name)
+    const mouseOver = this.mouseOver(mouse, this);
     this.last.forEach(view => {
       if(!mouseOver.contains(view)) {
         view.onMouseOut && view.onMouseOut(getMouse(e, "onMouseOut"))
@@ -211,15 +212,18 @@ function Screen(canvas) {
       view = view.parent;
     }
     if(view && view !== this) {
-      view[name](this.mouse)
+      view[name](mouse)
     }
   }
 
+  let moved
   canvas.onmousedown = e => {
+    moved = 0
     call(e, "onMouseDown")
   }
 
   canvas.onmousemove = e => {
+    moved++
     call(e, "onMouseMove")
   }
 
@@ -228,7 +232,9 @@ function Screen(canvas) {
   }
 
   canvas.onclick = e => {
-    call(e, "onClick")
+    if(moved < 10) {      
+      call(e, "onClick")
+    }
   };
 }
 
@@ -499,6 +505,8 @@ Screen.prototype = {
   },
   linear(spacing = 0, direction = 'vertical') {
     this.active.managers.unshift(view => {
+      view.spacing = spacing
+      view.direction = direction
       const weight = view.children.reduce((weight, child) => weight + (child.weight || 0), 0)
       if(weight) {
         const vp = this.getViewPortSize(view)
@@ -520,8 +528,8 @@ Screen.prototype = {
           } else if(direction === 'horizontal') {
             child.x = previous.x + previous.bounds.width + spacing
           }
-          this.layoutView(child)
         }
+        this.layoutView(child)
       })
       return {}
     })
@@ -530,7 +538,6 @@ Screen.prototype = {
     this.active.weight = weight
   },
   render() {
-    //console.log("rendering")
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
     return this.children.forEach(child => {
       this.layoutView(child)
@@ -555,7 +562,6 @@ Screen.prototype = {
       }
       if(!lastMouse && (dx || dy)) {
         update()
-        this.render()
       }
     }, 1000 / 60)
     const update = () => {
@@ -563,6 +569,7 @@ Screen.prototype = {
       const bottom = Math.max(...active.children.map(child => child.bounds.y + child.bounds.height)) - (active.bounds.y + active.bounds.height + active.scrollY)
       active.scrollX = Math.max(Math.min(active.scrollX + dx, 0), -right)
       active.scrollY = Math.max(Math.min(active.scrollY + dy, 0), -bottom)
+      this.render()
     }
     active.onMouseMove = function(mouse) {
       if(lastMouse) {
@@ -618,7 +625,8 @@ Screen.prototype = {
     this.getIntersection(view)
   },
   renderView(view) {
-    if(!view.hidden) {
+    if(!view.hidden && view.isInBounds) {
+      this.context.save()
       this.context.globalAlpha = this.context.globalAlpha * view.alpha
       const x = view.bounds.x
       const y = view.bounds.y
@@ -728,6 +736,7 @@ Screen.prototype = {
         }
       });
       this.context.globalAlpha = this.context.globalAlpha / view.alpha
+      this.context.restore()
     }
   },
   bind() {
@@ -743,7 +752,6 @@ const medium_20 = {
   weight : "medium",
   size : 20
 }
-
 const bold_34 = {
   weight : "bold",
   size : 34
@@ -873,9 +881,8 @@ const LanguagePicker = function(state) {
     round(slight_round)
     shadow()
     linear()
-    // scrollable()
+    scrollable()
     LANGUAGES.forEach((language, index) => {
-      if(index > 5) return; //TODO
       container(MATCH, WRAP, () => {
         onClick(() => {
           start(GoalPicker, {})
