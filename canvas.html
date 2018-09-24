@@ -16,6 +16,7 @@ input {
   outline: none;
   position : absolute;
   caret-color: black;
+  font: 12px sans-serif;
 }
   </style>
 </head>
@@ -232,7 +233,7 @@ function Screen(canvas) {
   }
 
   canvas.onclick = e => {
-    if(moved < 10) {      
+    if(moved < 5) {
       call(e, "onClick")
     }
   };
@@ -436,7 +437,9 @@ Screen.prototype = {
     view.input = input
     view.onClick = () => {
       this.textbox = this.textbox || document.createElement("input")
+      this.textbox.style.display = "block"
       this.textbox.oninput = null
+      this.textbox.onblur = null
       this.textbox.value = view.text.display
       if(!this.textbox.parentNode) {
         document.body.appendChild(this.textbox)
@@ -447,6 +450,9 @@ Screen.prototype = {
       this.textbox.style.height = `${view.bounds.height}px`
       this.textbox.type = input
       this.textbox.focus()
+      this.textbox.onblur = e => {
+        this.textbox.style.display = "none"
+      }
       this.textbox.oninput = e => {
         view.text.display = this.textbox.value
         this.render()
@@ -712,8 +718,10 @@ Screen.prototype = {
             case "right" : offsetX = width - getLeftRight(padding); break;
             case "center" : offsetX = mw / 2 - padding[3]; break;
           }
+          // \u25CF
+          // \u2022
           this.context.fillText(
-            view.input === "password" ? line.split("").map(it => '\u25CF').join("") : line,
+            view.input === "password" ? line.split("").map(it => '\u2022').join("") : line,
             x + offsetX + padding[3],
             y + index * (view.text.size + LINE_SPACING) + padding[0]
           );
@@ -738,6 +746,20 @@ Screen.prototype = {
       this.context.globalAlpha = this.context.globalAlpha / view.alpha
       this.context.restore()
     }
+  },
+  button(color) {
+    this.textAlign("center")
+    this.padding(16)
+    this.textColor("white")
+    if(color) {
+      this.round(child => Math.min(child.bounds.width / 2, child.bounds.height / 2))
+      this.background(color)
+    }
+  },
+  card() {
+    this.background("white")
+    this.round(slight_round)
+    this.shadow()
   },
   bind() {
     for (var i in this) {
@@ -778,7 +800,8 @@ const Splash = function (state) {
     textColor,
     WRAP,
     MATCH,
-    textAlign
+    textAlign,
+    button
   } = this;
   background("#2196f3")
   container(PERCENT(40), WRAP, () => {
@@ -808,21 +831,15 @@ const Splash = function (state) {
     anchor(.5, .5)
     position(.5, .75)
     container(MATCH, WRAP, () => {
-      textAlign("center")
-      padding(16)
+      button("#673ab7")
       text("GET STARTED")
-      textColor("white")
-      round(child => Math.min(child.bounds.width / 2, child.bounds.height / 2))
-      background("#673ab7")
       onClick(() => {
         start(LanguagePicker, state)
       })
     })
     container(MATCH, WRAP, () => {
-      textAlign("center")
-      padding(16)
       text("LOGIN")
-      textColor("white")
+      button()
       onClick(() => {
         start(Login)
       })
@@ -856,7 +873,9 @@ const LanguagePicker = function(state) {
     textColor,
     start,
     textAlign,
-    weight
+    weight,
+    button,
+    card
   } = this
   padding(16)
   background("#2196f3")
@@ -877,9 +896,7 @@ const LanguagePicker = function(state) {
   })
   container(MATCH, 0, () => {
     weight(1)
-    background("white")
-    round(slight_round)
-    shadow()
+    card()
     linear()
     scrollable()
     LANGUAGES.forEach((language, index) => {
@@ -901,9 +918,8 @@ const LanguagePicker = function(state) {
     })
   })
   container(WRAP, WRAP, () => {
-    textColor("white")
-    padding(16)
     text("REQUEST A LANGUAGE")
+    button()
     anchor(1, 0)
     position(1, 0)
   })
@@ -940,7 +956,8 @@ const GoalPicker = function(state) {
     WRAP,
     MATCH,
     textColor,
-    textAlign
+    textAlign,
+    card
   } = this
   padding(16)
   background("#2196f3")
@@ -961,7 +978,7 @@ const GoalPicker = function(state) {
       onClick(back)
     })
   })
-  container(PERCENT(50), WRAP, () => {
+  container(PERCENT(40), WRAP, () => {
     src(languages_flag)
     position(.5, 0)
     anchor(.5, 0)
@@ -973,9 +990,7 @@ const GoalPicker = function(state) {
     anchor(.5, 0)
   })
   container(MATCH, WRAP, () => {
-    background("white")
-    round(slight_round)
-    shadow()
+    card()
     linear()
     GOALS.forEach(goal => {
       container(MATCH, WRAP, () => {
@@ -1013,7 +1028,9 @@ const Login = function(state) {
     MATCH,
     textColor,
     textAlign,
-    input
+    input,
+    button,
+    card
   } = this
   padding(16)
   background("#2196f3")
@@ -1035,13 +1052,10 @@ const Login = function(state) {
     })
   })
   container(MATCH, WRAP, () => {
-    background("white")
-    round(slight_round)
+    card()
     padding(16)
     linear(16)
     container(MATCH, WRAP, () => {
-      // \u25CF
-      // \u2022
       text("Username")
       input()
     })
@@ -1051,11 +1065,7 @@ const Login = function(state) {
     })
     container(MATCH, WRAP, () => {
       text("Login")
-      round(child => Math.min(child.bounds.width / 2, child.bounds.height / 2))
-      background("#673ab7")
-      padding(16)
-      textColor("white")
-      textAlign("center")
+      button("#673ab7")
     })
     container(MATCH, WRAP, () => {
       container(MATCH, 1, () => {
@@ -1072,20 +1082,12 @@ const Login = function(state) {
       })
     })
     container(MATCH, WRAP, () => {
-      textAlign("center")
       text("CONNECT WITH GOOGLE")
-      round(child => Math.min(child.bounds.width / 2, child.bounds.height / 2))
-      background("#673ab7")
-      padding(16)
-      textColor("white")
+      button("#673ab7")
     })
     container(MATCH, WRAP, () => {
-      textAlign("center")
+      button("#673ab7")
       text("CONNECT WITH FACEBOOK")
-      round(child => Math.min(child.bounds.width / 2, child.bounds.height / 2))
-      background("#673ab7")
-      padding(16)
-      textColor("white")
     })
   })
 }
@@ -1093,7 +1095,7 @@ const Login = function(state) {
 let screen
 setTimeout(() => {
   screen = new Screen(document.getElementsByTagName("canvas")[0]).start(Splash);
-}, 100)
+})
 
 </script>
 </body>
