@@ -56,6 +56,18 @@ function svg(input) {
   return image
 }
 
+const icons_settings = svg(`
+  <svg viewBox="0 0 19 20" xmlns="http://www.w3.org/2000/svg" width="16" height="16"><path fill="#2196F3" d="M16.759 10.98c.039-.32.068-.64.068-.98 0-.34-.029-.66-.068-.98l2.06-1.65a.513.513 0 0 0 .118-.64l-1.954-3.46c-.117-.22-.381-.3-.595-.22l-2.432 1a7.098 7.098 0 0 0-1.651-.98L11.934.42a.48.48 0 0 0-.479-.42H7.549a.481.481 0 0 0-.479.42l-.371 2.65c-.596.25-1.143.59-1.65.98l-2.432-1a.471.471 0 0 0-.596.22L.068 6.73a.5.5 0 0 0 .117.64l2.061 1.65a8.13 8.13 0 0 0-.069.98c0 .33.03.66.069.98L.185 12.63a.512.512 0 0 0-.117.64l1.953 3.46c.117.22.381.3.596.22l2.432-1c.507.4 1.054.73 1.65.98l.371 2.65c.03.24.235.42.479.42h3.906a.48.48 0 0 0 .479-.42l.371-2.65a7.464 7.464 0 0 0 1.651-.98l2.432 1a.47.47 0 0 0 .595-.22l1.954-3.46a.513.513 0 0 0-.118-.64l-2.06-1.65zM9.5 14C7.57 14 6 12.43 6 10.5S7.57 7 9.5 7 13 8.57 13 10.5 11.43 14 9.5 14z"/></svg>
+`)
+
+const download_normal = svg(`
+  <svg height="17" viewBox="0 0 14 17" width="14" xmlns="http://www.w3.org/2000/svg"><path fill="#BDBDBD" d="M14 6h-4V0H4v6H0l7 7 7-7zM0 15v2h14v-2H0z"/></svg>
+`)
+
+const chapters_possessive = svg(`
+  <svg height="48" viewBox="0 0 46 46" width="48" xmlns="http://www.w3.org/2000/svg"><path d="M1 23a22 22 0 1 0 44 0 22 22 0 1 0-44 0z" stroke="#2196F3" stroke-width="2" fill="none"/><path fill="#BBDEFB" d="M15 18a8 8 0 1 1 16 0 8 8 0 1 1-16 0"/><path fill="#2196F3" d="M32.97 23.86c-.59-.66-5.43-3.57-6.46-3.77-1.03-.2-7.98-.91-8.46 0-.47.91.72 1.57 1.17 1.83.44.26 3.08.44 4.82 1.4 1.74.95 1.87 1.57 1.67 2.26-.2.69-1.29 1.82-2.48 1.82-1.18 0-6.27-1.86-6.82-2.25-.54-.4-1.77-2.36-2.11-3.23-.35-.87-.86-3.65-3.26-3.91-2.4-.26.04 4.38.47 5.31.42.92 1.46 4.26 2.18 5.09.72.83 7.18 5 9 5 1.82 0 9.53-.5 10.27-1.17l.01-8.38zM35 24h1a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1z"/></svg>
+`)
+
 const sections_beginner = svg(`
   <svg height="24"
        width="24" viewBox="0 0 107 86" xmlns="http://www.w3.org/2000/svg">
@@ -154,6 +166,80 @@ const streak_normal = svg(`
   </svg>
 `)
 
+const slice = function (input) {
+  return Array.prototype.slice.call(input)
+}
+
+class Observable {
+  constructor (value) {
+    this.callbacks = []
+    this.value = value
+  }
+
+  assign (value = {}) {
+    this.set(Object.assign({}, this.get(), value))
+  }
+
+  observe (callback) {
+    this.callbacks.push(callback)
+    callback(this.value)
+    return callback
+  }
+
+  remove (callback) {
+    const io = this.callbacks.indexOf(callback)
+    if (io !== -1) {
+      this.callbacks.splice(io, 1)
+    }
+  }
+
+  set (value) {
+    if (value === this.value) return
+    this.value = value
+    this.callbacks.forEach(function (callback) {
+      callback(value)
+    })
+  }
+
+  get () {
+    return this.value
+  }
+
+  static derive () {
+    const args = slice(arguments)
+    const obs = args.slice(0, args.length - 1)
+    const observe = args[args.length - 1]
+    const observable$ = new Observable(observe(...obs.map(it => it.get())))
+    obs.forEach(function (ob, i) {
+      ob.observe(Observable.skipFirst(function (value) {
+        const values = obs.map(function (it) {
+          return it.get()
+        })
+        values[i] = value
+        observable$.set(observe(...values))
+      }))
+    })
+    return observable$
+  }
+
+  static hasValue (hasValue) {
+    return function (value) {
+      value && hasValue(value)
+    }
+  }
+
+  static skipFirst (skipFirst) {
+    const count = 1// getArgCount(callback)
+    let skipped = 0
+    return function (...args) {
+      if (skipped >= count) {
+        return skipFirst(...args)
+      }
+      skipped++
+    }
+  }
+}
+
 function equals(a, b) {
   if(a === b) {
     return true
@@ -227,10 +313,36 @@ const reposition = view => {
 }
 
 function Screen(canvas) {
+
+  this.textbox = document.createElement("input")
+  document.body.appendChild(this.textbox)
+  this.textbox.onblur = e => {
+    const view = this.textbox.view
+    if(view) {
+      this.textbox.view = null
+      view.textbox = null
+      this.render()
+    }
+  }
+  this.textbox.oninput = e => {
+    const view = this.textbox.view
+    if(view) {
+      view.text.display = this.textbox.value
+      this.render()
+    }
+  }
+
   this.children = [];
   this.active = this;
   this.canvas = canvas;
-  this.bounds = { x : 0, y : 0, width : canvas.width, height : canvas.height}
+  this.bounds = {
+    x : 0, y : 0,
+    width : canvas.width, height : canvas.height
+  }
+  this.intersection = {
+    left : 0, top : 0, right : canvas.width, bottom : canvas.height,
+    x : 0, y : 0, width : canvas.width, height : canvas.height
+  }
   this.context = canvas.getContext("2d");
   this.bind();
 
@@ -273,6 +385,14 @@ function Screen(canvas) {
     call(e, "onMouseDown")
   }
 
+  canvas.onmouseout = e => {
+    const mouse = getMouse(e, "onMouseOut")
+    this.last.forEach(view => {
+      view.onMouseOut && view.onMouseOut(mouse)
+    })
+    this.last = []
+  }
+
   canvas.onmousemove = e => {
     moved++
     call(e, "onMouseMove")
@@ -299,7 +419,7 @@ Screen.prototype = {
         height
       } = child.bounds
       const margin = child.margin || EMPTY_ARRAY
-      roundRect(
+      child.render(
         this.context,
         x + margin[3],
         y + margin[0],
@@ -350,9 +470,9 @@ Screen.prototype = {
           height : view.image.height || view.image.naturalHeight
         }
         const other = OPPOSITE_DIMENSIONS[dim]
-        const opposite = (view.bounds[other] / imageBounds[other]) * imageBounds[dim]
+        const opposite = Math.max(0, view.bounds[other] - spaceAround) / imageBounds[other] * imageBounds[dim]
         return {
-          [dim] : opposite || view.image[dim] + spaceAround
+          [dim] : (opposite || view.image[dim]) + spaceAround
         }
       } else if (view.children.length) {
         return {
@@ -387,6 +507,7 @@ Screen.prototype = {
   container(width, height, render) {
     const parent = this.active;
     const child = {
+      render : roundRect,
       round : 0,
       //margin
       //padding
@@ -423,19 +544,14 @@ Screen.prototype = {
     };
     parent.children.push(child);
     this.active = child;
-    render();
+    render(child);
     this.active = parent;
+    return child
   },
   style(text) {
     if(text.size) {
       this.active.text.size = text.size
     }
-  },
-  anchor(x, y) {
-    this.active.managers.push(view => ({
-      x : -Math.max(view.bounds.width, 0) * x,
-      y : -Math.max(view.bounds.height, 0) * y
-    }))
   },
   getViewPortSize(view) {
     return {
@@ -451,6 +567,42 @@ Screen.prototype = {
         y : vp.height * y
       }
     })
+  },
+  anchor(x, y) {
+    this.active.managers.push(view => ({
+      x : -Math.max(view.bounds.width, 0) * x,
+      y : -Math.max(view.bounds.height, 0) * y
+    }))
+  },
+  visibility(visible) {
+    this.active.hidden = !visible
+  },
+  animateVisibility(visible) {
+    const view = this.active
+    if(visible) {
+      view.hidden = false
+      this.animate({
+        alpha : view.alpha
+      }, {
+        alpha : 1
+      }, this.firstRender ? 0 : 300)
+    } else {
+      this.animate({
+        alpha : view.alpha
+      }, {
+        alpha : 0
+      }, this.firstRender ? 0 : 300, () => {
+        view.hidden = true
+      })
+    }
+  },
+  timeout(callback, ms) {
+    const active = this.active
+    setTimeout(() => {
+      this.active = active
+      callback()
+      this.render()
+    }, ms)
   },
   margin(...margin) {
     if(margin.length === 1) {
@@ -493,37 +645,23 @@ Screen.prototype = {
   input(input = "text") {
     const view = this.active
     view.input = input
+    view.overflow = false
     view.onClick = () => {
-      this.textbox = this.textbox || document.createElement("input")
-      this.textbox.style.display = "block"
-      this.textbox.oninput = null
-      this.textbox.onblur = null
+      view.textbox = this.textbox
+      this.textbox.view = view
       this.textbox.value = view.text.display
-      if(!this.textbox.parentNode) {
-        document.body.appendChild(this.textbox)
-      }
-      this.textbox.style.left = `${view.bounds.x}px`
-      this.textbox.style.top = `${view.bounds.y}px`
-      this.textbox.style.width = `${view.bounds.width}px`
-      this.textbox.style.height = `${view.bounds.height}px`
       this.textbox.type = input
-      this.textbox.focus()
-      this.textbox.onblur = e => {
-        this.textbox.style.display = "none"
-      }
-      this.textbox.oninput = e => {
-        view.text.display = this.textbox.value
-        this.render()
-      }
+      this.render()
     }
   },
-  animate(child, from, to, ms, cb) {
+  animate(from, to, ms, cb) {
+    const view = this.active
     const start = Date.now()
     const handler = (now = Date.now()) => {
       const percent =  Math.min((now - start) / ms, 1)
       const weight = percent
       Object.keys(from).forEach(key => {
-        child[key] = from[key] + (to[key] - from[key]) * weight
+        view[key] = from[key] + (to[key] - from[key]) * weight
       })
       if(percent === 1) {
         clearInterval(interval)
@@ -535,26 +673,28 @@ Screen.prototype = {
     const interval = setInterval(handler, 1000 / 60)
   },
   start(view, state) {
+    this.firstRender = true
+    this.active = this
     this.container(this.MATCH, this.MATCH, () => {
-      this.background("white")
       view.call(this, state)
+      if(this.children.length > 1) {
+        this.animate({
+          alpha : .25,
+          x : this.bounds.width
+        }, {
+          alpha : 1,
+          x : 0
+        }, 300)
+      }
     })
-    if(this.children.length > 1) {
-      this.animate(this.children[this.children.length - 1], {
-        alpha : .25,
-        x : this.bounds.width
-      }, {
-        alpha : 1,
-        x : 0
-      }, 300)
-    } else {
-      this.render()
-    }
+    this.render()
+    this.firstRender = false
     return this
   },
   back() {
     if(this.children.length > 1) {
-      this.animate(this.children[this.children.length - 1], {
+      this.active = this.children[this.children.length - 1]
+      this.animate({
         alpha : 1,
         x : 0
       }, {
@@ -595,7 +735,6 @@ Screen.prototype = {
             child.x = previous.x + previous.bounds.width + spacing
           }
         }
-        this.layoutView(child)
       })
       return {}
     })
@@ -604,11 +743,29 @@ Screen.prototype = {
     this.active.weight = weight
   },
   render() {
+    this.textbox.style.display = "none"
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
-    return this.children.forEach(child => {
+    this.children.forEach(child => {
       this.layoutView(child)
       this.renderView(child)
     });
+    const ctx = this.context
+    const cvs = this.canvas
+    ctx.beginPath()
+
+    ctx.moveTo(0,0)
+    ctx.lineTo(cvs.width,0)
+    ctx.lineTo(cvs.width,cvs.height)
+    ctx.lineTo(0, cvs.height)
+    ctx.lineTo(0, 0)
+
+    ctx.moveTo(cvs.width / 4, cvs.height / 4)
+    ctx.lineTo(3 * cvs.width / 4, cvs.height / 4)
+    ctx.lineTo(3 * cvs.width / 4, 3 * cvs.height / 4)
+    ctx.lineTo(cvs.width / 4, 3 * cvs.height / 4)
+    ctx.lineTo(cvs.width / 4, cvs.height / 4)
+    ctx.fillStyle="rgba(0,0,0,.7)"
+    ctx.fill()
   },
   scrollable() {
     const active = this.active
@@ -631,8 +788,8 @@ Screen.prototype = {
       }
     }, 1000 / 60)
     const update = () => {
-      const right = Math.max(...active.children.map(child => child.bounds.x + child.bounds.width)) - (active.bounds.x + active.bounds.width + active.scrollX)
-      const bottom = Math.max(...active.children.map(child => child.bounds.y + child.bounds.height)) - (active.bounds.y + active.bounds.height + active.scrollY)
+      const right = Math.max(0, ...active.children.map(child => child.bounds.x + child.bounds.width - (active.bounds.x + active.bounds.width + active.scrollX)))
+      const bottom = Math.max(0, ...active.children.map(child => child.bounds.y + child.bounds.height - (active.bounds.y + active.bounds.height + active.scrollY)))
       active.scrollX = Math.max(Math.min(active.scrollX + dx, 0), -right)
       active.scrollY = Math.max(Math.min(active.scrollY + dy, 0), -bottom)
       this.render()
@@ -655,17 +812,21 @@ Screen.prototype = {
   getIntersection(view) {
     const parent = view.parent
     const intersection = {
-      left : Math.max(parent.bounds.x, view.bounds.x),
-      top : Math.max(parent.bounds.y, view.bounds.y)
+      x : Math.max(parent.intersection.x, view.bounds.x),
+      y : Math.max(parent.intersection.y, view.bounds.y)
     }
-    intersection.right = Math.min(parent.bounds.x + parent.bounds.width, view.bounds.x + view.bounds.width)
-    intersection.bottom = Math.min(parent.bounds.y + parent.bounds.height, view.bounds.y + view.bounds.height)
+    intersection.left = intersection.x
+    intersection.top = intersection.y
+    intersection.right = Math.min(parent.intersection.x + parent.intersection.width, view.bounds.x + view.bounds.width)
+    intersection.bottom = Math.min(parent.intersection.y + parent.intersection.height, view.bounds.y + view.bounds.height)
+    intersection.width = intersection.right - intersection.left
+    intersection.height = intersection.bottom - intersection.top
     view.intersection = intersection
     //then check if its in bounds
-    view.isInBounds = intersection.bottom - intersection.top > 0 && intersection.right - intersection.left > 0
+    view.isInBounds = intersection.width > 0 && intersection.height > 0 && !view.hidden
   },
   layoutView(view) {
-    const bounds = view.managers.reduce((bounds, manager) => {
+    const bounds = view.hidden ? {x:0,y:0,width:0,height:0} : view.managers.reduce((bounds, manager) => {
       const wrapper = manager(view)
       const current = typeof wrapper === "function" ? wrapper(view) : wrapper
       return {
@@ -680,18 +841,23 @@ Screen.prototype = {
       width : view.width,
       height : view.height
     })
-    //TODO call dependents
-    if(!equals(view.bounds, bounds)) {
-      view.bounds = bounds
-      if(view.children.length) {
-        view.children.forEach(this.layoutView)
-      }
+    const moved = !equals(view.bounds, bounds)
+    view.bounds = bounds
+    if(moved) {
       this.layoutView(view)
+    } else {
+      this.getIntersection(view)
     }
-    this.getIntersection(view)
+    if(view.children.length) {
+      if(view.children.reduce((moved, child) => this.layoutView(child) || moved, false)) {
+        this.layoutView(view)
+        return true
+      }
+    }
+    return moved
   },
   renderView(view) {
-    if(!view.hidden && view.isInBounds) {
+    if(view.isInBounds) {
       this.context.save()
       this.context.globalAlpha = this.context.globalAlpha * view.alpha
       const x = view.bounds.x
@@ -712,7 +878,7 @@ Screen.prototype = {
         this.context.shadowOffsetX = shadow;
         this.context.shadowOffsetY = shadow;
       }
-      roundRect(
+      view.render(
         this.context,
         x + margin[3],
         y + margin[0],
@@ -720,13 +886,13 @@ Screen.prototype = {
         mh,
         getValue(view, "round"),
         view.background || "transparent"
-      );
+      )
       this.context.shadowColor = 'transparent';
       this.context.shadowBlur = 0;
       this.context.shadowOffsetX = 0;
       this.context.shadowOffsetY = 0;
       //DEBUG HERE
-      if(true) {
+      if(false) {
         this.context.translate(x, y)
         //padding
         if(padding) {
@@ -753,20 +919,31 @@ Screen.prototype = {
           this.context.fillRect(margin[3], height - margin[2], width - margin[1] - margin[3], margin[2])
         }
         //outline
-        this.context.strokeStyle = "rgba(255, 255, 255, .7)"
+        this.context.strokeStyle = "rgba(0, 0, 0, .7)"
         this.context.setLineDash([2, 4])
         this.context.strokeRect(0, 0, width, height)
         this.context.setLineDash([])
         this.context.translate(-x, -y)
       }
       if(view.image && view.image.complete) {
-        this.context.drawImage(view.image, x, y, mw - getLeftRight(padding), mh - getTopBottom(padding))
+        this.context.drawImage(view.image, x + padding[3], y + padding[0], mw - getLeftRight(padding), mh - getTopBottom(padding))
       }
       //STOP DEBUG
       if(!view.overflow) {
         this.context.clip()
       }
+      if(view.textbox) {
+        view.textbox.style.display = "block"
+        view.textbox.style.left = `${view.bounds.x}px`
+        view.textbox.style.top = `${view.bounds.y}px`
+        view.textbox.style.width = `${view.bounds.width}px`
+        view.textbox.style.height = `${view.bounds.height}px`
+        if(this.textbox !== document.activeElement) {
+          this.textbox.focus()
+        }
+      }
       if (view.text.display) {
+        const offset = view.textbox ? view.textbox.scrollLeft : 0
         this.context.fillStyle = view.text.color;
         this.context.font = `${view.text.size}px sans-serif`;
         this.context.textBaseline = "top";
@@ -782,7 +959,7 @@ Screen.prototype = {
           // \u2022
           this.context.fillText(
             view.input === "password" ? line.split("").map(it => '\u2022').join("") : line,
-            x + offsetX + padding[3],
+            x + offsetX + padding[3] - offset,
             y + index * (view.text.size + LINE_SPACING) + padding[0]
           );
         })
@@ -820,6 +997,59 @@ Screen.prototype = {
     this.background("white")
     this.round(slight_round)
     this.shadow()
+  },
+  tabs(...tabs) {
+    const tab$ = new Observable(0)
+    this.container(this.MATCH, this.WRAP, container => {
+      this.container(this.MATCH, this.WRAP, () => {
+        this.linear(0, "horizontal")
+        tabs.forEach((text, index) => {
+          this.container(0, this.WRAP, () => {
+            this.textColor(index ? "black" : "white")
+            this.padding(16)
+            this.weight(1)
+            this.text(text)
+            this.style(normal_12)
+            this.textAlign("center")
+            this.onClick(() => tab$.set(index))
+          })
+        })
+      })
+      const indicator = this.container(dim => view => ({
+        width : view.parent.bounds.width / tabs.length
+      }), 5, () => {
+        this.position(0, 1)
+        this.anchor(0, 1)
+        this.background("gold")
+      })
+      tab$.observe(tab => {
+        container.children[0].children.forEach(child => {
+          child.text.color = "black"
+        })
+        container.children[0].children[tab].text.color = "white"
+        this.active = indicator
+        this.animate({
+          x : indicator.x
+        }, {
+          x : tab * container.bounds.width / tabs.length
+        }, 300)
+      })
+    })
+    return tab$
+  },
+  observe(...args) {
+    const observables$ = args
+    const callback = observables$.pop()
+    const view = this.active
+    observables$.forEach((observable$, i) => {
+      observable$.observe(Observable.skipFirst(observable => {
+        this.active = view
+        const values = observables$.map(it => it.get())
+        values[i] = observable
+        callback(...values)
+      }))
+    })
+    callback(...observables$.map(it => it.get()))
   },
   bind() {
     for (var i in this) {
@@ -1175,16 +1405,44 @@ const Login = function(state) {
   })
 }
 
-const SECTIONS = [{
+const CHAPTER = {
+  icon : chapters_possessive,
+  name : "Possessive",
+  description : "To have"
+}
+
+const CHAPTERS = [CHAPTER, CHAPTER, CHAPTER]
+
+const SECTION = {
   icon : sections_beginner,
-  name : "Beginner"
-}, {
-  icon : sections_beginner,
-  name : "Beginner"
-}, {
-  icon : sections_beginner,
-  name : "Beginner"
-}]
+  name : "Beginner",
+  chapters : CHAPTERS
+}
+
+const SECTIONS = [SECTION, SECTION, SECTION]
+
+const PHRASE = {
+  translation : {
+    english : "TO OWN",
+    mandarin : "you"
+  }
+}
+
+const PHRASES = {
+  a : [PHRASE, PHRASE, PHRASE],
+  b : [PHRASE, PHRASE, PHRASE],
+  c : [PHRASE, PHRASE, PHRASE]
+}
+
+const MENU_ITEM = {
+  icon : icons_settings,
+  text : "Settings",
+  onClick : () => {
+    console.log("Settings")
+  }
+}
+
+const MENU = [MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM]
 
 const Overview = function(state) {
   const {
@@ -1211,90 +1469,255 @@ const Overview = function(state) {
     input,
     button,
     card,
-    weight
+    weight,
+    separator,
+    tab,
+    tabs,
+    visibility,
+    animateVisibility,
+    observe,
+    timeout,
+    animate
   } = this
-  background("#2196f3")
-  linear(0)
-  container(MATCH, WRAP, () => {
-    padding(16, 16, 0, 16)
-    linear(8, "horizontal")
-    container(WRAP, WRAP, () => {
-      src(icons_menu)
+  const drawer$ = new Observable(false)
+  container(MATCH, MATCH, () => {
+    background("#2196f3")
+    linear(0)
+    container(MATCH, WRAP, () => {
+      padding(16, 16, 0, 16)
+      linear(8, "horizontal")
+      container(WRAP, WRAP, () => {
+        src(icons_menu)
+        onClick(() => {
+          drawer$.set(true)
+        })
+      })
+      container(0, WRAP, () => {
+        position(0, .5)
+        anchor(0, .5)
+        weight(1)
+        textColor("white")
+        text("Chinese - Mandarin")
+        style(medium_20)
+      })
+      container(WRAP, PERCENT(50), () => {
+        src(languages_flag)
+        position(0, .5)
+        anchor(0, .5)
+      })
+      container(WRAP, WRAP, () => {
+        position(0, .5)
+        anchor(0, .5)
+        textColor("white")
+        text("100%")
+        style(normal_12)
+      })
+      container(WRAP, PERCENT(50), () => {
+        src(streak_normal)
+        position(0, .5)
+        anchor(0, .5)
+      })
+      container(WRAP, WRAP, () => {
+        position(0, .5)
+        anchor(0, .5)
+        textColor("white")
+        text("1")
+        style(normal_12)
+      })
     })
-    container(0, WRAP, () => {
-      position(0, .5)
-      anchor(0, .5)
+    const tab$ = tabs("LEARN", "REVIEW")
+    container(MATCH, 0, () => {
       weight(1)
-      textColor("white")
-      text("Chinese - Mandarin")
-      style(medium_20)
-    })
-    container(WRAP, PERCENT(50), () => {
-      src(languages_flag)
-      position(0, .5)
-      anchor(0, .5)
-    })
-    container(WRAP, WRAP, () => {
-      position(0, .5)
-      anchor(0, .5)
-      textColor("white")
-      text("100%")
-      style(normal_12)
-    })
-    container(WRAP, PERCENT(50), () => {
-      src(streak_normal)
-      position(0, .5)
-      anchor(0, .5)
-    })
-    container(WRAP, WRAP, () => {
-      position(0, .5)
-      anchor(0, .5)
-      textColor("white")
-      text("1")
-      style(normal_12)
+      container(MATCH, MATCH, () => {
+        observe(tab$, tab => {
+          animateVisibility(tab === 0)
+        })
+        linear()
+        scrollable()
+        background('#f1f9ff')
+        SECTIONS.forEach(section => {
+          container(MATCH, WRAP, () => {
+            padding(16)
+            linear(8)
+            container(PERCENT(25), WRAP, () => {
+              position(.5, 0)
+              anchor(.5, 0)
+              src(section.icon)
+            })
+            container(WRAP, WRAP, () => {
+              position(.5, 0)
+              anchor(.5, 0)
+              text(section.name)
+            })
+          })
+          container(MATCH, WRAP, () => {
+            card()
+            linear()
+            separator()
+            section.chapters.forEach(chapter => {
+              container(MATCH, WRAP, () => {
+                onClick(() => {
+                  console.log("chapter")
+                })
+                padding(16)
+                linear(16, "horizontal")
+                container(WRAP, WRAP, () => {
+                  position(0, .5)
+                  anchor(0, .5)
+                  src(chapter.icon)
+                })
+                container(0, WRAP, () => {
+                  position(0, .5)
+                  anchor(0, .5)
+                  weight(1)
+                  linear(8)
+                  container(WRAP, WRAP, () => {
+                    text(chapter.name)
+                  })
+                  container(WRAP, WRAP, () => {
+                    text(chapter.description)
+                  })
+                })
+                container(WRAP, WRAP, () => {
+                  padding(8)
+                  position(0, .5)
+                  anchor(0, .5)
+                  src(download_normal)
+                  onClick(() => {
+                    console.log("download")
+                  })
+                })
+              })
+            })
+          })
+        })
+      })
+      container(MATCH, MATCH, () => {
+        background('#f1f9ff')
+        observe(tab$, tab => {
+          animateVisibility(tab === 1)
+        })
+        linear()
+        container(MATCH, WRAP, () => {
+          padding(16)
+          background("white")
+          container(MATCH, WRAP, () => {
+            input()
+            text("Search all vocabulary")
+          })
+        })
+        container(MATCH, 0, () => {
+          weight(1)
+          scrollable()
+          linear()
+          Object.keys(PHRASES).forEach(letter => {
+            container(WRAP, WRAP, () => {
+              padding(16)
+              text(letter)
+            })
+            container(MATCH, WRAP, () => {
+              card()
+              separator()
+              linear()
+              PHRASES[letter].forEach(phrase => {
+                container(MATCH, WRAP, () => {
+                  padding(16)
+                  linear(8)
+                  container(WRAP, WRAP, () => {
+                    text(phrase.translation.english)
+                  })
+                  container(WRAP, WRAP, () => {
+                    text(phrase.translation.mandarin)
+                  })
+                })
+              })
+            })
+          })
+        })
+      })
     })
   })
-  container(MATCH, WRAP, () => {
-    linear(0, "horizontal")
-    container(0, WRAP, () => {
-      textColor("white")
-      padding(16)
-      weight(1)
-      text("LEARN")
-      style(normal_12)
-      textAlign("center")
-    })
-    container(0, WRAP, () => {
-      textColor("white")
-      padding(16)
-      weight(1)
-      text("LEARN")
-      style(normal_12)
-      textAlign("center")
-    })
+  container(48, 48, () => {
+    //fab()
+    position(1, 1)
+    anchor(1, 1)
   })
-  container(MATCH, 0, () => {
-    weight(1)
-    linear()
-    scrollable()
-    background('#f1f9ff')
-    SECTIONS.forEach(section => {
+
+  //DRAWER
+  container(MATCH, MATCH, () => {
+    observe(drawer$, drawer => {
+      if(drawer) {
+        visibility(true)
+      } else {
+        if(this.firstRender) {
+          visibility(false)
+        } else {
+          timeout(() => visibility(false), 300)
+        }
+      }
+    })
+    container(MATCH, MATCH, () => {
+      background("rgba(0,0,0,.7)")
+      observe(drawer$, drawer => {
+        animateVisibility(drawer)
+      })
+      onClick(() => {
+        drawer$.set(false)
+      })
+    })
+    container(PERCENT(80), MATCH, () => {
+      observe(drawer$, drawer => {
+        const view = this.active
+        if(drawer) {
+          animate({
+            x : -view.bounds.width
+          }, {
+            x : 0
+          }, 300)
+        } else {
+          animate({
+            x : 0
+          }, {
+            x : -view.bounds.width
+          }, 300)
+        }
+      })
+      background("white")
+      linear()
       container(MATCH, WRAP, () => {
         padding(16)
         linear(8)
-        container(PERCENT(25), WRAP, () => {
+        background("#2196f3")
+        container(PERCENT(40), WRAP, () => {
+          src(languages_flag)
           position(.5, 0)
           anchor(.5, 0)
-          src(section.icon)
         })
-        container(WRAP, WRAP, () => {
-          position(.5, 0)
-          anchor(.5, 0)
-          text(section.name)
+        container(MATCH, WRAP, () => {
+          text("Chinese - Mandarin")
+          textAlign("center")
+          textColor("white")
         })
       })
-      container(MATCH, 100, () => {
-        card()
+      container(MATCH, 0, () => {
+        weight(1)
+        scrollable()
+        linear()
+        MENU.forEach(item => {
+          container(MATCH, WRAP, () => {
+            onClick(item.onClick)
+            padding(16)
+            linear(16, "horizontal")
+            container(WRAP, WRAP, () => {
+              src(item.icon)
+            })
+            container(WRAP, WRAP, () => {
+              text(item.text)
+              position(0, .5)
+              anchor(0, .5)
+            })
+          })
+        })
       })
     })
   })

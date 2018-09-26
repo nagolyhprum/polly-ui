@@ -1,0 +1,9 @@
+<svg height="24" 
+     width="24" viewBox="0 0 19 19" xmlns="http://www.w3.org/2000/svg">
+    <path fill="#50E3C2"
+        d="M8.554,11.196l-2.125,-2.125l-0.708,0.708l2.833,2.833l6.071,-6.071l-0.708,-0.708z"
+        stroke="#00000000" stroke-width="1"/>
+    <path fill="#00000000"
+        d="M9.5,9.5m-8.5,0a8.5,8.5 0,1 1,17 0a8.5,8.5 0,1 1,-17 0"
+        stroke="#50E3C2" stroke-width="1.5"/>
+</svg>
