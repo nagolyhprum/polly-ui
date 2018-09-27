@@ -6,6 +6,11 @@ import font from 'font'
 
 let isDebug = true
 
+const TOP = 0
+const RIGHT = 1
+const BOTTOM = 2
+const LEFT = 3
+
 const slightRound = 4
 const EMPTY_ARRAY = [0, 0, 0, 0]
 const COMPLEMENTARY_DIMENSIONS = {
@@ -65,11 +70,11 @@ const getValue = (view, dim) => {
 }
 
 const getTopBottom = r => {
-  return r instanceof Array ? r[0] + r[2] : 0
+  return r instanceof Array ? r[TOP] + r[BOTTOM] : 0
 }
 
 const getLeftRight = r => {
-  return r instanceof Array ? r[1] + r[3] : 0
+  return r instanceof Array ? r[RIGHT] + r[LEFT] : 0
 }
 
 const getName = view => view.text.display || view.image || `(${view.children.map(getName)})`
@@ -78,8 +83,8 @@ const reposition = view => {
   const padding = view.parent.padding instanceof Array ? view.parent.padding : EMPTY_ARRAY
   const margin = view.parent.margin instanceof Array ? view.parent.margin : EMPTY_ARRAY
   return {
-    x: view.parent.bounds.x + padding[3] + margin[3] + view.x + (view.parent.scrollX || 0),
-    y: view.parent.bounds.y + padding[0] + margin[0] + view.y + (view.parent.scrollY || 0)
+    x: view.parent.bounds.x + padding[LEFT] + margin[LEFT] + view.x + (view.parent.scrollX || 0),
+    y: view.parent.bounds.y + padding[TOP] + margin[TOP] + view.y + (view.parent.scrollY || 0)
   }
 }
 
@@ -195,8 +200,8 @@ Screen.prototype = {
       const margin = child.margin || EMPTY_ARRAY
       child.render(
         this.canvas,
-        x + margin[3],
-        y + margin[0],
+        x + margin[LEFT],
+        y + margin[TOP],
         width - getLeftRight(margin),
         height - getTopBottom(margin),
         getValue(child, 'round')
@@ -378,14 +383,14 @@ Screen.prototype = {
   },
   margin (...margin) {
     if (margin.length === 1) {
-      this.active.margin = [margin[0], margin[0], margin[0], margin[0]]
+      this.active.margin = [margin[TOP], margin[TOP], margin[TOP], margin[TOP]]
     } else {
       this.active.margin = margin
     }
   },
   padding (...padding) {
     if (padding.length === 1) {
-      this.active.padding = [padding[0], padding[0], padding[0], padding[0]]
+      this.active.padding = [padding[TOP], padding[TOP], padding[TOP], padding[TOP]]
     } else {
       this.active.padding = padding
     }
@@ -522,23 +527,41 @@ Screen.prototype = {
       this.layoutView(child)
       this.renderView(child)
     })
-    const ctx = this.canvas
-    const cvs = this.canvas
-    ctx.beginPath()
 
-    ctx.moveTo(0, 0)
-    ctx.lineTo(cvs.width, 0)
-    ctx.lineTo(cvs.width, cvs.height)
-    ctx.lineTo(0, cvs.height)
-    ctx.lineTo(0, 0)
-
-    ctx.moveTo(cvs.width / 4, cvs.height / 4)
-    ctx.lineTo(3 * cvs.width / 4, cvs.height / 4)
-    ctx.lineTo(3 * cvs.width / 4, 3 * cvs.height / 4)
-    ctx.lineTo(cvs.width / 4, 3 * cvs.height / 4)
-    ctx.lineTo(cvs.width / 4, cvs.height / 4)
-    ctx.fillStyle('rgba(0,0,0,.7)')
-    ctx.fill()
+    const view = this.children[0].children[0]
+    if(this.highlighted) {
+      this.highlight(
+        'rgba(0,0,0,.7)',
+        0, 0, this.canvas.getWidth(), this.canvas.getHeight(),
+        this.highlighted.x, this.highlighted.y, this.highlighted.width, this.highlighted.height
+      )
+    } else if(view.isInBounds) {
+      this.active = this.highlighted = {}
+      const from = {
+        x : 0,
+        y : 0,
+        width : this.canvas.getWidth(),
+        height : this.canvas.getHeight()
+      }
+      const to = this.children[0].children[0].bounds
+      this.animate(from, to, 3000, () => {
+        const from = this.highlighted
+        const to = this.children[0].children[1].bounds
+        this.active = this.highlighted = {}
+        this.animate(from, to, 3000);
+      })
+    }
+  },
+  highlight (
+    color,
+    x1, y1, w1, h1,
+    x2, y2, w2, h2
+  ) {
+    this.canvas.fillStyle(color)
+    this.canvas.fillRect(x1, y1, w1, y2 - y1) // full top
+    this.canvas.fillRect(x1, y2, x2 - x1, h2) // part left
+    this.canvas.fillRect(x2 + w2, y2, (x1 + w1) - (x2 + w2), h2) // part right
+    this.canvas.fillRect(x1, y2 + h2, w1, (y1 + h1) - (y2 + h2)) // full bottom
   },
   scrollable () {
     const active = this.active
@@ -635,14 +658,20 @@ Screen.prototype = {
     if (view.isInBounds) {
       this.canvas.save()
       this.canvas.alpha(this.canvas.alpha() * view.alpha)
-      const x = view.bounds.x
-      const y = view.bounds.y
-      const width = view.bounds.width
-      const height = view.bounds.height
+
       const margin = view.margin || EMPTY_ARRAY
       const padding = view.padding || EMPTY_ARRAY
-      const mw = width - getLeftRight(margin)
-      const mh = height - getTopBottom(margin)
+      const x = view.bounds.x
+      const y = view.bounds.y
+
+      const wpm = view.bounds.width
+      const hpm = view.bounds.height
+
+      const wp = wpm - getLeftRight(margin)
+      const hp = hpm - getTopBottom(margin)
+
+      const w = wp - getLeftRight(padding)
+      const h = hp - getTopBottom(padding)
 
       if (view.shadow) {
         const shadow = 2
@@ -653,10 +682,10 @@ Screen.prototype = {
       }
       view.render(
         this.canvas,
-        x + margin[3],
-        y + margin[0],
-        mw,
-        mh,
+        x + margin[LEFT],
+        y + margin[TOP],
+        wp,
+        hp,
         getValue(view, 'round'),
         view.background || 'transparent'
       )
@@ -666,40 +695,30 @@ Screen.prototype = {
       this.canvas.shadowOffsetY = 0
       // DEBUG HERE
       if (isDebug) {
-        this.canvas.translate(x, y)
         // padding
-        if (padding) {
-          this.canvas.fillStyle('rgba(0, 255, 0, .7)')
-          // top
-          this.canvas.fillRect(margin[3], margin[0], width - (margin[3] + margin[1]), padding[0])
-          // left
-          this.canvas.fillRect(margin[3], margin[0] + padding[0], padding[3], height - (margin[0] + margin[2] + padding[0]))
-          // right
-          this.canvas.fillRect(width - margin[1] - padding[1], margin[0] + padding[0], padding[1], height - (margin[0] + margin[2] + padding[0]))
-          // bottom
-          this.canvas.fillRect(margin[3] + padding[3], height - margin[2] - padding[2], width - (margin[3] + padding[3] + margin[1] + padding[1]), padding[2])
+        if (view.padding) {
+          this.highlight(
+            'rgba(0, 255, 0, .7)',
+            x + margin[LEFT], y + margin[TOP], wp, hp,
+            x + margin[LEFT] + padding[LEFT], y + margin[TOP] + padding[TOP], w, h
+          )
         }
         // margin
-        if (margin) {
-          this.canvas.fillStyle('rgba(0, 0, 255, .7)')
-          // top
-          this.canvas.fillRect(0, 0, width, margin[0])
-          // left
-          this.canvas.fillRect(0, margin[0], margin[3], height - margin[0])
-          // right
-          this.canvas.fillRect(width - margin[1], margin[0], margin[1], height - margin[0])
-          // bottom
-          this.canvas.fillRect(margin[3], height - margin[2], width - margin[1] - margin[3], margin[2])
+        if (view.margin) {
+          this.highlight(
+            'rgba(0, 0, 255, .7)',
+            x, y, wpm, hpm,
+            x + margin[LEFT], y + margin[TOP], wp, hp
+          )
         }
         // outline
         this.canvas.strokeStyle('rgba(0, 0, 0, .7)')
         this.canvas.setLineDash([2, 4])
-        this.canvas.strokeRect(0, 0, width, height)
+        this.canvas.strokeRect(x, y, wpm, hpm)
         this.canvas.setLineDash([])
-        this.canvas.translate(-x, -y)
       }
       if (view.image && view.image.complete) {
-        this.canvas.drawImage(view.image, x + padding[3], y + padding[0], mw - getLeftRight(padding), mh - getTopBottom(padding))
+        this.canvas.drawImage(view.image, x + padding[LEFT] + margin[LEFT], y + padding[TOP] + margin[TOP], w, h)
       }
       // STOP DEBUG
       if (!view.overflow) {
@@ -723,15 +742,15 @@ Screen.prototype = {
         this.canvas.textAlign(view.text.align)
         const lines = view.text.display.split('\n')
         lines.forEach((line, index) => {
-          let offsetX = 0
+          let offsetX = padding[LEFT] + margin[LEFT]
           switch (view.text.align) {
-            case 'right' : offsetX = width - getLeftRight(padding); break
-            case 'center' : offsetX = mw / 2 - padding[3]; break
+            case 'right' : offsetX = w - padding[RIGHT] - margin[RIGHT]; break
+            case 'center' : offsetX = wpm / 2; break
           }
           this.canvas.fillText(
             view.input === 'password' ? line.split('').map(it => '\u2022').join('') : line,
-            x + offsetX + padding[3] - offset,
-            y + index * (view.text.size + LINE_SPACING) + padding[0]
+            x + offsetX - offset,
+            y + index * (view.text.size + LINE_SPACING) + padding[TOP]
           )
         })
       }
@@ -770,8 +789,8 @@ Screen.prototype = {
   },
   tabs (...tabs) {
     const tab$ = new Observable(0)
-    this.container(this.MATCH, this.WRAP, container => {
-      this.container(this.MATCH, this.WRAP, () => {
+    this.container(this.MATCH, this.WRAP, () => {
+      const horizontal = this.container(this.MATCH, this.WRAP, () => {
         this.linear(0, 'horizontal')
         tabs.forEach((text, index) => {
           this.container(0, this.WRAP, () => {
@@ -793,15 +812,15 @@ Screen.prototype = {
         this.background('gold')
       })
       tab$.observe(tab => {
-        container.children[0].children.forEach(child => {
+        horizontal.children.forEach(child => {
           child.text.color = 'black'
         })
-        container.children[0].children[tab].text.color = 'white'
+        horizontal.children[tab].text.color = 'white'
         this.active = indicator
         this.animate({
           x: indicator.x
         }, {
-          x: tab * container.bounds.width / tabs.length
+          x: tab * horizontal.bounds.width / tabs.length
         }, 300)
       })
     })
