@@ -20,8 +20,7 @@ export default function (state) {
     WRAP,
     MATCH,
     PERCENT,
-    button,
-    animate
+    button
   } = this
   background('#2196f3')
   container(PERCENT(40), WRAP, () => {
@@ -29,11 +28,6 @@ export default function (state) {
     anchor(0.5, 0.5)
     position(0.5, 0.25)
     src(drawable.logos.lexicon_white)
-    animate({
-      scale: 1
-    }, {
-      scale: 10
-    }, 10000)
   })
   container(WRAP, WRAP, () => {
     linear(16)

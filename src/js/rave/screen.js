@@ -62,15 +62,6 @@ const getName = view => view.text.display || view.image || `(${view.children.map
 function Screen (canvas, ...plugins) {
   this.canvas = canvas
   this.plugins = plugins.map(plugin => plugin(this)).filter(_ => _)
-  this.highlighted = {
-    processed: {},
-    options: [],
-    view: null,
-    x: 0,
-    y: 0,
-    width: canvas.getWidth(),
-    height: canvas.getHeight()
-  }
   this.children = []
   this.active = this
   this.bounds = {
@@ -376,37 +367,6 @@ Screen.prototype = {
       this.layoutView(child)
       this.renderView(child)
     })
-    if (this.highlighted.view) {
-      this.highlightArea(
-        'rgba(0,0,0,.7)',
-        0, 0, this.canvas.getWidth(), this.canvas.getHeight(),
-        this.highlighted.x, this.highlighted.y, this.highlighted.width, this.highlighted.height
-      )
-    }
-  },
-  highlight () {
-    this.highlightView(this.active, 'HELLO WORLD')
-  },
-  highlightView (view, message) {
-    // TODO do this right
-    // this.highlighed.views.push({ view, message })
-    // this.highlighted.view = view
-    // this.highlighted.message = message
-    // const from = this.highlighted
-    // const to = (view || this).bounds
-    // console.log(this.highlighted, from, to)
-    // this.highlighted.animation = this.animateObject(this.highlighted, from, to, 3000)
-  },
-  highlightArea (
-    color,
-    x1, y1, w1, h1,
-    x2, y2, w2, h2
-  ) {
-    this.canvas.fillStyle(color)
-    this.canvas.fillRect(x1, y1, w1, y2 - y1) // full top
-    this.canvas.fillRect(x1, y2, x2 - x1, h2) // part left
-    this.canvas.fillRect(x2 + w2, y2, (x1 + w1) - (x2 + w2), h2) // part right
-    this.canvas.fillRect(x1, y2 + h2, w1, (y1 + h1) - (y2 + h2)) // full bottom
   },
   getIntersection (view) {
     const parent = view.parent
