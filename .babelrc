@@ -1,0 +1,13 @@
+{
+  "plugins": [
+    ["module-resolver", {
+      "alias": {
+        "drawable": "./src/js/res/drawable",
+        "font": "./src/js/res/font",
+        "utils": "./src/js/utils",
+        "rave": "./src/js/rave",
+        "views": "./src/js/views"
+      }
+    }]
+  ]
+}

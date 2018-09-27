@@ -1,0 +1,17 @@
+html,
+body,
+canvas,
+input {
+  padding: 0;
+  border: 0;
+  margin: 0;
+}
+
+input {
+  background: transparent;
+  color: transparent;
+  outline: none;
+  position : absolute;
+  caret-color: black;
+  font: 12px sans-serif;
+}
