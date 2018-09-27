@@ -1,9 +1,9 @@
-export default function(screen) {
-  screen.separator = function(separator = true) {
+export default function (screen) {
+  screen.separator = function (separator = true) {
     this.active.separator = separator
   }
-  return function(view) {
-    if(view === screen) return;
+  return function (view) {
+    if (view === screen) return
     const index = view.parent.children.indexOf(view)
     if (index > 0 && view.parent.separator) {
       screen.canvas.beginPath()

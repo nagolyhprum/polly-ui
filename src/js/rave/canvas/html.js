@@ -5,7 +5,7 @@ export default class Canvas {
     this.context = canvas.getContext('2d')
     this.images = {}
   }
-  shadow(shadow) {
+  shadow (shadow) {
     if (shadow) {
       this.context.shadowColor = 'rgba(0, 0, 0, .7)'
       this.context.shadowBlur = SHADOW

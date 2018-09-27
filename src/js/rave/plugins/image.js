@@ -1,13 +1,12 @@
-import { TOP, LEFT, EMPTY_ARRAY } from "rave/screen"
+import { TOP, LEFT, EMPTY_ARRAY } from 'rave/screen'
 
-export default function(screen) {
-
-  screen.src = function(image) {
+export default function (screen) {
+  screen.src = function (image) {
     this.active.image = this.canvas.image(image, () => {
       this.render()
     })
   }
-  return function(view) {
+  return function (view) {
     if (view.image && view.image.complete) {
       const margin = view.margin || EMPTY_ARRAY
       const padding = view.padding || EMPTY_ARRAY

@@ -1,4 +1,4 @@
-//TODO abstract this
+// TODO abstract this
 export default function (screen) {
   screen.textbox = document.createElement('input')
   document.body.appendChild(screen.textbox)
@@ -17,7 +17,7 @@ export default function (screen) {
       screen.render()
     }
   }
-  screen.input = function(input = 'text') {
+  screen.input = function (input = 'text') {
     const view = this.active
     view.input = input
     view.overflow = false
@@ -29,8 +29,8 @@ export default function (screen) {
       this.render()
     }
   }
-  return function(view) {
-    if(view === screen) {
+  return function (view) {
+    if (view === screen) {
       screen.textbox.style.display = 'none'
     } else {
       if (view.textbox) {

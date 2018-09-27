@@ -1,8 +1,8 @@
-import { LEFT, TOP, EMPTY_ARRAY } from "rave/screen"
+import { LEFT, TOP, EMPTY_ARRAY } from 'rave/screen'
 
-export default isDebug => function(screen) {
-  return function(view) {
-    if(isDebug) {
+export default isDebug => function (screen) {
+  return function (view) {
+    if (isDebug) {
       const x = view.bounds.x
       const y = view.bounds.y
       const margin = view.margin || EMPTY_ARRAY

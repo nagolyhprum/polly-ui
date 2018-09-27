@@ -12,6 +12,8 @@ import separator from 'plugins/separator'
 import overflow from 'plugins/overflow'
 import textbox from 'plugins/textbox'
 import text from 'plugins/text'
+import scrollable from 'plugins/scrollable'
+import mouse from 'plugins/mouse'
 
 const screen = new Screen(
   new Canvas(document.getElementsByTagName('canvas')[0]),
@@ -23,6 +25,9 @@ const screen = new Screen(
   separator,
   textbox,
   text,
-  layout(false)
+  layout(false),
+  // not drawn
+  scrollable,
+  mouse
 )
 screen.start(Splash)

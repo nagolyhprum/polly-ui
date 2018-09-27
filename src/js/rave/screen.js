@@ -4,8 +4,6 @@ import {
 import Observable from 'rave/observable'
 import font from 'font'
 
-let isDebug = true
-
 export const TOP = 0
 export const RIGHT = 1
 export const BOTTOM = 2
@@ -67,26 +65,26 @@ const reposition = view => {
   const padding = view.parent.padding instanceof Array ? view.parent.padding : EMPTY_ARRAY
   const margin = view.parent.margin instanceof Array ? view.parent.margin : EMPTY_ARRAY
   return {
+    // TODO figure out how to remove scroll x, scroll y from here
     x: view.parent.bounds.x + padding[LEFT] + margin[LEFT] + view.x + (view.parent.scrollX || 0),
     y: view.parent.bounds.y + padding[TOP] + margin[TOP] + view.y + (view.parent.scrollY || 0)
   }
 }
 
 function Screen (canvas, ...plugins) {
-  this.plugins = plugins.map(plugin => plugin(this))
+  this.canvas = canvas
+  this.plugins = plugins.map(plugin => plugin(this)).filter(_ => _)
   this.highlighted = {
-    processed : {},
-    options : [],
-    view : null,
-    x : 0,
-    y : 0,
-    width : canvas.getWidth(),
-    height : canvas.getHeight()
+    processed: {},
+    options: [],
+    view: null,
+    x: 0,
+    y: 0,
+    width: canvas.getWidth(),
+    height: canvas.getHeight()
   }
-
   this.children = []
   this.active = this
-  this.canvas = canvas
   this.bounds = {
     x: 0,
     y: 0,
@@ -104,110 +102,21 @@ function Screen (canvas, ...plugins) {
     height: this.bounds.height
   }
   this.bind()
-
-  const getMouse = (e, name) => ({
-    x: e.x,
-    y: e.y,
-    name
-  })
-
-  this.last = []
-  const call = (e, name) => {
-    const mouse = getMouse(e, name)
-    const mouseOver = this.mouseOver(mouse, this)
-    this.last.forEach(view => {
-      if (!mouseOver.contains(view)) {
-        view.onMouseOut && view.onMouseOut(getMouse(e, 'onMouseOut'))
-      }
-    })
-    mouseOver.forEach(view => {
-      if (!this.last.contains(view)) {
-        view.onMouseIn && view.onMouseIn(getMouse(e, 'onMouseIn'))
-      }
-    })
-    this.last = mouseOver
-    let view = mouseOver[mouseOver.length - 1]
-    while (view && !view[name]) {
-      view = view.parent
-    }
-    if (view && view !== this) {
-      view[name](mouse)
-    }
-  }
-
-  let moved
-  canvas.onMouseDown(e => {
-    moved = 0
-    call(e, 'onMouseDown')
-  })
-
-  canvas.onMouseOut(e => {
-    const mouse = getMouse(e, 'onMouseOut')
-    this.last.forEach(view => {
-      view.onMouseOut && view.onMouseOut(mouse)
-    })
-    this.last = []
-  })
-
-  canvas.onMouseMove(e => {
-    moved++
-    call(e, 'onMouseMove')
-  })
-
-  canvas.onMouseUp(e => {
-    call(e, 'onMouseUp')
-  })
-
-  canvas.onClick(e => {
-    if (moved < 5) {
-      call(e, 'onClick')
-      if(this.highlighted.view) {
-        this.highlighted.processed[this.highlighted.view.message]
-        //TODO see if you clicked it
-      }
-    }
-  })
 }
 
 Screen.prototype = {
-  getValue(view, dim) {
+  getValue (view, dim) {
     if (typeof view[dim] === 'function') {
-      return view[dim](view, dim)
+      return view[dim](view, dim) || 0
     } else {
-      return view[dim]
+      return view[dim] || 0
     }
   },
-  getTopBottom(r) {
+  getTopBottom (r) {
     return r instanceof Array ? r[TOP] + r[BOTTOM] : 0
   },
-  getLeftRight(r) {
+  getLeftRight (r) {
     return r instanceof Array ? r[RIGHT] + r[LEFT] : 0
-  },
-  mouseOver (mouse, view) {
-    if(this.highlighted.view) {
-      return []
-    }
-    return view.children.reduce((mouseOver, child) => {
-      const {
-        x,
-        y,
-        width,
-        height
-      } = child.bounds
-      const margin = child.margin || EMPTY_ARRAY
-      child.render(
-        this.canvas,
-        x + margin[LEFT],
-        y + margin[TOP],
-        width - this.getLeftRight(margin),
-        height - this.getTopBottom(margin),
-        this.getValue(child, 'round')
-      )
-      if (child.isInBounds && this.canvas.isPointInPath(mouse.x, mouse.y)) {
-        return mouseOver.concat([child]).concat(this.mouseOver(mouse, child))
-      }
-      return mouseOver
-    }, [])
   },
   PERCENT (percent) {
     return dim => view => {
@@ -283,7 +192,6 @@ Screen.prototype = {
     const parent = this.active
     const child = {
       render: roundRect,
-      round: 0,
       // margin
       // padding
       // background
@@ -304,16 +212,7 @@ Screen.prototype = {
         width: 0,
         height: 0
       },
-      scrollX: 0,
-      scrollY: 0,
-      children: [],
-      text: {
-        // display
-        size: 12,
-        color: 'black',
-        weight: 'normal',
-        align: 'left'
-      }
+      children: []
     }
     parent.children.push(child)
     this.active = child
@@ -386,13 +285,10 @@ Screen.prototype = {
       this.active.padding = padding
     }
   },
-  onClick (onClick) {
-    this.active.onClick = onClick
-  },
   round (round) {
     this.active.round = round
   },
-  animateObject(object, from, to, ms, cb) {
+  animateObject (object, from, to, ms, cb) {
     const start = Date.now()
     const handler = (now = Date.now()) => {
       const percent = Math.min((now - start) / ms, 1)
@@ -484,7 +380,7 @@ Screen.prototype = {
       this.layoutView(child)
       this.renderView(child)
     })
-    if(this.highlighted.view) {
+    if (this.highlighted.view) {
       this.highlightArea(
         'rgba(0,0,0,.7)',
         0, 0, this.canvas.getWidth(), this.canvas.getHeight(),
@@ -492,19 +388,18 @@ Screen.prototype = {
       )
     }
   },
-  highlight() {
-    this.highlightView(this.active, "HELLO WORLD")
+  highlight () {
+    this.highlightView(this.active, 'HELLO WORLD')
   },
-  highlightView(view, message) {
-    return;
-    this.highlighed.views.push({ view, message })
-
-    this.highlighted.view = view
-    this.highlighted.message = message
-    const from = this.highlighted
-    const to = (view || this).bounds
-    console.log(this.highlighted, from, to)
-    this.highlighted.animation = this.animateObject(this.highlighted, from, to, 3000)
+  highlightView (view, message) {
+    // TODO do this right
+    // this.highlighed.views.push({ view, message })
+    // this.highlighted.view = view
+    // this.highlighted.message = message
+    // const from = this.highlighted
+    // const to = (view || this).bounds
+    // console.log(this.highlighted, from, to)
+    // this.highlighted.animation = this.animateObject(this.highlighted, from, to, 3000)
   },
   highlightArea (
     color,
@@ -516,50 +411,6 @@ Screen.prototype = {
     this.canvas.fillRect(x1, y2, x2 - x1, h2) // part left
     this.canvas.fillRect(x2 + w2, y2, (x1 + w1) - (x2 + w2), h2) // part right
     this.canvas.fillRect(x1, y2 + h2, w1, (y1 + h1) - (y2 + h2)) // full bottom
-  },
-  scrollable () {
-    const active = this.active
-    active.overflow = false
-    let lastMouse; let dx = 0; let dy = 0
-    // TODO : DO SOMETHING WITH THIS
-    // let lastTs = Date.now();
-    setInterval(() => {
-      // const now = Date.now()
-      // const dt = (now - lastTs) / 1000
-      // lastTs = now
-      dx /= 1.2
-      if (Math.abs(dx) < 1) {
-        dx = 0
-      }
-      dy /= 1.2
-      if (Math.abs(dy) < 1) {
-        dy = 0
-      }
-      if (!lastMouse && (dx || dy)) {
-        update()
-      }
-    }, 1000 / 60)
-    const update = () => {
-      const right = Math.max(0, ...active.children.map(child => child.bounds.x + child.bounds.width - (active.bounds.x + active.bounds.width + active.scrollX)))
-      const bottom = Math.max(0, ...active.children.map(child => child.bounds.y + child.bounds.height - (active.bounds.y + active.bounds.height + active.scrollY)))
-      active.scrollX = Math.max(Math.min(active.scrollX + dx, 0), -right)
-      active.scrollY = Math.max(Math.min(active.scrollY + dy, 0), -bottom)
-      this.render()
-    }
-    active.onMouseMove = function (mouse) {
-      if (lastMouse) {
-        dx = mouse.x - lastMouse.x
-        dy = mouse.y - lastMouse.y
-        update()
-        lastMouse = mouse
-      }
-    }
-    active.onMouseDown = function (mouse) {
-      lastMouse = mouse
-    }
-    active.onMouseUp = active.onMouseOut = function (mouse) {
-      lastMouse = null
-    }
   },
   getIntersection (view) {
     const parent = view.parent

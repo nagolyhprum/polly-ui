@@ -1,35 +1,45 @@
-import { EMPTY_ARRAY, LEFT, TOP, LINE_SPACING } from 'rave/screen'
+import { EMPTY_ARRAY, LEFT, TOP, RIGHT, LINE_SPACING } from 'rave/screen'
 
-export default function(screen) {
-  screen.style = function(text) {
+export default function (screen) {
+  const init = function (view) {
+    view.text = view.text || {
+      // display
+      size: 12,
+      color: 'black',
+      weight: 'normal',
+      align: 'left'
+    }
+  }
+  screen.style = function (text) {
+    init(this.active)
     if (text.size) {
       this.active.text.size = text.size
     }
-  },
-  screen.text = function(display) {
+  }
+  screen.text = function (display) {
+    init(this.active)
     this.active.text.display = display
-  },
-  screen.textColor = function(textColor) {
+  }
+  screen.textColor = function (textColor) {
+    init(this.active)
     this.active.text.color = textColor
-  },
-  screen.textAlign = function(align) {
+  }
+  screen.textAlign = function (align) {
+    init(this.active)
     this.active.text.align = align
   }
-  return function(view) {
-    if (view.text.display) {
+  return function (view) {
+    if (view.text && view.text.display) {
       const margin = view.margin || EMPTY_ARRAY
       const padding = view.padding || EMPTY_ARRAY
       const x = view.bounds.x
       const y = view.bounds.y
 
       const wpm = view.bounds.width
-      const hpm = view.bounds.height
 
       const wp = wpm - screen.getLeftRight(margin)
-      const hp = hpm - screen.getTopBottom(margin)
 
       const w = wp - screen.getLeftRight(padding)
-      const h = hp - screen.getTopBottom(padding)
 
       const offset = view.textbox ? view.textbox.scrollLeft : 0
       screen.canvas.fillStyle(view.text.color)
