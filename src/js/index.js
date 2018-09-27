@@ -16,6 +16,7 @@ import scrollable from 'plugins/scrollable'
 import mouse from 'plugins/mouse'
 import scale from 'plugins/scale'
 import components from 'plugins/components'
+import highlight from 'plugins/highlight'
 
 const screen = new Screen(
   new Canvas(document.getElementsByTagName('canvas')[0]),
@@ -32,6 +33,7 @@ const screen = new Screen(
   // not drawn
   components,
   scrollable,
-  mouse
+  mouse,
+  highlight
 )
 screen.start(Splash)

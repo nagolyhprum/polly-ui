@@ -368,6 +368,17 @@ Screen.prototype = {
       this.renderView(child)
     })
   },
+  highlightArea (
+    color,
+    x1, y1, w1, h1,
+    x2, y2, w2, h2
+  ) {
+    this.canvas.fillStyle(color)
+    this.canvas.fillRect(x1, y1, w1, y2 - y1) // full top
+    this.canvas.fillRect(x1, y2, x2 - x1, h2) // part left
+    this.canvas.fillRect(x2 + w2, y2, (x1 + w1) - (x2 + w2), h2) // part right
+    this.canvas.fillRect(x1, y2 + h2, w1, (y1 + h1) - (y2 + h2)) // full bottom
+  },
   getIntersection (view) {
     const parent = view.parent
     const intersection = {
