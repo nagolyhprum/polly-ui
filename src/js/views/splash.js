@@ -5,6 +5,7 @@ import LanguagePicker from 'views/languagepicker'
 
 export default function (state) {
   const {
+    highlight,
     container,
     background,
     position,
@@ -23,6 +24,7 @@ export default function (state) {
   } = this
   background('#2196f3')
   container(PERCENT(40), WRAP, () => {
+    highlight()
     anchor(0.5, 0.5)
     position(0.5, 0.25)
     src(drawable.logos.lexicon_white)

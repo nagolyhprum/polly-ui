@@ -6,7 +6,8 @@
         "font": "./src/js/res/font",
         "utils": "./src/js/utils",
         "rave": "./src/js/rave",
-        "views": "./src/js/views"
+        "views": "./src/js/views",
+        "plugins": "./src/js/rave/plugins"
       }
     }]
   ]

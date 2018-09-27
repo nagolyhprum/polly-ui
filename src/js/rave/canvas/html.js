@@ -1,8 +1,22 @@
+const SHADOW = 4
 export default class Canvas {
   constructor (canvas) {
     this.canvas = canvas
     this.context = canvas.getContext('2d')
     this.images = {}
+  }
+  shadow(shadow) {
+    if (shadow) {
+      this.context.shadowColor = 'rgba(0, 0, 0, .7)'
+      this.context.shadowBlur = SHADOW
+      this.context.shadowOffsetX = SHADOW
+      this.context.shadowOffsetY = SHADOW
+    } else {
+      this.context.shadowColor = 'transparent'
+      this.context.shadowBlur = 0
+      this.context.shadowOffsetX = 0
+      this.context.shadowOffsetY = 0
+    }
   }
   alpha (alpha) {
     if (arguments.length === 1) {

@@ -6,13 +6,13 @@ import font from 'font'
 
 let isDebug = true
 
-const TOP = 0
-const RIGHT = 1
-const BOTTOM = 2
-const LEFT = 3
+export const TOP = 0
+export const RIGHT = 1
+export const BOTTOM = 2
+export const LEFT = 3
+export const EMPTY_ARRAY = [0, 0, 0, 0]
 
 const slightRound = 4
-const EMPTY_ARRAY = [0, 0, 0, 0]
 const COMPLEMENTARY_DIMENSIONS = {
   width: 'x',
   height: 'y',
@@ -31,7 +31,7 @@ const DIMENSIONS = {
   width: 'height',
   height: 'width'
 }
-const LINE_SPACING = 8
+export const LINE_SPACING = 8
 
 function roundRect (canvas, x, y, width, height, radius, fill, stroke) {
   radius = { tl: radius, tr: radius, br: radius, bl: radius }
@@ -61,22 +61,6 @@ function roundRect (canvas, x, y, width, height, radius, fill, stroke) {
   }
 }
 
-const getValue = (view, dim) => {
-  if (typeof view[dim] === 'function') {
-    return view[dim](view, dim)
-  } else {
-    return view[dim]
-  }
-}
-
-const getTopBottom = r => {
-  return r instanceof Array ? r[TOP] + r[BOTTOM] : 0
-}
-
-const getLeftRight = r => {
-  return r instanceof Array ? r[RIGHT] + r[LEFT] : 0
-}
-
 const getName = view => view.text.display || view.image || `(${view.children.map(getName)})`
 
 const reposition = view => {
@@ -88,23 +72,16 @@ const reposition = view => {
   }
 }
 
-function Screen (canvas) {
-  this.textbox = document.createElement('input')
-  document.body.appendChild(this.textbox)
-  this.textbox.onblur = e => {
-    const view = this.textbox.view
-    if (view) {
-      this.textbox.view = null
-      view.textbox = null
-      this.render()
-    }
-  }
-  this.textbox.oninput = e => {
-    const view = this.textbox.view
-    if (view) {
-      view.text.display = this.textbox.value
-      this.render()
-    }
+function Screen (canvas, ...plugins) {
+  this.plugins = plugins.map(plugin => plugin(this))
+  this.highlighted = {
+    processed : {},
+    options : [],
+    view : null,
+    x : 0,
+    y : 0,
+    width : canvas.getWidth(),
+    height : canvas.getHeight()
   }
 
   this.children = []
@@ -184,12 +161,32 @@ function Screen (canvas) {
   canvas.onClick(e => {
     if (moved < 5) {
       call(e, 'onClick')
+      if(this.highlighted.view) {
+        this.highlighted.processed[this.highlighted.view.message]
+        //TODO see if you clicked it
+      }
     }
   })
 }
 
 Screen.prototype = {
+  getValue(view, dim) {
+    if (typeof view[dim] === 'function') {
+      return view[dim](view, dim)
+    } else {
+      return view[dim]
+    }
+  },
+  getTopBottom(r) {
+    return r instanceof Array ? r[TOP] + r[BOTTOM] : 0
+  },
+  getLeftRight(r) {
+    return r instanceof Array ? r[RIGHT] + r[LEFT] : 0
+  },
   mouseOver (mouse, view) {
+    if(this.highlighted.view) {
+      return []
+    }
     return view.children.reduce((mouseOver, child) => {
       const {
         x,
@@ -202,9 +199,9 @@ Screen.prototype = {
         this.canvas,
         x + margin[LEFT],
         y + margin[TOP],
-        width - getLeftRight(margin),
-        height - getTopBottom(margin),
-        getValue(child, 'round')
+        width - this.getLeftRight(margin),
+        height - this.getTopBottom(margin),
+        this.getValue(child, 'round')
       )
       if (child.isInBounds && this.canvas.isPointInPath(mouse.x, mouse.y)) {
         return mouseOver.concat([child]).concat(this.mouseOver(mouse, child))
@@ -236,10 +233,11 @@ Screen.prototype = {
     }
   },
   WRAP: (function () {
-    return dim => (view, canvas) => {
+    return dim => (view, screen) => {
+      const { canvas } = screen
       const spaceAround = {
-        width: getLeftRight(view.padding) + getLeftRight(view.margin),
-        height: getTopBottom(view.padding) + getTopBottom(view.margin)
+        width: screen.getLeftRight(view.padding) + screen.getLeftRight(view.margin),
+        height: screen.getTopBottom(view.padding) + screen.getTopBottom(view.margin)
       }[dim]
       if (view.image) {
         const imageBounds = {
@@ -295,9 +293,7 @@ Screen.prototype = {
         typeof height === 'function' ? height('height') : () => ({ height }),
         reposition
       ],
-      overflow: true,
       parent,
-      alpha: 1,
       x: 0,
       y: 0,
       width: 0,
@@ -325,15 +321,10 @@ Screen.prototype = {
     this.active = parent
     return child
   },
-  style (text) {
-    if (text.size) {
-      this.active.text.size = text.size
-    }
-  },
   getViewPortSize (view) {
     return {
-      width: view.bounds.width - getLeftRight(view.padding) - getLeftRight(view.margin),
-      height: view.bounds.height - getTopBottom(view.padding) - getTopBottom(view.margin)
+      width: view.bounds.width - this.getLeftRight(view.padding) - this.getLeftRight(view.margin),
+      height: view.bounds.height - this.getTopBottom(view.padding) - this.getTopBottom(view.margin)
     }
   },
   position (x, y) {
@@ -359,13 +350,13 @@ Screen.prototype = {
     if (visible) {
       view.hidden = false
       this.animate({
-        alpha: view.alpha
+        alpha: view.alpha || 0
       }, {
         alpha: 1
       }, this.firstRender ? 0 : 300)
     } else {
       this.animate({
-        alpha: view.alpha
+        alpha: view.alpha || 1
       }, {
         alpha: 0
       }, this.firstRender ? 0 : 300, () => {
@@ -395,52 +386,19 @@ Screen.prototype = {
       this.active.padding = padding
     }
   },
-  background (background) {
-    this.active.background = background
-  },
   onClick (onClick) {
     this.active.onClick = onClick
-  },
-  text (display) {
-    this.active.text.display = display
   },
   round (round) {
     this.active.round = round
   },
-  shadow (shadow = true) {
-    this.active.shadow = shadow
-  },
-  src (image) {
-    this.active.image = this.canvas.image(image, () => {
-      this.render()
-    })
-  },
-  textColor (textColor) {
-    this.active.text.color = textColor
-  },
-  textAlign (align) {
-    this.active.text.align = align
-  },
-  input (input = 'text') {
-    const view = this.active
-    view.input = input
-    view.overflow = false
-    view.onClick = () => {
-      view.textbox = this.textbox
-      this.textbox.view = view
-      this.textbox.value = view.text.display
-      this.textbox.type = input
-      this.render()
-    }
-  },
-  animate (from, to, ms, cb) {
-    const view = this.active
+  animateObject(object, from, to, ms, cb) {
     const start = Date.now()
     const handler = (now = Date.now()) => {
       const percent = Math.min((now - start) / ms, 1)
       const weight = percent
       Object.keys(from).forEach(key => {
-        view[key] = from[key] + (to[key] - from[key]) * weight
+        object[key] = from[key] + (to[key] - from[key]) * weight
       })
       if (percent === 1) {
         clearInterval(interval)
@@ -450,6 +408,9 @@ Screen.prototype = {
     }
     handler(start)
     const interval = setInterval(handler, 1000 / 60)
+  },
+  animate (from, to, ms, cb) {
+    this.animateObject(this.active, from, to, ms, cb)
   },
   start (view, state) {
     this.firstRender = true
@@ -486,9 +447,6 @@ Screen.prototype = {
       console.log('TODO')
     }
   },
-  separator () {
-    this.active.separator = true
-  },
   linear (spacing = 0, direction = 'vertical') {
     this.active.managers.unshift(view => {
       const weight = view.children.reduce((weight, child) => weight + (child.weight || 0), 0)
@@ -521,38 +479,34 @@ Screen.prototype = {
     this.active.weight = weight
   },
   render () {
-    this.textbox.style.display = 'none'
-    this.canvas.clear()
+    this.plugins.forEach(plugin => plugin(this))
     this.children.forEach(child => {
       this.layoutView(child)
       this.renderView(child)
     })
-
-    const view = this.children[0].children[0]
-    if(this.highlighted) {
-      this.highlight(
+    if(this.highlighted.view) {
+      this.highlightArea(
         'rgba(0,0,0,.7)',
         0, 0, this.canvas.getWidth(), this.canvas.getHeight(),
         this.highlighted.x, this.highlighted.y, this.highlighted.width, this.highlighted.height
       )
-    } else if(view.isInBounds) {
-      this.active = this.highlighted = {}
-      const from = {
-        x : 0,
-        y : 0,
-        width : this.canvas.getWidth(),
-        height : this.canvas.getHeight()
-      }
-      const to = this.children[0].children[0].bounds
-      this.animate(from, to, 3000, () => {
-        const from = this.highlighted
-        const to = this.children[0].children[1].bounds
-        this.active = this.highlighted = {}
-        this.animate(from, to, 3000);
-      })
     }
   },
-  highlight (
+  highlight() {
+    this.highlightView(this.active, "HELLO WORLD")
+  },
+  highlightView(view, message) {
+    return;
+    this.highlighed.views.push({ view, message })
+
+    this.highlighted.view = view
+    this.highlighted.message = message
+    const from = this.highlighted
+    const to = (view || this).bounds
+    console.log(this.highlighted, from, to)
+    this.highlighted.animation = this.animateObject(this.highlighted, from, to, 3000)
+  },
+  highlightArea (
     color,
     x1, y1, w1, h1,
     x2, y2, w2, h2
@@ -625,7 +579,7 @@ Screen.prototype = {
   },
   layoutView (view) {
     const bounds = view.hidden ? { x: 0, y: 0, width: 0, height: 0 } : view.managers.reduce((bounds, manager) => {
-      const wrapper = manager(view, this.canvas)
+      const wrapper = manager(view, this)
       const current = typeof wrapper === 'function' ? wrapper() : wrapper
       return {
         x: Math.round((current.x || 0) + bounds.x),
@@ -657,118 +611,9 @@ Screen.prototype = {
   renderView (view) {
     if (view.isInBounds) {
       this.canvas.save()
-      this.canvas.alpha(this.canvas.alpha() * view.alpha)
-
-      const margin = view.margin || EMPTY_ARRAY
-      const padding = view.padding || EMPTY_ARRAY
-      const x = view.bounds.x
-      const y = view.bounds.y
-
-      const wpm = view.bounds.width
-      const hpm = view.bounds.height
-
-      const wp = wpm - getLeftRight(margin)
-      const hp = hpm - getTopBottom(margin)
-
-      const w = wp - getLeftRight(padding)
-      const h = hp - getTopBottom(padding)
-
-      if (view.shadow) {
-        const shadow = 2
-        this.canvas.shadowColor = 'rgba(0, 0, 0, .7)'
-        this.canvas.shadowBlur = shadow
-        this.canvas.shadowOffsetX = shadow
-        this.canvas.shadowOffsetY = shadow
-      }
-      view.render(
-        this.canvas,
-        x + margin[LEFT],
-        y + margin[TOP],
-        wp,
-        hp,
-        getValue(view, 'round'),
-        view.background || 'transparent'
-      )
-      this.canvas.shadowColor = 'transparent'
-      this.canvas.shadowBlur = 0
-      this.canvas.shadowOffsetX = 0
-      this.canvas.shadowOffsetY = 0
-      // DEBUG HERE
-      if (isDebug) {
-        // padding
-        if (view.padding) {
-          this.highlight(
-            'rgba(0, 255, 0, .7)',
-            x + margin[LEFT], y + margin[TOP], wp, hp,
-            x + margin[LEFT] + padding[LEFT], y + margin[TOP] + padding[TOP], w, h
-          )
-        }
-        // margin
-        if (view.margin) {
-          this.highlight(
-            'rgba(0, 0, 255, .7)',
-            x, y, wpm, hpm,
-            x + margin[LEFT], y + margin[TOP], wp, hp
-          )
-        }
-        // outline
-        this.canvas.strokeStyle('rgba(0, 0, 0, .7)')
-        this.canvas.setLineDash([2, 4])
-        this.canvas.strokeRect(x, y, wpm, hpm)
-        this.canvas.setLineDash([])
-      }
-      if (view.image && view.image.complete) {
-        this.canvas.drawImage(view.image, x + padding[LEFT] + margin[LEFT], y + padding[TOP] + margin[TOP], w, h)
-      }
-      // STOP DEBUG
-      if (!view.overflow) {
-        this.canvas.clip()
-      }
-      if (view.textbox) {
-        view.textbox.style.display = 'block'
-        view.textbox.style.left = `${view.bounds.x}px`
-        view.textbox.style.top = `${view.bounds.y}px`
-        view.textbox.style.width = `${view.bounds.width}px`
-        view.textbox.style.height = `${view.bounds.height}px`
-        if (this.textbox !== document.activeElement) {
-          this.textbox.focus()
-        }
-      }
-      if (view.text.display) {
-        const offset = view.textbox ? view.textbox.scrollLeft : 0
-        this.canvas.fillStyle(view.text.color)
-        this.canvas.font(view.text.size, 'sans-serif')
-        this.canvas.textBaseline('top')
-        this.canvas.textAlign(view.text.align)
-        const lines = view.text.display.split('\n')
-        lines.forEach((line, index) => {
-          let offsetX = padding[LEFT] + margin[LEFT]
-          switch (view.text.align) {
-            case 'right' : offsetX = w - padding[RIGHT] - margin[RIGHT]; break
-            case 'center' : offsetX = wpm / 2; break
-          }
-          this.canvas.fillText(
-            view.input === 'password' ? line.split('').map(it => '\u2022').join('') : line,
-            x + offsetX - offset,
-            y + index * (view.text.size + LINE_SPACING) + padding[TOP]
-          )
-        })
-      }
+      this.plugins.forEach(plugin => plugin(view))
       view.children.forEach((child, index) => {
         this.renderView(child)
-        if (index > 0 && view.separator) {
-          this.canvas.beginPath()
-          this.canvas.moveTo(
-            child.bounds.x,
-            child.bounds.y
-          )
-          this.canvas.lineTo(
-            child.bounds.x + child.bounds.width,
-            child.bounds.y
-          )
-          this.canvas.strokeStyle('rgba(0, 0, 0, .7)')
-          this.canvas.stroke()
-        }
       })
       this.canvas.restore()
     }
