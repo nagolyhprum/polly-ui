@@ -1,4 +1,12 @@
+import Screen from "rave/screen"
 export default function (screen) {
+  screen.reposition = function(view) {
+    const position = Screen.prototype.reposition.call(this, view)
+    return {
+      x : position.x + (view.parent.scrollX || 0),
+      y : position.y + (view.parent.scrollY || 0)
+    }
+  }
   screen.scrollable = function () {
     const active = this.active
     active.scrollX = 0

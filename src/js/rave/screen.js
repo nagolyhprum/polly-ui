@@ -61,16 +61,6 @@ function roundRect (canvas, x, y, width, height, radius, fill, stroke) {
 
 const getName = view => view.text.display || view.image || `(${view.children.map(getName)})`
 
-const reposition = view => {
-  const padding = view.parent.padding instanceof Array ? view.parent.padding : EMPTY_ARRAY
-  const margin = view.parent.margin instanceof Array ? view.parent.margin : EMPTY_ARRAY
-  return {
-    // TODO figure out how to remove scroll x, scroll y from here
-    x: view.parent.bounds.x + padding[LEFT] + margin[LEFT] + view.x + (view.parent.scrollX || 0),
-    y: view.parent.bounds.y + padding[TOP] + margin[TOP] + view.y + (view.parent.scrollY || 0)
-  }
-}
-
 function Screen (canvas, ...plugins) {
   this.canvas = canvas
   this.plugins = plugins.map(plugin => plugin(this)).filter(_ => _)
@@ -105,6 +95,14 @@ function Screen (canvas, ...plugins) {
 }
 
 Screen.prototype = {
+  reposition(view) {
+    const padding = view.parent.padding instanceof Array ? view.parent.padding : EMPTY_ARRAY
+    const margin = view.parent.margin instanceof Array ? view.parent.margin : EMPTY_ARRAY
+    return {
+      x: view.parent.bounds.x + padding[LEFT] + margin[LEFT] + view.x,
+      y: view.parent.bounds.y + padding[TOP] + margin[TOP] + view.y
+    }
+  },
   getValue (view, dim) {
     if (typeof view[dim] === 'function') {
       return view[dim](view, dim) || 0
@@ -192,14 +190,10 @@ Screen.prototype = {
     const parent = this.active
     const child = {
       render: roundRect,
-      // margin
-      // padding
-      // background
-      // onClick
       managers: [
         typeof width === 'function' ? width('width') : () => ({ width }),
         typeof height === 'function' ? height('height') : () => ({ height }),
-        reposition
+        this.reposition
       ],
       parent,
       x: 0,
