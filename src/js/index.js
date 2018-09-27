@@ -15,6 +15,7 @@ import text from 'plugins/text'
 import scrollable from 'plugins/scrollable'
 import mouse from 'plugins/mouse'
 import scale from 'plugins/scale'
+import components from 'plugins/components'
 
 const screen = new Screen(
   new Canvas(document.getElementsByTagName('canvas')[0]),
@@ -29,6 +30,7 @@ const screen = new Screen(
   text,
   layout(true),
   // not drawn
+  components,
   scrollable,
   mouse
 )

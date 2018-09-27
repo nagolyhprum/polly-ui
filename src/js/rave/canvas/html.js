@@ -5,7 +5,7 @@ export default class Canvas {
     this.context = canvas.getContext('2d')
     this.images = {}
   }
-  scale(scale) {
+  scale (scale) {
     this.context.scale(scale, scale)
   }
   shadow (shadow) {

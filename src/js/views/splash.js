@@ -30,9 +30,9 @@ export default function (state) {
     position(0.5, 0.25)
     src(drawable.logos.lexicon_white)
     animate({
-      scale : 1
+      scale: 1
     }, {
-      scale : 10
+      scale: 10
     }, 10000)
   })
   container(WRAP, WRAP, () => {
