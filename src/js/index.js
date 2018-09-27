@@ -1,4 +1,5 @@
 import './prototype'
-import Splash from './views/splash'
-import Screen from './rave/screen'
-new Screen(document.getElementsByTagName('canvas')[0]).start(Splash)
+import Screen from 'rave/screen'
+import Canvas from 'rave/canvas/html'
+import Splash from 'views/splash'
+new Screen(new Canvas(document.getElementsByTagName('canvas')[0])).start(Splash)

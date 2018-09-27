@@ -28,31 +28,31 @@ const DIMENSIONS = {
 }
 const LINE_SPACING = 8
 
-function roundRect (context, x, y, width, height, radius, fill, stroke) {
+function roundRect (canvas, x, y, width, height, radius, fill, stroke) {
   radius = { tl: radius, tr: radius, br: radius, bl: radius }
-  context.beginPath()
-  context.moveTo(x + radius.tl, y)
-  context.lineTo(x + width - radius.tr, y)
-  context.quadraticCurveTo(x + width, y, x + width, y + radius.tr)
-  context.lineTo(x + width, y + height - radius.br)
-  context.quadraticCurveTo(
+  canvas.beginPath()
+  canvas.moveTo(x + radius.tl, y)
+  canvas.lineTo(x + width - radius.tr, y)
+  canvas.quadraticCurveTo(x + width, y, x + width, y + radius.tr)
+  canvas.lineTo(x + width, y + height - radius.br)
+  canvas.quadraticCurveTo(
     x + width,
     y + height,
     x + width - radius.br,
     y + height
   )
-  context.lineTo(x + radius.bl, y + height)
-  context.quadraticCurveTo(x, y + height, x, y + height - radius.bl)
-  context.lineTo(x, y + radius.tl)
-  context.quadraticCurveTo(x, y, x + radius.tl, y)
-  context.closePath()
+  canvas.lineTo(x + radius.bl, y + height)
+  canvas.quadraticCurveTo(x, y + height, x, y + height - radius.bl)
+  canvas.lineTo(x, y + radius.tl)
+  canvas.quadraticCurveTo(x, y, x + radius.tl, y)
+  canvas.closePath()
   if (fill) {
-    context.fillStyle = fill
-    context.fill()
+    canvas.fillStyle(fill)
+    canvas.fill()
   }
   if (stroke) {
-    context.strokeStyle = stroke
-    context.stroke()
+    canvas.strokeStyle(stroke)
+    canvas.stroke()
   }
 }
 
@@ -108,30 +108,26 @@ function Screen (canvas) {
   this.bounds = {
     x: 0,
     y: 0,
-    width: canvas.width,
-    height: canvas.height
+    width: canvas.getWidth(),
+    height: canvas.getHeight()
   }
   this.intersection = {
     left: 0,
     top: 0,
-    right: canvas.width,
-    bottom: canvas.height,
+    right: this.bounds.width,
+    bottom: this.bounds.height,
     x: 0,
     y: 0,
-    width: canvas.width,
-    height: canvas.height
+    width: this.bounds.width,
+    height: this.bounds.height
   }
-  this.context = canvas.getContext('2d')
   this.bind()
 
-  const getMouse = (e, name) => {
-    const bounds = canvas.getBoundingClientRect()
-    return {
-      x: e.pageX - bounds.left,
-      y: e.pageY - bounds.top,
-      name
-    }
-  }
+  const getMouse = (e, name) => ({
+    x: e.x,
+    y: e.y,
+    name
+  })
 
   this.last = []
   const call = (e, name) => {
@@ -158,33 +154,33 @@ function Screen (canvas) {
   }
 
   let moved
-  canvas.onmousedown = e => {
+  canvas.onMouseDown(e => {
     moved = 0
     call(e, 'onMouseDown')
-  }
+  })
 
-  canvas.onmouseout = e => {
+  canvas.onMouseOut(e => {
     const mouse = getMouse(e, 'onMouseOut')
     this.last.forEach(view => {
       view.onMouseOut && view.onMouseOut(mouse)
     })
     this.last = []
-  }
+  })
 
-  canvas.onmousemove = e => {
+  canvas.onMouseMove(e => {
     moved++
     call(e, 'onMouseMove')
-  }
+  })
 
-  canvas.onmouseup = e => {
+  canvas.onMouseUp(e => {
     call(e, 'onMouseUp')
-  }
+  })
 
-  canvas.onclick = e => {
+  canvas.onClick(e => {
     if (moved < 5) {
       call(e, 'onClick')
     }
-  }
+  })
 }
 
 Screen.prototype = {
@@ -198,14 +194,14 @@ Screen.prototype = {
       } = child.bounds
       const margin = child.margin || EMPTY_ARRAY
       child.render(
-        this.context,
+        this.canvas,
         x + margin[3],
         y + margin[0],
         width - getLeftRight(margin),
         height - getTopBottom(margin),
         getValue(child, 'round')
       )
-      if (child.isInBounds && this.context.isPointInPath(mouse.x, mouse.y)) {
+      if (child.isInBounds && this.canvas.isPointInPath(mouse.x, mouse.y)) {
         return mouseOver.concat([child]).concat(this.mouseOver(mouse, child))
       }
       return mouseOver
@@ -235,9 +231,7 @@ Screen.prototype = {
     }
   },
   WRAP: (function () {
-    const canvas = document.createElement('canvas')
-    const context = canvas.getContext('2d')
-    return dim => view => {
+    return dim => (view, canvas) => {
       const spaceAround = {
         width: getLeftRight(view.padding) + getLeftRight(view.margin),
         height: getTopBottom(view.padding) + getTopBottom(view.margin)
@@ -264,9 +258,9 @@ Screen.prototype = {
         }
       } else if (view.text.display || view.input) {
         if (dim === 'width') {
-          context.font = `${view.text.size}px sans-serif`
+          canvas.font(view.text.size, 'sans-serif')
           return {
-            width: Math.max(...view.text.display.split('\n').map(display => context.measureText(display).width)) + spaceAround
+            width: Math.max(...view.text.display.split('\n').map(display => canvas.measureText(display))) + spaceAround
           }
         } else if (dim === 'height') {
           const count = view.text.display.split('\n').length
@@ -521,12 +515,12 @@ Screen.prototype = {
   },
   render () {
     this.textbox.style.display = 'none'
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
+    this.canvas.clear()
     this.children.forEach(child => {
       this.layoutView(child)
       this.renderView(child)
     })
-    const ctx = this.context
+    const ctx = this.canvas
     const cvs = this.canvas
     ctx.beginPath()
 
@@ -541,7 +535,7 @@ Screen.prototype = {
     ctx.lineTo(3 * cvs.width / 4, 3 * cvs.height / 4)
     ctx.lineTo(cvs.width / 4, 3 * cvs.height / 4)
     ctx.lineTo(cvs.width / 4, cvs.height / 4)
-    ctx.fillStyle = 'rgba(0,0,0,.7)'
+    ctx.fillStyle('rgba(0,0,0,.7)')
     ctx.fill()
   },
   scrollable () {
@@ -606,8 +600,8 @@ Screen.prototype = {
   },
   layoutView (view) {
     const bounds = view.hidden ? { x: 0, y: 0, width: 0, height: 0 } : view.managers.reduce((bounds, manager) => {
-      const wrapper = manager(view)
-      const current = typeof wrapper === 'function' ? wrapper(view) : wrapper
+      const wrapper = manager(view, this.canvas)
+      const current = typeof wrapper === 'function' ? wrapper() : wrapper
       return {
         x: Math.round((current.x || 0) + bounds.x),
         y: Math.round((current.y || 0) + bounds.y),
@@ -637,8 +631,8 @@ Screen.prototype = {
   },
   renderView (view) {
     if (view.isInBounds) {
-      this.context.save()
-      this.context.globalAlpha = this.context.globalAlpha * view.alpha
+      this.canvas.save()
+      this.canvas.alpha(this.canvas.alpha() * view.alpha)
       const x = view.bounds.x
       const y = view.bounds.y
       const width = view.bounds.width
@@ -650,13 +644,13 @@ Screen.prototype = {
 
       if (view.shadow) {
         const shadow = 2
-        this.context.shadowColor = 'rgba(0, 0, 0, .7)'
-        this.context.shadowBlur = shadow
-        this.context.shadowOffsetX = shadow
-        this.context.shadowOffsetY = shadow
+        this.canvas.shadowColor = 'rgba(0, 0, 0, .7)'
+        this.canvas.shadowBlur = shadow
+        this.canvas.shadowOffsetX = shadow
+        this.canvas.shadowOffsetY = shadow
       }
       view.render(
-        this.context,
+        this.canvas,
         x + margin[3],
         y + margin[0],
         mw,
@@ -664,50 +658,50 @@ Screen.prototype = {
         getValue(view, 'round'),
         view.background || 'transparent'
       )
-      this.context.shadowColor = 'transparent'
-      this.context.shadowBlur = 0
-      this.context.shadowOffsetX = 0
-      this.context.shadowOffsetY = 0
+      this.canvas.shadowColor = 'transparent'
+      this.canvas.shadowBlur = 0
+      this.canvas.shadowOffsetX = 0
+      this.canvas.shadowOffsetY = 0
       // DEBUG HERE
       if (isDebug) {
-        this.context.translate(x, y)
+        this.canvas.translate(x, y)
         // padding
         if (padding) {
-          this.context.fillStyle = 'rgba(0, 255, 0, .7)'
+          this.canvas.fillStyle('rgba(0, 255, 0, .7)')
           // top
-          this.context.fillRect(margin[3], margin[0], width - (margin[3] + margin[1]), padding[0])
+          this.canvas.fillRect(margin[3], margin[0], width - (margin[3] + margin[1]), padding[0])
           // left
-          this.context.fillRect(margin[3], margin[0] + padding[0], padding[3], height - (margin[0] + margin[2] + padding[0]))
+          this.canvas.fillRect(margin[3], margin[0] + padding[0], padding[3], height - (margin[0] + margin[2] + padding[0]))
           // right
-          this.context.fillRect(width - margin[1] - padding[1], margin[0] + padding[0], padding[1], height - (margin[0] + margin[2] + padding[0]))
+          this.canvas.fillRect(width - margin[1] - padding[1], margin[0] + padding[0], padding[1], height - (margin[0] + margin[2] + padding[0]))
           // bottom
-          this.context.fillRect(margin[3] + padding[3], height - margin[2] - padding[2], width - (margin[3] + padding[3] + margin[1] + padding[1]), padding[2])
+          this.canvas.fillRect(margin[3] + padding[3], height - margin[2] - padding[2], width - (margin[3] + padding[3] + margin[1] + padding[1]), padding[2])
         }
         // margin
         if (margin) {
-          this.context.fillStyle = 'rgba(0, 0, 255, .7)'
+          this.canvas.fillStyle('rgba(0, 0, 255, .7)')
           // top
-          this.context.fillRect(0, 0, width, margin[0])
+          this.canvas.fillRect(0, 0, width, margin[0])
           // left
-          this.context.fillRect(0, margin[0], margin[3], height - margin[0])
+          this.canvas.fillRect(0, margin[0], margin[3], height - margin[0])
           // right
-          this.context.fillRect(width - margin[1], margin[0], margin[1], height - margin[0])
+          this.canvas.fillRect(width - margin[1], margin[0], margin[1], height - margin[0])
           // bottom
-          this.context.fillRect(margin[3], height - margin[2], width - margin[1] - margin[3], margin[2])
+          this.canvas.fillRect(margin[3], height - margin[2], width - margin[1] - margin[3], margin[2])
         }
         // outline
-        this.context.strokeStyle = 'rgba(0, 0, 0, .7)'
-        this.context.setLineDash([2, 4])
-        this.context.strokeRect(0, 0, width, height)
-        this.context.setLineDash([])
-        this.context.translate(-x, -y)
+        this.canvas.strokeStyle('rgba(0, 0, 0, .7)')
+        this.canvas.setLineDash([2, 4])
+        this.canvas.strokeRect(0, 0, width, height)
+        this.canvas.setLineDash([])
+        this.canvas.translate(-x, -y)
       }
       if (view.image && view.image.complete) {
-        this.context.drawImage(view.image, x + padding[3], y + padding[0], mw - getLeftRight(padding), mh - getTopBottom(padding))
+        this.canvas.drawImage(view.image, x + padding[3], y + padding[0], mw - getLeftRight(padding), mh - getTopBottom(padding))
       }
       // STOP DEBUG
       if (!view.overflow) {
-        this.context.clip()
+        this.canvas.clip()
       }
       if (view.textbox) {
         view.textbox.style.display = 'block'
@@ -721,20 +715,20 @@ Screen.prototype = {
       }
       if (view.text.display) {
         const offset = view.textbox ? view.textbox.scrollLeft : 0
-        this.context.fillStyle = view.text.color
-        this.context.font = `${view.text.size}px sans-serif`
-        this.context.textBaseline = 'top'
-        this.context.textAlign = view.text.align
+        this.canvas.fillStyle(view.text.color)
+        this.canvas.font(view.text.size, 'sans-serif')
+        this.canvas.textBaseline('top')
+        this.canvas.textAlign(view.text.align)
         const lines = view.text.display.split('\n')
         lines.forEach((line, index) => {
           let offsetX = 0
-          switch (this.context.textAlign) {
+          switch (view.text.align) {
             case 'right' : offsetX = width - getLeftRight(padding); break
             case 'center' : offsetX = mw / 2 - padding[3]; break
           }
           // \u25CF
           // \u2022
-          this.context.fillText(
+          this.canvas.fillText(
             view.input === 'password' ? line.split('').map(it => '\u2022').join('') : line,
             x + offsetX + padding[3] - offset,
             y + index * (view.text.size + LINE_SPACING) + padding[0]
@@ -744,21 +738,21 @@ Screen.prototype = {
       view.children.forEach((child, index) => {
         this.renderView(child)
         if (index > 0 && view.separator) {
-          this.context.beginPath()
-          this.context.moveTo(
+          this.canvas.beginPath()
+          this.canvas.moveTo(
             child.bounds.x,
             child.bounds.y
           )
-          this.context.lineTo(
+          this.canvas.lineTo(
             child.bounds.x + child.bounds.width,
             child.bounds.y
           )
-          this.context.strokeStyle = 'rgba(0, 0, 0, .7)'
-          this.context.stroke()
+          this.canvas.strokeStyle('rgba(0, 0, 0, .7)')
+          this.canvas.stroke()
         }
       })
-      this.context.globalAlpha = this.context.globalAlpha / view.alpha
-      this.context.restore()
+      this.canvas.alpha(this.canvas.alpha() / view.alpha)
+      this.canvas.restore()
     }
   },
   button (color) {

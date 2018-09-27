@@ -1,6 +1,6 @@
 import drawable from 'drawable'
 import font from 'font'
-import GoalPicker from './goalpicker'
+import GoalPicker from 'views/goalpicker'
 
 const LANGUAGES = Array.from({ length: 32 }).map((_, i) => ({
   flag: drawable.languages.english,
