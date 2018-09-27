@@ -2,6 +2,7 @@ export default class Canvas {
   constructor (canvas) {
     this.canvas = canvas
     this.context = canvas.getContext('2d')
+    this.images = {}
   }
   alpha (alpha) {
     if (arguments.length === 1) {
@@ -74,10 +75,16 @@ export default class Canvas {
   restore () {
     this.context.restore()
   }
-  getWidth () {
+  getWidth (image) {
+    if (image) {
+      return image.width
+    }
     return this.canvas.width
   }
-  getHeight () {
+  getHeight (image) {
+    if (image) {
+      return image.height
+    }
     return this.canvas.height
   }
   beginPath () {
@@ -101,6 +108,9 @@ export default class Canvas {
   fill () {
     this.context.fill(...arguments)
   }
+  drawImage () {
+    this.context.drawImage(...arguments)
+  }
   strokeStyle (strokeStyle) {
     this.context.strokeStyle = strokeStyle
   }
@@ -115,5 +125,15 @@ export default class Canvas {
   }
   measureText (text) {
     return this.context.measureText(text).width
+  }
+  image (src, cb) {
+    if (!this.images[src]) {
+      const image = this.images[src] = new Image()
+      image.onload = () => {
+        cb(image)
+      }
+      image.src = src
+    }
+    return this.images[src]
   }
 }

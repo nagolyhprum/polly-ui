@@ -7,6 +7,9 @@
     "parcel": "parcel",
     "standard": "standard 'src/js/**/*.js'"
   },
+  "standard": {
+    "globals": ["Image"]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://bitbucket.org/nagolyhprum/rave.git"

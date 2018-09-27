@@ -238,8 +238,8 @@ Screen.prototype = {
       }[dim]
       if (view.image) {
         const imageBounds = {
-          width: view.image.width || view.image.naturalWidth,
-          height: view.image.height || view.image.naturalHeight
+          width: canvas.getWidth(view.image),
+          height: canvas.getHeight(view.image)
         }
         const other = OPPOSITE_DIMENSIONS[dim]
         const opposite = Math.max(0, view.bounds[other] - spaceAround) / imageBounds[other] * imageBounds[dim]
@@ -406,7 +406,9 @@ Screen.prototype = {
     this.active.shadow = shadow
   },
   src (image) {
-    this.active.image = image
+    this.active.image = this.canvas.image(image, () => {
+      this.render()
+    })
   },
   textColor (textColor) {
     this.active.text.color = textColor
@@ -726,8 +728,6 @@ Screen.prototype = {
             case 'right' : offsetX = width - getLeftRight(padding); break
             case 'center' : offsetX = mw / 2 - padding[3]; break
           }
-          // \u25CF
-          // \u2022
           this.canvas.fillText(
             view.input === 'password' ? line.split('').map(it => '\u2022').join('') : line,
             x + offsetX + padding[3] - offset,
@@ -751,7 +751,6 @@ Screen.prototype = {
           this.canvas.stroke()
         }
       })
-      this.canvas.alpha(this.canvas.alpha() / view.alpha)
       this.canvas.restore()
     }
   },
