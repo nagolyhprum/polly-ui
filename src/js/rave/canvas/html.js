@@ -5,6 +5,9 @@ export default class Canvas {
     this.context = canvas.getContext('2d')
     this.images = {}
   }
+  scale(scale) {
+    this.context.scale(scale, scale)
+  }
   shadow (shadow) {
     if (shadow) {
       this.context.shadowColor = 'rgba(0, 0, 0, .7)'

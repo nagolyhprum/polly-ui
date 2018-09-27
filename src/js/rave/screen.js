@@ -316,10 +316,12 @@ Screen.prototype = {
       if (this.children.length > 1) {
         this.animate({
           alpha: 0.25,
-          x: this.bounds.width
+          x: this.bounds.width,
+          scale: 0.25
         }, {
           alpha: 1,
-          x: 0
+          x: 0,
+          scale: 1
         }, 300)
       }
     })
@@ -332,10 +334,12 @@ Screen.prototype = {
       this.active = this.children[this.children.length - 1]
       this.animate({
         alpha: 1,
-        x: 0
+        x: 0,
+        scale: 1
       }, {
         alpha: 0.25,
-        x: this.bounds.width
+        x: this.bounds.width,
+        scale: 0.25
       }, 300, () => {
         this.children.pop()
       })
