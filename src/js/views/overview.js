@@ -43,6 +43,7 @@ const MENU = [MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, 
 
 export default function (state) {
   const {
+    fab,
     margin,
     background,
     padding,
@@ -230,10 +231,7 @@ export default function (state) {
     })
   })
   container(64, 64, () => {
-    // fab()
-    padding(8, 8, 8, 8)
-    src(drawable.icons.add_white)
-    background('gold')
+    fab()
     margin(0, 16, 16, 0)
     position(1, 1)
     anchor(1, 1)

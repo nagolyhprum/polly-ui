@@ -1,9 +1,16 @@
 import Observable from 'rave/observable'
 import font from 'font'
+import drawable from 'drawable'
 
 const slightRound = 4
 
 export default function (screen) {
+  screen.fab = function (icon = drawable.icons.add_white, color = 'gold') {
+    this.padding(8)
+    this.src(icon)
+    this.background(color)
+    this.circle()
+  }
   screen.button = function (color) {
     this.textAlign('center')
     this.padding(16)

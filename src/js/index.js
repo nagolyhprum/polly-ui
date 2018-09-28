@@ -17,12 +17,16 @@ import mouse from 'plugins/mouse'
 import components from 'plugins/components'
 import linear from 'plugins/linear'
 import highlight from 'plugins/highlight'
+import round from 'plugins/round'
+import circle from 'plugins/circle'
 
 const screen = new Screen(
   new Canvas(document.getElementsByTagName('canvas')[0]),
   alpha,
   shadow,
   background,
+  round,
+  circle,
   image,
   overflow,
   separator,

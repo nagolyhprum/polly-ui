@@ -5,6 +5,12 @@ export default class Canvas {
     this.context = canvas.getContext('2d')
     this.images = {}
   }
+  arc () {
+    this.context.arc(...arguments)
+  }
+  rect () {
+    this.context.rect(...arguments)
+  }
   scale (scale) {
     this.context.scale(scale, scale)
   }
