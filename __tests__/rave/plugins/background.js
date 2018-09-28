@@ -2,10 +2,6 @@ import background from "rave/plugins/background"
 import Screen from "rave/screen"
 
 describe("background", () => {
-  it("prevents screen", () => {
-    const screen = {}
-    expect(background(screen)(screen)).toEqual(false)
-  })
   it("sets the background", () => {
     const bg = "red"
     const view = {}
@@ -16,7 +12,11 @@ describe("background", () => {
     screen.background(bg)
     expect(view).toEqual({ background : bg })
   })
-  it("draws the view with margin", () => {
+  it("prevents screen", () => {
+    const screen = {}
+    expect(background(screen)(screen)).toEqual(false)
+  })
+  it("draws the view with margin", done => {
     const canvas = {
       getWidth : () => 0,
       getHeight : () => 0
@@ -39,11 +39,12 @@ describe("background", () => {
         expect(height).toEqual(35)
         expect(round).toEqual(0)
         expect(background).toEqual("red")
+        done()
       }
     }
     background(screen)(view)
   })
-  it("draws the view without margin", () => {
+  it("draws the view without margin", done => {
     const canvas = {
       getWidth : () => 0,
       getHeight : () => 0
@@ -65,6 +66,7 @@ describe("background", () => {
         expect(height).toEqual(50)
         expect(round).toEqual(3)
         expect(background).toEqual("transparent")
+        done()
       }
     }
     background(screen)(view)

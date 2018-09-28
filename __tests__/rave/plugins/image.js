@@ -25,7 +25,7 @@ describe("image", () => {
     const view = {}
     expect(image(screen)(view)).toEqual(false)
   })
-  it("draws with margin and padding", () => {
+  it("draws with margin and padding", done => {
     const canvas = {
       getWidth : () => 0,
       getHeight : () => 0,
@@ -35,6 +35,7 @@ describe("image", () => {
         expect(y).toEqual(40)
         expect(w).toEqual(-90)
         expect(h).toEqual(-40)
+        done()
       },
     }
     const screen = new Screen(canvas)
@@ -53,7 +54,7 @@ describe("image", () => {
     }
     image(screen)(view)
   })
-  it("draws without margin or padding", () => {
+  it("draws without margin or padding", done => {
     const canvas = {
       getWidth : () => 0,
       getHeight : () => 0,
@@ -63,6 +64,7 @@ describe("image", () => {
         expect(y).toEqual(20)
         expect(w).toEqual(30)
         expect(h).toEqual(40)
+        done()
       },
     }
     const screen = new Screen(canvas)
