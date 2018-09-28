@@ -1,4 +1,4 @@
-import Screen, { TOP, LEFT, EMPTY_ARRAY } from 'rave/screen'
+import { TOP, LEFT, EMPTY_ARRAY } from 'rave/screen'
 
 function roundRect (canvas, x, y, width, height, radius, fill, stroke) {
   radius = { tl: radius, tr: radius, br: radius, bl: radius }
@@ -45,19 +45,16 @@ export default function (screen) {
       (isRender && this.background) || 'transparent'
     )
   }
-  screen.view = function (parent, width, height) {
-    const view = Screen.prototype.view.call(screen, parent, width, height)
-    view.render = renderRoundRect
-    return view
-  }
+  screen.plugins.view.push(view => Object.assign(view, {
+    render: renderRoundRect
+  }))
   screen.background = function (background) {
     this.active.background = background
   }
   screen.round = function (round) {
     this.active.round = round
   }
-  return function (view) {
-    if (view === screen) return false
+  screen.plugins.render.push(function (view) {
     view.render(true)
-  }
+  })
 }

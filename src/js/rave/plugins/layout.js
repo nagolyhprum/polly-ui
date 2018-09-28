@@ -1,7 +1,7 @@
 import { LEFT, TOP, EMPTY_ARRAY } from 'rave/screen'
 
 export default isDebug => function (screen) {
-  return function (view) {
+  screen.plugins.render.push(function (view) {
     if (isDebug) {
       const x = view.bounds.x
       const y = view.bounds.y
@@ -35,5 +35,5 @@ export default isDebug => function (screen) {
       screen.canvas.strokeRect(x, y, wpm, hpm)
       screen.canvas.setLineDash([])
     }
-  }
+  })
 }

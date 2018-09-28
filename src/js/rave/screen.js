@@ -34,7 +34,13 @@ const getName = view => view.text.display || view.image || `(${view.children.map
 function Screen (canvas, ...plugins) {
   this.isInBounds = true
   this.canvas = canvas
-  this.plugins = plugins.map(plugin => plugin(this)).filter(_ => _)
+  this.plugins = {
+    prerender: [],
+    render: [],
+    view: [],
+    reposition: []
+  }
+  plugins.map(plugin => plugin(this))
   this.children = []
   this.active = this
   this.bounds = {
@@ -60,10 +66,16 @@ Screen.prototype = {
   reposition (view) {
     const padding = view.parent.padding instanceof Array ? view.parent.padding : EMPTY_ARRAY
     const margin = view.parent.margin instanceof Array ? view.parent.margin : EMPTY_ARRAY
-    return {
+    return this.plugins.reposition.reduce((position, plugin) => {
+      const translate = plugin(view)
+      return {
+        x: position.x + translate.x,
+        y: position.y + translate.y
+      }
+    }, {
       x: view.parent.bounds.x + padding[LEFT] + margin[LEFT] + view.x,
       y: view.parent.bounds.y + padding[TOP] + margin[TOP] + view.y
-    }
+    })
   },
   getValue (view, dim) {
     if (typeof view[dim] === 'function') {
@@ -149,7 +161,7 @@ Screen.prototype = {
     }
   })(),
   view (parent, width, height) {
-    return {
+    return this.plugins.view.reduce((view, plugin) => plugin(view), {
       render: _ => _,
       managers: [
         typeof width === 'function' ? width('width') : () => ({ width }),
@@ -168,7 +180,7 @@ Screen.prototype = {
         height: 0
       },
       children: []
-    }
+    })
   },
   container (width, height, render) {
     const parent = this.active
@@ -304,7 +316,7 @@ Screen.prototype = {
     }
   },
   render () {
-    this.plugins.forEach(plugin => plugin(this))
+    this.plugins.prerender.forEach(plugin => plugin(this))
     this.children.slice(this.children.length - 2).forEach(child => {
       this.layoutView(child)
       this.renderView(child)
@@ -368,7 +380,7 @@ Screen.prototype = {
   renderView (view) {
     if (view.isInBounds) {
       this.canvas.save()
-      this.plugins.forEach(plugin => plugin(view))
+      this.plugins.render.forEach(plugin => plugin(view))
       view.children.forEach((child, index) => {
         this.renderView(child)
       })

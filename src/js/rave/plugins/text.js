@@ -28,7 +28,7 @@ export default function (screen) {
     init(this.active)
     this.active.text.align = align
   }
-  return function (view) {
+  screen.plugins.render.push(function (view) {
     if (view.text && view.text.display) {
       const margin = view.margin || EMPTY_ARRAY
       const padding = view.padding || EMPTY_ARRAY
@@ -60,5 +60,5 @@ export default function (screen) {
         )
       })
     }
-  }
+  })
 }

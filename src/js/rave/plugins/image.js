@@ -6,7 +6,7 @@ export default function (screen) {
       this.render()
     })
   }
-  return function (view) {
+  screen.plugins.render.push(function (view) {
     if (view.image && view.image.complete) {
       const margin = view.margin || EMPTY_ARRAY
       const padding = view.padding || EMPTY_ARRAY
@@ -15,8 +15,6 @@ export default function (screen) {
       const w = view.bounds.width - screen.getLeftRight(margin) - screen.getLeftRight(padding)
       const h = view.bounds.height - screen.getTopBottom(margin) - screen.getTopBottom(padding)
       screen.canvas.drawImage(view.image, x + padding[LEFT] + margin[LEFT], y + padding[TOP] + margin[TOP], w, h)
-      return true
     }
-    return false
-  }
+  })
 }

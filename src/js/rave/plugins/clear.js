@@ -1,7 +1,5 @@
 export default function (screen) {
-  return function (view) {
-    if (view === screen) {
-      screen.canvas.clear()
-    }
-  }
+  screen.plugins.prerender.push(function (view) {
+    screen.canvas.clear()
+  })
 }

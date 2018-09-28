@@ -12,10 +12,14 @@ describe("alpha", () => {
           }
           return 1
         }
+      },
+      plugins : {
+        render : []
       }
     }
     const view = {}
-    alpha(screen)(view)
+    alpha(screen)
+    screen.plugins.render[0](view)
   })
   it("uses the alpha", done => {
     const values = [undefined, .5]
@@ -28,10 +32,14 @@ describe("alpha", () => {
           }
           return 1
         }
+      },
+      plugins : {
+        render : []
       }
     }
     const view = { alpha : .5 }
-    alpha(screen)(view)
+    alpha(screen)
+    screen.plugins.render[0](view)
   })
   it("accumulates alpha", done => {
     const values = [undefined, .25]
@@ -44,9 +52,13 @@ describe("alpha", () => {
           }
           return .5
         }
+      },
+      plugins : {
+        render : []
       }
     }
     const view = { alpha : .5 }
-    alpha(screen)(view)
+    alpha(screen)
+    screen.plugins.render[0](view)
   })
 })

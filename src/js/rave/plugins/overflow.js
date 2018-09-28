@@ -1,7 +1,7 @@
 export default function (screen) {
-  return function (view) {
+  screen.plugins.render.push(function (view) {
     if (view.overflow === false) {
       screen.canvas.clip()
     }
-  }
+  })
 }

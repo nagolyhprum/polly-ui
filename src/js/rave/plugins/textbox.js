@@ -29,20 +29,19 @@ export default function (screen) {
       this.render()
     }
   }
-  return function (view) {
-    if (view === screen) {
-      screen.textbox.style.display = 'none'
-    } else {
-      if (view.textbox) {
-        view.textbox.style.display = 'block'
-        view.textbox.style.left = `${view.bounds.x}px`
-        view.textbox.style.top = `${view.bounds.y}px`
-        view.textbox.style.width = `${view.bounds.width}px`
-        view.textbox.style.height = `${view.bounds.height}px`
-        if (screen.textbox !== document.activeElement) {
-          screen.textbox.focus()
-        }
+  screen.plugins.prerender.push(function (view) {
+    screen.textbox.style.display = 'none'
+  })
+  screen.plugins.render.push(function (view) {
+    if (view.textbox) {
+      view.textbox.style.display = 'block'
+      view.textbox.style.left = `${view.bounds.x}px`
+      view.textbox.style.top = `${view.bounds.y}px`
+      view.textbox.style.width = `${view.bounds.width}px`
+      view.textbox.style.height = `${view.bounds.height}px`
+      if (screen.textbox !== document.activeElement) {
+        screen.textbox.focus()
       }
     }
-  }
+  })
 }

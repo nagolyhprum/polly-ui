@@ -6,15 +6,15 @@ describe("background", () => {
     const bg = "red"
     const view = {}
     const screen = {
-      active : view
+      active : view,
+      plugins : {
+        render : [],
+        view : []
+      }
     }
     background(screen)
     screen.background(bg)
     expect(view).toEqual({ background : bg })
-  })
-  it("prevents screen", () => {
-    const screen = {}
-    expect(background(screen)(screen)).toEqual(false)
   })
   it("draws the view with margin", done => {
     const canvas = {
@@ -28,6 +28,7 @@ describe("background", () => {
         done()
       }
     }
-    background(screen)(view)
+    background(screen)
+    screen.plugins.render[0](view)
   })
 })

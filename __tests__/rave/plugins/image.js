@@ -15,15 +15,13 @@ describe("image", () => {
       render : () => {
         expect(view.image).toEqual("cool")
         done()
+      },
+      plugins : {
+        render : []
       }
     }
     image(screen)
     screen.src("cool")
-  })
-  it("skips drawing", () => {
-    const screen = {}
-    const view = {}
-    expect(image(screen)(view)).toEqual(false)
   })
   it("draws with margin and padding", done => {
     const canvas = {
@@ -52,7 +50,18 @@ describe("image", () => {
         complete : true
       }
     }
-    image(screen)(view)
+    image(screen)
+    screen.plugins.render[0](view)
+  })
+  it("skips drawing", () => {
+    const screen = {
+      plugins : {
+        render : []
+      }
+    }
+    const view = {}
+    image(screen)
+    screen.plugins.render[0](view)
   })
   it("draws without margin or padding", done => {
     const canvas = {
@@ -79,6 +88,7 @@ describe("image", () => {
         complete : true
       }
     }
-    image(screen)(view)
+    image(screen)
+    screen.plugins.render[0](view)
   })
 })

@@ -2,8 +2,7 @@ export default function (screen) {
   screen.separator = function (separator = true) {
     this.active.separator = separator
   }
-  return function (view) {
-    if (view === screen) return
+  screen.plugins.render.push(function (view) {
     if (view.parent.separator) {
       const index = view.parent.children.indexOf(view)
       if (index) {
@@ -20,5 +19,5 @@ export default function (screen) {
         screen.canvas.stroke()
       }
     }
-  }
+  })
 }
