@@ -74,4 +74,12 @@ export default function (screen) {
   screen.onClick = function (onClick) {
     this.active.onClick = onClick
   }
+
+  screen.onMouseIn = function (onMouseIn) {
+    this.active.onMouseIn = onMouseIn
+  }
+
+  screen.onMouseOut = function (onMouseOut) {
+    this.active.onMouseOut = onMouseOut
+  }
 }
