@@ -29,34 +29,6 @@ const DIMENSIONS = {
 }
 export const LINE_SPACING = 8
 
-function roundRect (canvas, x, y, width, height, radius, fill, stroke) {
-  radius = { tl: radius, tr: radius, br: radius, bl: radius }
-  canvas.beginPath()
-  canvas.moveTo(x + radius.tl, y)
-  canvas.lineTo(x + width - radius.tr, y)
-  canvas.quadraticCurveTo(x + width, y, x + width, y + radius.tr)
-  canvas.lineTo(x + width, y + height - radius.br)
-  canvas.quadraticCurveTo(
-    x + width,
-    y + height,
-    x + width - radius.br,
-    y + height
-  )
-  canvas.lineTo(x + radius.bl, y + height)
-  canvas.quadraticCurveTo(x, y + height, x, y + height - radius.bl)
-  canvas.lineTo(x, y + radius.tl)
-  canvas.quadraticCurveTo(x, y, x + radius.tl, y)
-  canvas.closePath()
-  if (fill) {
-    canvas.fillStyle(fill)
-    canvas.fill()
-  }
-  if (stroke) {
-    canvas.strokeStyle(stroke)
-    canvas.stroke()
-  }
-}
-
 const getName = view => view.text.display || view.image || `(${view.children.map(getName)})`
 
 function Screen (canvas, ...plugins) {
@@ -176,10 +148,9 @@ Screen.prototype = {
       }
     }
   })(),
-  container (width, height, render) {
-    const parent = this.active
-    const child = {
-      render: roundRect,
+  view (parent, width, height) {
+    return {
+      render: _ => _,
       managers: [
         typeof width === 'function' ? width('width') : () => ({ width }),
         typeof height === 'function' ? height('height') : () => ({ height }),
@@ -198,6 +169,10 @@ Screen.prototype = {
       },
       children: []
     }
+  },
+  container (width, height, render) {
+    const parent = this.active
+    const child = this.view(parent, width, height)
     parent.children.push(child)
     this.active = child
     render(child)
@@ -268,9 +243,6 @@ Screen.prototype = {
     } else {
       this.active.padding = padding
     }
-  },
-  round (round) {
-    this.active.round = round
   },
   animateObject (object, from, to, ms, cb) {
     const start = Date.now()
@@ -351,7 +323,7 @@ Screen.prototype = {
   },
   getIntersection (view) {
     view.isInBounds = false
-    if(!view.hidden && view.parent.isInBounds) {
+    if (!view.hidden && view.parent.isInBounds) {
       const parent = view.parent
       const intersection = {
         x: Math.max(parent.intersection.x, view.bounds.x),

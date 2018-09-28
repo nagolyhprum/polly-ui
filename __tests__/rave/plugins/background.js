@@ -23,49 +23,8 @@ describe("background", () => {
     }
     const screen = new Screen(canvas)
     const view = {
-      bounds : {
-        x : 10,
-        y : 15,
-        width : 40,
-        height : 50
-      },
-      background : "red",
-      margin : [10, 12, 5, 13],
-      render : (cvs, x, y, width, height, round, background) => {
-        expect(canvas).toEqual(cvs)
-        expect(x).toEqual(23)
-        expect(y).toEqual(25)
-        expect(width).toEqual(15)
-        expect(height).toEqual(35)
-        expect(round).toEqual(0)
-        expect(background).toEqual("red")
-        done()
-      }
-    }
-    background(screen)(view)
-  })
-  it("draws the view without margin", done => {
-    const canvas = {
-      getWidth : () => 0,
-      getHeight : () => 0
-    }
-    const screen = new Screen(canvas)
-    const view = {
-      bounds : {
-        x : 10,
-        y : 15,
-        width : 40,
-        height : 50
-      },
-      round : 3,
-      render : (cvs, x, y, width, height, round, background) => {
-        expect(canvas).toEqual(cvs)
-        expect(x).toEqual(10)
-        expect(y).toEqual(15)
-        expect(width).toEqual(40)
-        expect(height).toEqual(50)
-        expect(round).toEqual(3)
-        expect(background).toEqual("transparent")
+      render : isRender => {
+        expect(isRender).toEqual(true)
         done()
       }
     }

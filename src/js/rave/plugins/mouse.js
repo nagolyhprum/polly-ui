@@ -1,4 +1,3 @@
-import { EMPTY_ARRAY, LEFT, TOP } from 'rave/screen'
 export default function (screen) {
   const canvas = screen.canvas
   const getMouse = (e, name) => ({
@@ -61,21 +60,7 @@ export default function (screen) {
 
   const mouseOver = (mouse, view) => {
     return view.children.reduce((mo, child) => {
-      const {
-        x,
-        y,
-        width,
-        height
-      } = child.bounds
-      const margin = child.margin || EMPTY_ARRAY
-      child.render(
-        canvas,
-        x + margin[LEFT],
-        y + margin[TOP],
-        width - screen.getLeftRight(margin),
-        height - screen.getTopBottom(margin),
-        screen.getValue(child, 'round')
-      )
+      child.render()
       if (child.isInBounds && canvas.isPointInPath(mouse.x, mouse.y)) {
         return mo.concat([child]).concat(mouseOver(mouse, child))
       }
