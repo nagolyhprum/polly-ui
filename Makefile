@@ -8,7 +8,7 @@ test:
 	npm run jest -- -c jest.config.js
 
 nsp:
-	npm run nsp -- check --threshold 3
+	npm run nsp -- check --threshold 2
 
 integration:
 	make nsp

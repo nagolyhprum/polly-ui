@@ -14,14 +14,12 @@ import textbox from 'plugins/textbox'
 import text from 'plugins/text'
 import scrollable from 'plugins/scrollable'
 import mouse from 'plugins/mouse'
-import scale from 'plugins/scale'
 import components from 'plugins/components'
 import highlight from 'plugins/highlight'
 
 const screen = new Screen(
   new Canvas(document.getElementsByTagName('canvas')[0]),
   alpha,
-  scale,
   shadow,
   background,
   image,

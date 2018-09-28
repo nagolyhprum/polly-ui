@@ -12,16 +12,11 @@ export default function (screen) {
       const padding = view.padding || EMPTY_ARRAY
       const x = view.bounds.x
       const y = view.bounds.y
-
-      const wpm = view.bounds.width
-      const hpm = view.bounds.height
-
-      const wp = wpm - screen.getLeftRight(margin)
-      const hp = hpm - screen.getTopBottom(margin)
-
-      const w = wp - screen.getLeftRight(padding)
-      const h = hp - screen.getTopBottom(padding)
+      const w = view.bounds.width - screen.getLeftRight(margin) - screen.getLeftRight(padding)
+      const h = view.bounds.height - screen.getTopBottom(margin) - screen.getTopBottom(padding)
       screen.canvas.drawImage(view.image, x + padding[LEFT] + margin[LEFT], y + padding[TOP] + margin[TOP], w, h)
+      return true
     }
+    return false
   }
 }
