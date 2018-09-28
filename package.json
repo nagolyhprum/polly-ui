@@ -7,7 +7,8 @@
     "parcel": "parcel",
     "standard": "standard 'src/js/**/*.js'",
     "jest": "jest",
-    "test": "jest"
+    "test": "jest",
+    "nsp": "nsp"
   },
   "standard": {
     "globals": [
@@ -22,11 +23,12 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/nagolyhprum/rave#readme",
   "dependencies": {
-    "babel-plugin-module-resolver": "^3.1.1",
-    "parcel-bundler": "^1.10.0",
-    "jest": "^23.6.0",
     "babel-core": "^6.26.3",
-    "node-sass": "^4.9.3"
+    "babel-plugin-module-resolver": "^3.1.1",
+    "jest": "^23.6.0",
+    "node-sass": "^4.9.3",
+    "nsp": "^3.2.1",
+    "parcel-bundler": "^1.10.0"
   },
   "devDependencies": {
     "babel-preset-env": "^1.7.0"

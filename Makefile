@@ -6,3 +6,11 @@ lint:
 
 test:
 	npm run jest -- -c jest.config.js
+
+nsp:
+	npm run nsp -- check --threshold 3
+
+integration:
+	make nsp
+	npm run standard
+	make test

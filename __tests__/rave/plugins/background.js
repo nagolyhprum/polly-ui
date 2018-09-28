@@ -29,14 +29,16 @@ describe("background", () => {
         width : 40,
         height : 50
       },
+      background : "red",
       margin : [10, 12, 5, 13],
-      render : (cvs, x, y, width, height, round) => {
+      render : (cvs, x, y, width, height, round, background) => {
         expect(canvas).toEqual(cvs)
         expect(x).toEqual(23)
         expect(y).toEqual(25)
         expect(width).toEqual(15)
         expect(height).toEqual(35)
         expect(round).toEqual(0)
+        expect(background).toEqual("red")
       }
     }
     background(screen)(view)
@@ -55,13 +57,14 @@ describe("background", () => {
         height : 50
       },
       round : 3,
-      render : (cvs, x, y, width, height, round) => {
+      render : (cvs, x, y, width, height, round, background) => {
         expect(canvas).toEqual(cvs)
         expect(x).toEqual(10)
         expect(y).toEqual(15)
         expect(width).toEqual(40)
         expect(height).toEqual(50)
         expect(round).toEqual(3)
+        expect(background).toEqual("transparent")
       }
     }
     background(screen)(view)
