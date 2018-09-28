@@ -5,14 +5,12 @@ export default function (screen) {
     this.active.background = background
   }
   return function (view) {
-    if (view === screen) return
+    if (view === screen) return false
+    const margin = view.margin || EMPTY_ARRAY
     const x = view.bounds.x
     const y = view.bounds.y
-    const margin = view.margin || EMPTY_ARRAY
-    const wpm = view.bounds.width
-    const hpm = view.bounds.height
-    const wp = wpm - screen.getLeftRight(margin)
-    const hp = hpm - screen.getTopBottom(margin)
+    const wp = view.bounds.width - screen.getLeftRight(margin)
+    const hp = view.bounds.height - screen.getTopBottom(margin)
     view.render(
       screen.canvas,
       x + margin[LEFT],

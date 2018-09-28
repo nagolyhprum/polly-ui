@@ -5,4 +5,4 @@ lint:
 	npm run standard -- --fix
 
 test:
-	npm run standard
+	npm run jest -- -c jest.config.js

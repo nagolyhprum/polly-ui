@@ -5,10 +5,14 @@
   "main": "index.js",
   "scripts": {
     "parcel": "parcel",
-    "standard": "standard 'src/js/**/*.js'"
+    "standard": "standard 'src/js/**/*.js'",
+    "jest": "jest",
+    "test": "jest"
   },
   "standard": {
-    "globals": ["Image"]
+    "globals": [
+      "Image"
+    ]
   },
   "repository": {
     "type": "git",
@@ -19,13 +23,12 @@
   "homepage": "https://bitbucket.org/nagolyhprum/rave#readme",
   "dependencies": {
     "babel-plugin-module-resolver": "^3.1.1",
-    "font": "0.0.4",
     "parcel-bundler": "^1.10.0",
-    "style": "0.0.3",
-    "utils": "^0.3.1"
-  },
-  "devDependencies": {
+    "jest": "^23.6.0",
     "babel-core": "^6.26.3",
     "node-sass": "^4.9.3"
+  },
+  "devDependencies": {
+    "babel-preset-env": "^1.7.0"
   }
 }

@@ -413,18 +413,12 @@ Screen.prototype = {
     })
     const moved = !equals(view.bounds, bounds)
     view.bounds = bounds
-    if (moved) {
+    this.getIntersection(view)
+    if (view.children.reduce((moved, child) => this.layoutView(child) || moved, moved)) {
       this.layoutView(view)
-    } else {
-      this.getIntersection(view)
+      return true
     }
-    if (view.children.length) {
-      if (view.children.reduce((moved, child) => this.layoutView(child) || moved, false)) {
-        this.layoutView(view)
-        return true
-      }
-    }
-    return moved
+    return false
   },
   renderView (view) {
     if (view.isInBounds) {

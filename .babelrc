@@ -1,4 +1,5 @@
 {
+  "presets": ["env"],
   "plugins": [
     ["module-resolver", {
       "alias": {
