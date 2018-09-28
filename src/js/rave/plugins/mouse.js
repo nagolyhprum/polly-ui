@@ -1,3 +1,4 @@
+import { contains } from 'utils'
 export default function (screen) {
   const canvas = screen.canvas
   const getMouse = (e, name) => ({
@@ -5,17 +6,20 @@ export default function (screen) {
     y: e.y,
     name
   })
+
   let last = []
+  let moved = 0
+
   const call = (e, name) => {
     const mouse = getMouse(e, name)
     const mo = mouseOver(mouse, screen)
     last.forEach(view => {
-      if (!mo.contains(view)) {
+      if (!contains(mo, view)) {
         view.onMouseOut && view.onMouseOut(getMouse(e, 'onMouseOut'))
       }
     })
     mo.forEach(view => {
-      if (!last.contains(view)) {
+      if (!contains(last, view)) {
         view.onMouseIn && view.onMouseIn(getMouse(e, 'onMouseIn'))
       }
     })
@@ -29,7 +33,6 @@ export default function (screen) {
     }
   }
 
-  let moved
   canvas.onMouseDown(e => {
     moved = 0
     call(e, 'onMouseDown')

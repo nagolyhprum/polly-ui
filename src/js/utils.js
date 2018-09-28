@@ -15,3 +15,7 @@ export function equals (a, b) {
   }
   return true
 }
+
+export const contains = function (arr, item) {
+  return arr.indexOf(item) !== -1
+}

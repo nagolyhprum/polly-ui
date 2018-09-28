@@ -29,8 +29,6 @@ const DIMENSIONS = {
 }
 export const LINE_SPACING = 8
 
-const getName = view => view.text.display || view.image || `(${view.children.map(getName)})`
-
 function Screen (canvas, ...plugins) {
   this.isInBounds = true
   this.canvas = canvas

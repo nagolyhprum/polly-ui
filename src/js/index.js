@@ -1,4 +1,3 @@
-import './prototype'
 import Screen from 'rave/screen'
 import Canvas from 'rave/canvas/html'
 import Splash from 'views/splash'
