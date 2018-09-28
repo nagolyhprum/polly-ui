@@ -15,6 +15,7 @@ import text from 'plugins/text'
 import scrollable from 'plugins/scrollable'
 import mouse from 'plugins/mouse'
 import components from 'plugins/components'
+import linear from 'plugins/linear'
 import highlight from 'plugins/highlight'
 
 const screen = new Screen(
@@ -32,6 +33,7 @@ const screen = new Screen(
   components,
   scrollable,
   mouse,
+  linear,
   highlight
 )
 screen.start(Splash)

@@ -60,6 +60,7 @@ function roundRect (canvas, x, y, width, height, radius, fill, stroke) {
 const getName = view => view.text.display || view.image || `(${view.children.map(getName)})`
 
 function Screen (canvas, ...plugins) {
+  this.isInBounds = true
   this.canvas = canvas
   this.plugins = plugins.map(plugin => plugin(this)).filter(_ => _)
   this.children = []
@@ -330,40 +331,9 @@ Screen.prototype = {
       console.log('TODO')
     }
   },
-  linear (spacing = 0, direction = 'vertical') {
-    this.active.managers.unshift(view => {
-      const weight = view.children.reduce((weight, child) => weight + (child.weight || 0), 0)
-      if (weight) {
-        const dim = direction === 'vertical' ? 'height' : 'width'
-        const vp = this.getViewPortSize(view)
-        const space = view.children.reduce((space, child) => {
-          return space - (child.weight ? 0 : child.bounds[dim])
-        }, vp[dim] - spacing * (view.children.length - 1))
-        view.children.forEach(child => {
-          if (child.weight) {
-            child[dim] = (child.weight / weight) * space
-          }
-        })
-      }
-      view.children.forEach((child, index) => {
-        if (index) {
-          const previous = view.children[index - 1]
-          if (direction === 'vertical') {
-            child.y = previous.y + previous.bounds.height + spacing
-          } else if (direction === 'horizontal') {
-            child.x = previous.x + previous.bounds.width + spacing
-          }
-        }
-      })
-      return {}
-    })
-  },
-  weight (weight) {
-    this.active.weight = weight
-  },
   render () {
     this.plugins.forEach(plugin => plugin(this))
-    this.children.forEach(child => {
+    this.children.slice(this.children.length - 2).forEach(child => {
       this.layoutView(child)
       this.renderView(child)
     })
@@ -380,20 +350,23 @@ Screen.prototype = {
     this.canvas.fillRect(x1, y2 + h2, w1, (y1 + h1) - (y2 + h2)) // full bottom
   },
   getIntersection (view) {
-    const parent = view.parent
-    const intersection = {
-      x: Math.max(parent.intersection.x, view.bounds.x),
-      y: Math.max(parent.intersection.y, view.bounds.y)
+    view.isInBounds = false
+    if(!view.hidden && view.parent.isInBounds) {
+      const parent = view.parent
+      const intersection = {
+        x: Math.max(parent.intersection.x, view.bounds.x),
+        y: Math.max(parent.intersection.y, view.bounds.y)
+      }
+      intersection.left = intersection.x
+      intersection.top = intersection.y
+      intersection.right = Math.min(parent.intersection.x + parent.intersection.width, view.bounds.x + view.bounds.width)
+      intersection.bottom = Math.min(parent.intersection.y + parent.intersection.height, view.bounds.y + view.bounds.height)
+      intersection.width = intersection.right - intersection.left
+      intersection.height = intersection.bottom - intersection.top
+      view.intersection = intersection
+      // then check if its in bounds
+      view.isInBounds = intersection.width > 0 && intersection.height > 0
     }
-    intersection.left = intersection.x
-    intersection.top = intersection.y
-    intersection.right = Math.min(parent.intersection.x + parent.intersection.width, view.bounds.x + view.bounds.width)
-    intersection.bottom = Math.min(parent.intersection.y + parent.intersection.height, view.bounds.y + view.bounds.height)
-    intersection.width = intersection.right - intersection.left
-    intersection.height = intersection.bottom - intersection.top
-    view.intersection = intersection
-    // then check if its in bounds
-    view.isInBounds = intersection.width > 0 && intersection.height > 0 && !view.hidden
   },
   layoutView (view) {
     const bounds = view.hidden ? { x: 0, y: 0, width: 0, height: 0 } : view.managers.reduce((bounds, manager) => {
