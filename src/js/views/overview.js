@@ -233,12 +233,12 @@ export default function (state) {
     // fab()
     padding(8, 8, 8, 8)
     src(drawable.icons.add_white)
-    background("gold")
+    background('gold')
     margin(0, 16, 16, 0)
     position(1, 1)
     anchor(1, 1)
     onClick(() => {
-      console.log("fab")
+      console.log('fab')
     })
   })
 

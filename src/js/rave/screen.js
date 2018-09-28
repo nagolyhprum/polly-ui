@@ -323,8 +323,8 @@ Screen.prototype = {
       this.renderView(child)
     })
     const diff = Date.now() - start
-    if(diff >= 1000 / 60) {
-      console.log("slow draw", diff, "ms")
+    if (diff >= 1000 / 60) {
+      console.log('slow draw', diff, 'ms')
     }
   },
   highlightArea (
