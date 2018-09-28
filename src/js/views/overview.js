@@ -43,6 +43,7 @@ const MENU = [MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, 
 
 export default function (state) {
   const {
+    margin,
     background,
     padding,
     container,
@@ -228,10 +229,17 @@ export default function (state) {
       })
     })
   })
-  container(48, 48, () => {
+  container(64, 64, () => {
     // fab()
+    padding(8, 8, 8, 8)
+    src(drawable.icons.add_white)
+    background("gold")
+    margin(0, 16, 16, 0)
     position(1, 1)
     anchor(1, 1)
+    onClick(() => {
+      console.log("fab")
+    })
   })
 
   // DRAWER

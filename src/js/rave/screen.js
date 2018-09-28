@@ -132,7 +132,7 @@ Screen.prototype = {
         }
       } else if (view.children.length) {
         return {
-          [dim]: Math.max(...view.children.map(
+          [dim]: Math.max(1, ...view.children.map(
             child =>
               child[COMPLEMENTARY_DIMENSIONS[dim]] + // child.x
               // child.bounds[COMPLEMENTARY_DIMENSIONS[dim]] + //child.bounds.x
@@ -316,11 +316,16 @@ Screen.prototype = {
     }
   },
   render () {
+    const start = Date.now()
     this.plugins.prerender.forEach(plugin => plugin(this))
     this.children.slice(this.children.length - 2).forEach(child => {
       this.layoutView(child)
       this.renderView(child)
     })
+    const diff = Date.now() - start
+    if(diff >= 1000 / 60) {
+      console.log("slow draw", diff, "ms")
+    }
   },
   highlightArea (
     color,
@@ -335,7 +340,7 @@ Screen.prototype = {
   },
   getIntersection (view) {
     view.isInBounds = false
-    if (!view.hidden && view.parent.isInBounds) {
+    if (!view.hidden) {
       const parent = view.parent
       const intersection = {
         x: Math.max(parent.intersection.x, view.bounds.x),
@@ -371,7 +376,7 @@ Screen.prototype = {
     const moved = !equals(view.bounds, bounds)
     view.bounds = bounds
     this.getIntersection(view)
-    if (view.children.reduce((moved, child) => this.layoutView(child) || moved, moved)) {
+    if (view.isInBounds && view.children.reduce((moved, child) => this.layoutView(child) || moved, moved)) {
       this.layoutView(view)
       return true
     }
