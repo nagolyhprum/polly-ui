@@ -46,7 +46,7 @@ export default function (screen) {
     )
   }
   screen.view = function (parent, width, height) {
-    const view = Screen.prototype.view(parent, width, height)
+    const view = Screen.prototype.view.call(screen, parent, width, height)
     view.render = renderRoundRect
     return view
   }

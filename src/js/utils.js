@@ -1,6 +1,3 @@
-export const slice = function (input) {
-  return Array.prototype.slice.call(input)
-}
 export function equals (a, b) {
   let i
   if (a === b) {
