@@ -236,7 +236,7 @@ Screen.prototype = {
   },
   timeout (callback, ms) {
     const active = this.active
-    setTimeout(() => {
+    this.setTimeout(() => {
       this.active = active
       callback()
       this.render()
@@ -256,6 +256,12 @@ Screen.prototype = {
       this.active.padding = padding
     }
   },
+  setInterval (interval, ms) {
+    return setInterval(interval, ms) // TODO
+  },
+  setTimeout (timeout, ms) {
+    return setTimeout(timeout, ms) // TODO
+  },
   animateObject (object, from, to, ms, cb) {
     const start = Date.now()
     const handler = (now = Date.now()) => {
@@ -271,7 +277,7 @@ Screen.prototype = {
       this.render()
     }
     handler(start)
-    const interval = setInterval(handler, 1000 / 60)
+    const interval = this.setInterval(handler, 1000 / 60)
   },
   animate (from, to, ms, cb) {
     this.animateObject(this.active, from, to, ms, cb)

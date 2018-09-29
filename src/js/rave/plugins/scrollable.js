@@ -11,7 +11,7 @@ export default screen => {
       let lastMouse; let dx = 0; let dy = 0
       // TODO : DO SOMETHING WITH DATE
       // let lastTs = Date.now();
-      setInterval(() => {
+      screen.setInterval(() => {
         // const now = Date.now()
         // const dt = (now - lastTs) / 1000
         // lastTs = now

@@ -9,7 +9,11 @@ export default (extend = {}) => Object.assign({
   plugins: {
     render: [],
     view: [],
-    prerender: []
+    prerender: [],
+    reposition: []
+  },
+  setInterval (interval) {
+    this.interval = interval
   },
   extend (extension) {
     Object.keys(extension).forEach(key => {
@@ -28,6 +32,9 @@ export default (extend = {}) => Object.assign({
   },
   getLeftRight (r) {
     return r instanceof Array ? r[this.RIGHT] + r[this.LEFT] : 0
+  },
+  render () {
+
   },
   children: []
 }, extend, {
