@@ -1,4 +1,5 @@
 export default extend => Object.assign({
+  drawn: [],
   getWidth: () => 0,
   getHeight: () => 0,
   image (src, callback) {
@@ -56,5 +57,17 @@ export default extend => Object.assign({
     },
     focus () {
     }
-  })
+  }),
+  beginPath () {
+    this.drawn.push(['beginPath'])
+  },
+  rect () {
+    this.drawn.push(['rect', ...arguments])
+  },
+  fill () {
+    this.drawn.push(['fill', ...arguments])
+  },
+  fillStyle () {
+    this.drawn.push(['fillStyle', ...arguments])
+  }
 }, extend)

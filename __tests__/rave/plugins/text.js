@@ -42,20 +42,20 @@ describe('text', () => {
     ]
     const screen = Screen({
       canvas: {
-        fillStyle (...args) {
-          expect(args).toEqual(next.shift())
+        fillStyle () {
+          expect([...arguments]).toEqual(next.shift())
         },
-        font (...args) {
-          expect(args).toEqual(next.shift())
+        font () {
+          expect([...arguments]).toEqual(next.shift())
         },
-        textBaseline (...args) {
-          expect(args).toEqual(next.shift())
+        textBaseline () {
+          expect([...arguments]).toEqual(next.shift())
         },
-        textAlign (...args) {
-          expect(args).toEqual(next.shift())
+        textAlign () {
+          expect([...arguments]).toEqual(next.shift())
         },
-        fillText (...args) {
-          expect(args).toEqual(next.shift())
+        fillText () {
+          expect([...arguments]).toEqual(next.shift())
         }
       },
       active: view

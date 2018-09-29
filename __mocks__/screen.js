@@ -28,7 +28,8 @@ export default (extend = {}) => Object.assign({
   },
   getLeftRight (r) {
     return r instanceof Array ? r[this.RIGHT] + r[this.LEFT] : 0
-  }
+  },
+  children: []
 }, extend, {
   canvas: Canvas(extend.canvas)
 })

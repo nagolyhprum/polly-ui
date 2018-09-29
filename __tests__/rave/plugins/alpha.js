@@ -1,4 +1,5 @@
 import alpha from 'rave/plugins/alpha'
+import View from 'view'
 describe('alpha', () => {
   it('defaults to 1', done => {
     const values = [undefined, 1]
@@ -16,7 +17,7 @@ describe('alpha', () => {
         render: []
       }
     }
-    const view = {}
+    const view = View()
     alpha(screen)
     screen.plugins.render[0](view)
   })
@@ -36,7 +37,7 @@ describe('alpha', () => {
         render: []
       }
     }
-    const view = { alpha: 0.5 }
+    const view = View({ alpha: 0.5 })
     alpha(screen)
     screen.plugins.render[0](view)
   })
@@ -56,7 +57,7 @@ describe('alpha', () => {
         render: []
       }
     }
-    const view = { alpha: 0.5 }
+    const view = View({ alpha: 0.5 })
     alpha(screen)
     screen.plugins.render[0](view)
   })
