@@ -9,7 +9,7 @@ export default screen => {
       active.scrollY = 0
       active.overflow = false
       let lastMouse; let dx = 0; let dy = 0
-      // TODO : DO SOMETHING WITH THIS
+      // TODO : DO SOMETHING WITH DATE
       // let lastTs = Date.now();
       setInterval(() => {
         // const now = Date.now()

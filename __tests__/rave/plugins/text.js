@@ -72,13 +72,13 @@ describe('text', () => {
     expect(view.text.size).toEqual(size)
 
     screen.plugins.render[0](view)
-    // ^ this runs the expects
+    // ^ runs the expects
 
     view.input = 'password'
     screen.textAlign('right')
     view.textbox = null
     screen.plugins.render[0](view)
-    // ^ this runs the expects
+    // ^ runs the expects
 
     screen.text('')
     screen.plugins.render[0](view)

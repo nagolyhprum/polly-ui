@@ -7,7 +7,7 @@ const LANGUAGES = Array.from({ length: 32 }).map((_, i) => ({
   display: 'Chinese - Mandarin ' + (i + 1)
 }))
 
-export default function (state) {
+export default (screen, state) => {
   const {
     background,
     padding,
@@ -30,7 +30,7 @@ export default function (state) {
     button,
     card,
     separator
-  } = this
+  } = screen
   padding(16)
   background('#2196f3')
   linear(16)

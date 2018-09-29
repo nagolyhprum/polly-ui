@@ -41,7 +41,7 @@ const MENU_ITEM = {
 
 const MENU = [MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM, MENU_ITEM]
 
-export default function (state) {
+export default (screen, state) => {
   const {
     fab,
     margin,
@@ -71,7 +71,7 @@ export default function (state) {
     observe,
     timeout,
     animate
-  } = this
+  } = screen
   const drawer$ = new Observable(false)
   container(MATCH, MATCH, () => {
     background('#2196f3')
@@ -246,7 +246,7 @@ export default function (state) {
       if (drawer) {
         visibility(true)
       } else {
-        if (this.firstRender) {
+        if (screen.firstRender) {
           visibility(false)
         } else {
           timeout(() => visibility(false), 300)
@@ -264,7 +264,7 @@ export default function (state) {
     })
     container(PERCENT(80), MATCH, () => {
       observe(drawer$, drawer => {
-        const view = this.active
+        const view = screen.active
         if (drawer) {
           animate({
             x: -view.bounds.width

@@ -280,7 +280,7 @@ Screen.prototype = {
     this.firstRender = true
     this.active = this
     this.container(this.MATCH, this.MATCH, () => {
-      view.call(this, state)
+      view(this, state)
       if (this.children.length > 1) {
         this.animate({
           alpha: 0.25,

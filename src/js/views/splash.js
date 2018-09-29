@@ -3,7 +3,7 @@ import font from 'font'
 import Login from 'views/login'
 import LanguagePicker from 'views/languagepicker'
 
-export default function (state) {
+export default (screen, state) => {
   const {
     highlight,
     container,
@@ -21,7 +21,7 @@ export default function (state) {
     MATCH,
     PERCENT,
     button
-  } = this
+  } = screen
   background('#2196f3')
   container(PERCENT(40), WRAP, () => {
     highlight()

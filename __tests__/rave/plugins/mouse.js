@@ -22,7 +22,7 @@ describe('mouse', () => {
     screen.canvas.onmousedown({})
     screen.canvas.onclick({})
     expect(call).toEqual(2)
-    screen.canvas.onmouseup({}) // just doing this for coverage
+    screen.canvas.onmouseup({}) // just doing for coverage
     expect(call).toEqual(2)
   })
   it('can skip mouse in and out', () => {

@@ -1,7 +1,7 @@
 import drawable from 'drawable'
 import font from 'font'
 import Overview from 'views/overview'
-export default function (state) {
+export default (screen, state) => {
   const {
     background,
     padding,
@@ -21,7 +21,7 @@ export default function (state) {
     button,
     card,
     start
-  } = this
+  } = screen
   padding(16)
   background('#2196f3')
   linear(16)
