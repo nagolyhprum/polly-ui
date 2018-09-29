@@ -1,8 +1,8 @@
-import { contains, equals } from "utils"
+import { contains, equals } from 'utils'
 
-describe("utils", () => {
-  describe("contains", () => {
-    it("finds something", () => {
+describe('utils', () => {
+  describe('contains', () => {
+    it('finds something', () => {
       const needle = {}
       const haystack = [needle]
       expect(contains(haystack, needle)).toEqual(true)
@@ -11,7 +11,7 @@ describe("utils", () => {
       haystack.unshift({})
       expect(contains(haystack, needle)).toEqual(true)
     })
-    it("finds nothing", () => {
+    it('finds nothing', () => {
       const needle = {}
       const haystack = []
       expect(contains(haystack, needle)).toEqual(false)
@@ -21,8 +21,8 @@ describe("utils", () => {
       expect(contains(haystack, needle)).toEqual(false)
     })
   })
-  describe("equals", () => {
-    it("matches", () => {
+  describe('equals', () => {
+    it('matches', () => {
       const a = {}
       const b = {}
       expect(equals(a, a)).toEqual(true)
@@ -30,19 +30,19 @@ describe("utils", () => {
       expect(equals(b, a)).toEqual(true)
       expect(equals(b, b)).toEqual(true)
     })
-    it("mismatches", () => {
+    it('mismatches', () => {
       const a = {
-        a : "a",
-        b : "b"
+        a: 'a',
+        b: 'b'
       }
       const b = {
-        a : "a",
-        c : "c"
+        a: 'a',
+        c: 'c'
       }
       const c = {
-        a : "a",
-        b : "b",
-        c : "c"
+        a: 'a',
+        b: 'b',
+        c: 'c'
       }
       expect(equals(a, b)).toEqual(false)
       expect(equals(a, c)).toEqual(false)
