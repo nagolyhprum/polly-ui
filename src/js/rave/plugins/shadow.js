@@ -1,8 +1,8 @@
 export default function (screen) {
-  screen.shadow = function (shadow = true) {
-    this.active.shadow = shadow
-  }
-  screen.plugins.render.push(function (view) {
-    screen.canvas.shadow(view.shadow)
+  screen.extend({
+    shadow (view, shadow = true) {
+      view.shadow = shadow
+    }
   })
+  screen.plugins.render.push(view => screen.canvas.shadow(view.shadow))
 }

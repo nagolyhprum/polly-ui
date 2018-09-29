@@ -1,7 +1,9 @@
 export default function (screen) {
-  screen.separator = function (separator = true) {
-    this.active.separator = separator
-  }
+  screen.extend({
+    separator (view, separator = true) {
+      view.separator = separator
+    }
+  })
   screen.plugins.render.push(function (view) {
     if (view.parent.separator) {
       const index = view.parent.children.indexOf(view)

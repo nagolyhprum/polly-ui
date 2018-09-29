@@ -43,8 +43,10 @@ export default function (screen) {
       isRender && screen.getValue(this, 'background')
     )
   }
-  screen.round = function (round) {
-    this.active.round = round
-    this.active.render = renderRoundRect
-  }
+  screen.extend({
+    round (view, round) {
+      view.round = round
+      view.render = renderRoundRect
+    }
+  })
 }

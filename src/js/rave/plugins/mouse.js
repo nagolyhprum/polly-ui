@@ -71,15 +71,15 @@ export default function (screen) {
     }, [])
   }
 
-  screen.onClick = function (onClick) {
-    this.active.onClick = onClick
-  }
-
-  screen.onMouseIn = function (onMouseIn) {
-    this.active.onMouseIn = onMouseIn
-  }
-
-  screen.onMouseOut = function (onMouseOut) {
-    this.active.onMouseOut = onMouseOut
-  }
+  screen.extend({
+    onClick (view, onClick) {
+      view.onClick = onClick
+    },
+    onMouseIn (view, onMouseIn) {
+      view.onMouseIn = onMouseIn
+    },
+    onMouseOut (view, onMouseOut) {
+      view.onMouseOut = onMouseOut
+    }
+  })
 }

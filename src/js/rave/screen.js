@@ -61,6 +61,11 @@ function Screen (canvas, ...plugins) {
 }
 
 Screen.prototype = {
+  extend (extension) {
+    Object.keys(extension).forEach(key => {
+      this[key] = (...args) => extension[key](this.active, ...args)
+    })
+  },
   reposition (view) {
     const padding = view.parent.padding instanceof Array ? view.parent.padding : EMPTY_ARRAY
     const margin = view.parent.margin instanceof Array ? view.parent.margin : EMPTY_ARRAY

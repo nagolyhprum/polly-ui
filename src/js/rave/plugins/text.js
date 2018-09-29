@@ -1,32 +1,34 @@
 import { EMPTY_ARRAY, LEFT, TOP, RIGHT, LINE_SPACING } from 'rave/screen'
+const init = function (view) {
+  view.text = view.text || {
+    display: '',
+    size: 12,
+    color: 'black',
+    weight: 'normal',
+    align: 'left'
+  }
+}
 export default function (screen) {
-  const init = function (view) {
-    view.text = view.text || {
-      display: '',
-      size: 12,
-      color: 'black',
-      weight: 'normal',
-      align: 'left'
+  screen.extend({
+    style (view, text) {
+      init(view)
+      for (var i in text) {
+        view.text[i] = text[i]
+      }
+    },
+    text (view, display) {
+      init(view)
+      view.text.display = display
+    },
+    textColor (view, textColor) {
+      init(view)
+      view.text.color = textColor
+    },
+    textAlign (view, align) {
+      init(view)
+      view.text.align = align
     }
-  }
-  screen.style = function (text) {
-    init(this.active)
-    for (var i in text) {
-      this.active.text[i] = text[i]
-    }
-  }
-  screen.text = function (display) {
-    init(this.active)
-    this.active.text.display = display
-  }
-  screen.textColor = function (textColor) {
-    init(this.active)
-    this.active.text.color = textColor
-  }
-  screen.textAlign = function (align) {
-    init(this.active)
-    this.active.text.align = align
-  }
+  })
   screen.plugins.render.push(function (view) {
     if (view.text && view.text.display) {
       const margin = view.margin || EMPTY_ARRAY

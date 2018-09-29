@@ -17,9 +17,11 @@ export default function (screen) {
   screen.plugins.view.push(view => Object.assign(view, {
     render: renderRect
   }))
-  screen.background = function (background) {
-    this.active.background = background
-  }
+  screen.extend({
+    background (view, background) {
+      view.background = background
+    }
+  })
   screen.plugins.render.push(function (view) {
     view.render(true)
   })

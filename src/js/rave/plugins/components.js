@@ -5,63 +5,64 @@ import drawable from 'drawable'
 const slightRound = 4
 
 export default function (screen) {
-  screen.fab = function (icon = drawable.icons.add_white, color = 'gold') {
-    this.padding(8)
-    this.src(icon)
-    this.background(color)
-    this.circle()
-  }
-  screen.button = function (color) {
-    this.textAlign('center')
-    this.padding(16)
-    this.textColor('white')
-    if (color) {
-      this.round(child => Math.min(child.bounds.width / 2, child.bounds.height / 2))
-      this.background(color)
-    }
-  }
-  screen.card = function () {
-    this.background('white')
-    this.round(slightRound)
-    this.shadow()
-  }
-  screen.tabs = function (...tabs) {
-    const tab$ = new Observable(0)
-    this.container(this.MATCH, this.WRAP, () => {
-      const horizontal = this.container(this.MATCH, this.WRAP, () => {
-        this.linear(0, 'horizontal')
-        tabs.forEach((text, index) => {
-          this.container(0, this.WRAP, () => {
-            this.textColor(index ? 'black' : 'white')
-            this.padding(16)
-            this.weight(1)
-            this.text(text)
-            this.style(font.normal_12)
-            this.textAlign('center')
-            this.onClick(() => tab$.set(index))
+  screen.extend({
+    fab (view, icon = drawable.icons.add_white, color = 'gold') {
+      screen.padding(8)
+      screen.src(icon)
+      screen.background(color)
+      screen.circle()
+    },
+    button (view, color) {
+      screen.textAlign('center')
+      screen.padding(16)
+      screen.textColor('white')
+      if (color) {
+        screen.round(child => Math.min(child.bounds.width / 2, child.bounds.height / 2))
+        screen.background(color)
+      }
+    },
+    card (view) {
+      screen.background('white')
+      screen.round(slightRound)
+      screen.shadow()
+    },
+    tabs (view, ...tabs) {
+      const tab$ = new Observable(0)
+      screen.container(screen.MATCH, screen.WRAP, () => {
+        const horizontal = screen.container(screen.MATCH, screen.WRAP, () => {
+          screen.linear(0, 'horizontal')
+          tabs.forEach((text, index) => {
+            screen.container(0, screen.WRAP, () => {
+              screen.textColor(index ? 'black' : 'white')
+              screen.padding(16)
+              screen.weight(1)
+              screen.text(text)
+              screen.style(font.normal_12)
+              screen.textAlign('center')
+              screen.onClick(() => tab$.set(index))
+            })
           })
         })
-      })
-      const indicator = this.container(dim => view => ({
-        width: view.parent.bounds.width / tabs.length
-      }), 5, () => {
-        this.position(0, 1)
-        this.anchor(0, 1)
-        this.background('gold')
-      })
-      tab$.observe(tab => {
-        horizontal.children.forEach(child => {
-          child.text.color = 'black'
+        const indicator = screen.container(dim => view => ({
+          width: view.parent.bounds.width / tabs.length
+        }), 5, () => {
+          screen.position(0, 1)
+          screen.anchor(0, 1)
+          screen.background('gold')
         })
-        horizontal.children[tab].text.color = 'white'
-        this.active = indicator
-        this.animate({
-          x: indicator.x
-        }, {
-          x: tab * horizontal.bounds.width / tabs.length
-        }, 300)
+        tab$.observe(tab => {
+          horizontal.children.forEach(child => {
+            child.text.color = 'black'
+          })
+          horizontal.children[tab].text.color = 'white'
+          screen.animateObject(indicator, {
+            x: indicator.x
+          }, {
+            x: tab * horizontal.bounds.width / tabs.length
+          }, 300)
+        })
       })
-    })
-    return tab$
-  }
+      return tab$
+    }
+  })
 }

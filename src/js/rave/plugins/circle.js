@@ -16,7 +16,9 @@ export default function (screen) {
       screen.canvas.fill()
     }
   }
-  screen.circle = function () {
-    this.active.render = renderCircle
-  }
+  screen.extend({
+    circle (view) {
+      view.render = renderCircle
+    }
+  })
 }

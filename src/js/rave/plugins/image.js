@@ -1,11 +1,13 @@
 import { TOP, LEFT, EMPTY_ARRAY } from 'rave/screen'
 
 export default function (screen) {
-  screen.src = function (image) {
-    this.active.image = this.canvas.image(image, () => {
-      this.render()
-    })
-  }
+  screen.extend({
+    src (view, image) {
+      view.image = screen.canvas.image(image, () => {
+        screen.render()
+      })
+    }
+  })
   screen.plugins.render.push(function (view) {
     if (view.image && view.image.complete) {
       const margin = view.margin || EMPTY_ARRAY

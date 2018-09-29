@@ -31,7 +31,7 @@ const screen = new Screen(
   separator,
   textbox,
   text,
-  layout(false),
+  layout(true),
   // not drawn
   components,
   scrollable,
@@ -40,3 +40,4 @@ const screen = new Screen(
   highlight
 )
 screen.start(Splash)
+window.screen = screen

@@ -16,19 +16,20 @@ export default function (screen) {
       screen.render()
     }
   })
-  screen.input = function (type = 'text') {
-    const view = this.active
-    const textbox = screen.textbox
-    view.input = type
-    view.overflow = false
-    view.onClick = () => {
-      view.textbox = textbox
-      textbox.view = view
-      textbox.value(view.text.display)
-      textbox.type(type)
-      this.render()
+  screen.extend({
+    input (view, type = 'text') {
+      const textbox = screen.textbox
+      view.input = type
+      view.overflow = false
+      view.onClick = () => {
+        view.textbox = textbox
+        textbox.view = view
+        textbox.value(view.text.display)
+        textbox.type(type)
+        this.render()
+      }
     }
-  }
+  })
   screen.plugins.prerender.push(function (view) {
     screen.textbox.visibility(false)
   })
