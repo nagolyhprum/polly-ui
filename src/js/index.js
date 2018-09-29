@@ -31,7 +31,7 @@ const screen = new Screen(
   separator,
   textbox,
   text,
-  layout(true),
+  layout(false),
   // not drawn
   components,
   scrollable,

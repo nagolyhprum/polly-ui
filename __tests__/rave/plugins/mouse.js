@@ -1,5 +1,4 @@
 import mouse from 'rave/plugins/mouse'
-
 const Canvas = override => Object.assign({
   onMouseDown (onmousedown) {
     this.onmousedown = onmousedown
@@ -20,7 +19,6 @@ const Canvas = override => Object.assign({
     return true
   }
 }, override)
-
 describe('mouse', () => {
   it('can click and skip click', () => {
     const view = {

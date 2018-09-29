@@ -35,12 +35,10 @@ export default function (state) {
   background('#2196f3')
   linear(16)
   container(MATCH, WRAP, () => {
-    container(MATCH, WRAP, () => {
-      textColor('white')
-      text('What language do\nyou speak natively?')
-      textAlign('center')
-      style(font.medium_20)
-    })
+    textColor('white')
+    text('What language do\nyou speak natively?')
+    textAlign('center')
+    style(font.medium_20)
     container(WRAP, WRAP, () => {
       src(drawable.icons.back_white)
       anchor(0, 0.5)

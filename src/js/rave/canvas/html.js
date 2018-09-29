@@ -14,6 +14,9 @@ export default class Canvas {
       },
       onInput (onInput) {
         textbox.oninput = onInput
+        textbox.onkeydown = onInput
+        textbox.onmousedown = onInput
+        window.onselect = onInput
       },
       value (value) {
         if (arguments.length === 1) {
@@ -36,6 +39,12 @@ export default class Canvas {
         }
       },
       input (type) {
+        textbox.type = type
+      },
+      scroll () {
+        return textbox.scrollLeft
+      },
+      type (type) {
         textbox.type = type
       }
     }

@@ -1,6 +1,5 @@
 import background from 'rave/plugins/background'
 import Screen from 'rave/screen'
-
 describe('background', () => {
   it('sets the background', () => {
     const bg = 'red'

@@ -1,5 +1,4 @@
 import textbox from 'rave/plugins/textbox'
-
 const Canvas = () => ({
   textbox: () => ({
     onBlur (onBlur) {
@@ -36,7 +35,6 @@ const Canvas = () => ({
     }
   })
 })
-
 describe('textbox', () => {
   it('responds to events', () => {
     let calls = 0

@@ -1,5 +1,4 @@
 import alpha from 'rave/plugins/alpha'
-
 describe('alpha', () => {
   it('defaults to 1', done => {
     const values = [undefined, 1]

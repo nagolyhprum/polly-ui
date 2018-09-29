@@ -128,17 +128,7 @@ Screen.prototype = {
         return {
           [dim]: (opposite || view.image[dim]) + spaceAround
         }
-      } else if (view.children.length) {
-        return {
-          [dim]: Math.max(1, ...view.children.map(
-            child =>
-              child[COMPLEMENTARY_DIMENSIONS[dim]] + // child.x
-              // child.bounds[COMPLEMENTARY_DIMENSIONS[dim]] + //child.bounds.x
-              child.bounds[dim] + // child.bounds.width
-              spaceAround
-          ))
-        }
-      } else if (view.text.display || view.input) {
+      } else if ((view.text && view.text.display) || view.input) {
         if (dim === 'width') {
           canvas.font(view.text.size, 'sans-serif')
           return {
@@ -151,6 +141,16 @@ Screen.prototype = {
               view.text.size * count + LINE_SPACING * (count - 1) + spaceAround
             )
           }
+        }
+      } else if (view.children.length) {
+        return {
+          [dim]: Math.max(1, ...view.children.map(
+            child =>
+              child[COMPLEMENTARY_DIMENSIONS[dim]] + // child.x
+              // child.bounds[COMPLEMENTARY_DIMENSIONS[dim]] + //child.bounds.x
+              child.bounds[dim] + // child.bounds.width
+              spaceAround
+          ))
         }
       }
       return {

@@ -39,14 +39,10 @@ export default function (state) {
   background('#2196f3')
   linear(16)
   container(MATCH, WRAP, () => {
-    container(MATCH, WRAP, () => {
-      textColor('white')
-      text('How quickly would you\nlike to learn?')
-      textAlign('center')
-      anchor(0, 0.5)
-      position(0, 0.5)
-      style(font.medium_20)
-    })
+    textColor('white')
+    text('How quickly would you\nlike to learn?')
+    textAlign('center')
+    style(font.medium_20)
     container(WRAP, WRAP, () => {
       src(drawable.icons.back_white)
       anchor(0, 0.5)
