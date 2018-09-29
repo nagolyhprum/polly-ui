@@ -1,8 +1,9 @@
 import image from 'rave/plugins/image'
 import Screen from 'screen'
+import View from 'view'
 describe('image', () => {
   it('sets the src', done => {
-    const view = {}
+    const view = View()
     const screen = Screen({
       active: view,
       render: () => {
@@ -16,7 +17,7 @@ describe('image', () => {
   it('draws with margin and padding', done => {
     const screen = new Screen({
       canvas: {
-        drawImage: function (image, x, y, w, h) {
+        drawImage (image, x, y, w, h) {
           expect(image).toEqual(view.image)
           expect(x).toEqual(90)
           expect(y).toEqual(40)
@@ -26,32 +27,24 @@ describe('image', () => {
         }
       }
     })
-    const view = {
-      padding: [10, 20, 30, 40],
-      margin: [10, 20, 30, 40],
-      bounds: {
-        x: 10,
-        y: 20,
-        width: 30,
-        height: 40
-      },
+    const view = View({
       image: {
         complete: true
       }
-    }
+    })
     image(screen)
     screen.plugins.render[0](view)
   })
   it('skips drawing', () => {
     const screen = Screen()
-    const view = {}
+    const view = View()
     image(screen)
     screen.plugins.render[0](view)
   })
   it('draws without margin or padding', done => {
     const screen = new Screen({
       canvas: {
-        drawImage: function (image, x, y, w, h) {
+        drawImage (image, x, y, w, h) {
           expect(image).toEqual(view.image)
           expect(x).toEqual(10)
           expect(y).toEqual(20)
@@ -61,17 +54,13 @@ describe('image', () => {
         }
       }
     })
-    const view = {
-      bounds: {
-        x: 10,
-        y: 20,
-        width: 30,
-        height: 40
-      },
+    const view = View({
+      margin: null,
+      padding: null,
       image: {
         complete: true
       }
-    }
+    })
     image(screen)
     screen.plugins.render[0](view)
   })

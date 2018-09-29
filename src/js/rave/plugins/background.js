@@ -1,6 +1,6 @@
-export default function (screen) {
+export default screen => {
   const { TOP, LEFT, EMPTY_ARRAY } = screen
-  const renderRect = function (isRender) {
+  function renderRect (isRender) {
     const margin = this.margin || EMPTY_ARRAY
     const x = this.bounds.x + margin[LEFT]
     const y = this.bounds.y + margin[TOP]
@@ -22,7 +22,5 @@ export default function (screen) {
       view.background = background
     }
   })
-  screen.plugins.render.push(function (view) {
-    view.render(true)
-  })
+  screen.plugins.render.push(view => view.render(true))
 }

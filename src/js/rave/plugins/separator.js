@@ -1,10 +1,10 @@
-export default function (screen) {
+export default screen => {
   screen.extend({
     separator (view, separator = true) {
       view.separator = separator
     }
   })
-  screen.plugins.render.push(function (view) {
+  screen.plugins.render.push(view => {
     if (view.parent.separator) {
       const index = view.parent.children.indexOf(view)
       if (index) {

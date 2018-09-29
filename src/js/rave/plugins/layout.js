@@ -1,6 +1,6 @@
-export default isDebug => function (screen) {
+export default isDebug => screen => {
   const { LEFT, TOP, EMPTY_ARRAY } = screen
-  screen.plugins.render.push(function (view) {
+  screen.plugins.render.push(view => {
     if (isDebug) {
       const x = view.bounds.x
       const y = view.bounds.y

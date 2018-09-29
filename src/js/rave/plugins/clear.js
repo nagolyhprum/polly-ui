@@ -1,5 +1,5 @@
-export default function (screen) {
-  screen.plugins.prerender.push(function (view) {
+export default screen => {
+  screen.plugins.prerender.push(view => {
     screen.canvas.clear()
   })
 }

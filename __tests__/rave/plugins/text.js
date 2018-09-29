@@ -1,5 +1,6 @@
 import text from 'rave/plugins/text'
 import Screen from 'screen'
+import View from 'view'
 describe('text', () => {
   it('draws text properly', () => {
     const display = 'hello world'
@@ -7,21 +8,13 @@ describe('text', () => {
     const align = 'center'
     const size = 16
     const style = { size }
-    const view = {
+    const view = View({
       textbox: {
         scroll () {
           return 10
         }
-      },
-      padding: [10, 20, 30, 40],
-      margin: [40, 30, 20, 10],
-      bounds: {
-        x: 10,
-        y: 20,
-        width: 30,
-        height: 40
       }
-    }
+    })
     const next = [
       // fillStyle
       // font
@@ -32,13 +25,13 @@ describe('text', () => {
       [16, 'sans-serif'],
       ['top'],
       ['center'],
-      [display, 15, 70],
+      [display, 15, 40],
 
       ['red'],
       [16, 'sans-serif'],
       ['top'],
       ['right'],
-      ['\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', -10, 70]
+      ['\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', 0, 40]
     ]
     const screen = Screen({
       canvas: {

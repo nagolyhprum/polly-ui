@@ -1,4 +1,4 @@
-export default function (screen) {
+export default screen => {
   screen.textbox = screen.canvas.textbox()
   screen.textbox.onBlur(() => {
     const view = screen.textbox.view
@@ -29,10 +29,8 @@ export default function (screen) {
       }
     }
   })
-  screen.plugins.prerender.push(function (view) {
-    screen.textbox.visibility(false)
-  })
-  screen.plugins.render.push(function (view) {
+  screen.plugins.prerender.push(view => screen.textbox.visibility(false))
+  screen.plugins.render.push(view => {
     if (view.textbox) {
       screen.textbox.visibility(true)
       view.textbox.bounds(view.bounds)

@@ -115,53 +115,51 @@ Screen.prototype = {
       }
     }
   },
-  WRAP: (function () {
-    return dim => (view, screen) => {
-      const { canvas } = screen
-      const spaceAround = {
-        width: screen.getLeftRight(view.padding) + screen.getLeftRight(view.margin),
-        height: screen.getTopBottom(view.padding) + screen.getTopBottom(view.margin)
-      }[dim]
-      if (view.image) {
-        const imageBounds = {
-          width: canvas.getWidth(view.image),
-          height: canvas.getHeight(view.image)
-        }
-        const other = OPPOSITE_DIMENSIONS[dim]
-        const opposite = Math.max(0, view.bounds[other] - spaceAround) / imageBounds[other] * imageBounds[dim]
+  WRAP: dim => (view, screen) => {
+    const { canvas } = screen
+    const spaceAround = {
+      width: screen.getLeftRight(view.padding) + screen.getLeftRight(view.margin),
+      height: screen.getTopBottom(view.padding) + screen.getTopBottom(view.margin)
+    }[dim]
+    if (view.image) {
+      const imageBounds = {
+        width: canvas.getWidth(view.image),
+        height: canvas.getHeight(view.image)
+      }
+      const other = OPPOSITE_DIMENSIONS[dim]
+      const opposite = Math.max(0, view.bounds[other] - spaceAround) / imageBounds[other] * imageBounds[dim]
+      return {
+        [dim]: (opposite || view.image[dim]) + spaceAround
+      }
+    } else if ((view.text && view.text.display) || view.input) {
+      if (dim === 'width') {
+        canvas.font(view.text.size, 'sans-serif')
         return {
-          [dim]: (opposite || view.image[dim]) + spaceAround
+          width: Math.max(...view.text.display.split('\n').map(display => canvas.measureText(display))) + spaceAround
         }
-      } else if ((view.text && view.text.display) || view.input) {
-        if (dim === 'width') {
-          canvas.font(view.text.size, 'sans-serif')
-          return {
-            width: Math.max(...view.text.display.split('\n').map(display => canvas.measureText(display))) + spaceAround
-          }
-        } else if (dim === 'height') {
-          const count = view.text.display.split('\n').length
-          return {
-            height: (
-              view.text.size * count + screen.LINE_SPACING * (count - 1) + spaceAround
-            )
-          }
-        }
-      } else if (view.children.length) {
+      } else if (dim === 'height') {
+        const count = view.text.display.split('\n').length
         return {
-          [dim]: Math.max(1, ...view.children.map(
-            child =>
-              child[COMPLEMENTARY_DIMENSIONS[dim]] + // child.x
-              // child.bounds[COMPLEMENTARY_DIMENSIONS[dim]] + //child.bounds.x
-              child.bounds[dim] + // child.bounds.width
-              spaceAround
-          ))
+          height: (
+            view.text.size * count + screen.LINE_SPACING * (count - 1) + spaceAround
+          )
         }
       }
+    } else if (view.children.length) {
       return {
-        [dim]: spaceAround
+        [dim]: Math.max(1, ...view.children.map(
+          child =>
+            child[COMPLEMENTARY_DIMENSIONS[dim]] + // child.x
+            // child.bounds[COMPLEMENTARY_DIMENSIONS[dim]] + //child.bounds.x
+            child.bounds[dim] + // child.bounds.width
+            spaceAround
+        ))
       }
     }
-  })(),
+    return {
+      [dim]: spaceAround
+    }
+  },
   view (parent, width, height) {
     return this.plugins.view.reduce((view, plugin) => plugin(view), {
       render: _ => _,

@@ -1,5 +1,3 @@
-export default function (screen) {
-  screen.highlight = function () {
-
-  }
+export default screen => {
+  screen.highlight = _ => _
 }

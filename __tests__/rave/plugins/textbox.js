@@ -1,16 +1,16 @@
 import textbox from 'rave/plugins/textbox'
 import Screen from 'screen'
+import View from 'view'
 describe('textbox', () => {
   it('responds to events', () => {
     let calls = 0
     const display = 'Hello World'
     const change = 'changed value'
-    const view = {
+    const view = View({
       text: {
         display
-      },
-      bounds: { x: 0, y: 0, width: 0, height: 0 }
-    }
+      }
+    })
     const screen = Screen({
       render () {
         calls++

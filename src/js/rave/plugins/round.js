@@ -1,4 +1,4 @@
-function roundRect (canvas, x, y, width, height, radius, fill, stroke) {
+const roundRect = (canvas, x, y, width, height, radius, fill, stroke) => {
   radius = { tl: radius, tr: radius, br: radius, bl: radius }
   canvas.beginPath()
   canvas.moveTo(x + radius.tl, y)
@@ -25,7 +25,7 @@ function roundRect (canvas, x, y, width, height, radius, fill, stroke) {
     canvas.stroke()
   }
 }
-export default function (screen) {
+export default screen => {
   const { TOP, LEFT, EMPTY_ARRAY } = screen
   function renderRoundRect (isRender) {
     const margin = this.margin || EMPTY_ARRAY

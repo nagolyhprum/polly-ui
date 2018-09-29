@@ -4,7 +4,7 @@ import drawable from 'drawable'
 
 const slightRound = 4
 
-export default function (screen) {
+export default screen => {
   screen.extend({
     fab (view, icon = drawable.icons.add_white, color = 'gold') {
       screen.padding(8)

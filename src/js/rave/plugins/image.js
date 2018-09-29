@@ -1,4 +1,4 @@
-export default function (screen) {
+export default screen => {
   const { TOP, LEFT, EMPTY_ARRAY } = screen
   screen.extend({
     src (view, image) {
@@ -7,7 +7,7 @@ export default function (screen) {
       })
     }
   })
-  screen.plugins.render.push(function (view) {
+  screen.plugins.render.push(view => {
     if (view.image && view.image.complete) {
       const margin = view.margin || EMPTY_ARRAY
       const padding = view.padding || EMPTY_ARRAY

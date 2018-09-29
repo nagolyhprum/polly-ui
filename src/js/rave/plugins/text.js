@@ -1,4 +1,4 @@
-const init = function (view) {
+const init = view => {
   view.text = view.text || {
     display: '',
     size: 12,
@@ -7,7 +7,7 @@ const init = function (view) {
     align: 'left'
   }
 }
-export default function (screen) {
+export default screen => {
   const { EMPTY_ARRAY, LEFT, TOP, RIGHT, LINE_SPACING } = screen
   screen.extend({
     style (view, text) {
@@ -29,7 +29,7 @@ export default function (screen) {
       view.text.align = align
     }
   })
-  screen.plugins.render.push(function (view) {
+  screen.plugins.render.push(view => {
     if (view.text && view.text.display) {
       const margin = view.margin || EMPTY_ARRAY
       const padding = view.padding || EMPTY_ARRAY

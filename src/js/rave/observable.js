@@ -24,9 +24,7 @@ export default class Observable {
   set (value) {
     if (value === this.value) return
     this.value = value
-    this.callbacks.forEach(function (callback) {
-      callback(value)
-    })
+    this.callbacks.forEach(callback => callback(value))
   }
 
   get () {
@@ -37,11 +35,9 @@ export default class Observable {
     const obs = args.slice(0, args.length - 1)
     const observe = args[args.length - 1]
     const observable$ = new Observable(observe(...obs.map(it => it.get())))
-    obs.forEach(function (ob, i) {
-      ob.observe(Observable.skipFirst(function (value) {
-        const values = obs.map(function (it) {
-          return it.get()
-        })
+    obs.forEach((ob, i) => {
+      ob.observe(Observable.skipFirst(value => {
+        const values = obs.map(it => it.get())
         values[i] = value
         observable$.set(observe(...values))
       }))
@@ -50,15 +46,13 @@ export default class Observable {
   }
 
   static hasValue (hasValue) {
-    return function (value) {
-      value && hasValue(value)
-    }
+    return value => value && hasValue(value)
   }
 
   static skipFirst (skipFirst) {
     const count = 1// getArgCount(callback)
     let skipped = 0
-    return function (...args) {
+    return (...args) => {
       if (skipped >= count) {
         return skipFirst(...args)
       }

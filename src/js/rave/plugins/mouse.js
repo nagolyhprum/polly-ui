@@ -1,5 +1,5 @@
 import { contains } from 'utils'
-export default function (screen) {
+export default screen => {
   const canvas = screen.canvas
   const getMouse = (e, name) => ({
     x: e.x,

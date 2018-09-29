@@ -1,4 +1,4 @@
-export function equals (a, b) {
+export const equals = (a, b) => {
   let i
   if (a === b) {
     return true
@@ -16,6 +16,4 @@ export function equals (a, b) {
   return true
 }
 
-export const contains = function (arr, item) {
-  return arr.indexOf(item) !== -1
-}
+export const contains = (arr, item) => arr.indexOf(item) !== -1

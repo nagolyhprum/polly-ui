@@ -1,4 +1,4 @@
-export default function (screen) {
+export default screen => {
   screen.extend({
     shadow (view, shadow = true) {
       view.shadow = shadow

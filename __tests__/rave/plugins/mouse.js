@@ -1,21 +1,16 @@
 import mouse from 'rave/plugins/mouse'
 import Screen from 'screen'
+import View from 'view'
 describe('mouse', () => {
   it('can click and skip click', () => {
-    const view = {
-      render () {},
-      isInBounds: true,
-      children: []
-    }
+    const view = View()
     const screen = Screen({
       children: [view],
       active: view
     })
     mouse(screen)
     let call = 0
-    screen.onClick(function () {
-      call++
-    })
+    screen.onClick(() => call++)
     for (let i = 0; i < 4; i++) {
       screen.canvas.onmousemove({})
     }
@@ -31,11 +26,7 @@ describe('mouse', () => {
     expect(call).toEqual(2)
   })
   it('can skip mouse in and out', () => {
-    const view = {
-      render () {},
-      isInBounds: true,
-      children: []
-    }
+    const view = View()
     const screen = Screen({
       canvas: {
         isPointInPath (x, y) {

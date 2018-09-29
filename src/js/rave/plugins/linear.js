@@ -1,4 +1,4 @@
-export default function (screen) {
+export default screen => {
   screen.extend({
     linear (view, spacing = 0, direction = 'vertical') {
       view.managers.unshift(view => {

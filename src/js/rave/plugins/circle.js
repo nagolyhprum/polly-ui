@@ -1,4 +1,4 @@
-export default function (screen) {
+export default screen => {
   const {TOP, LEFT, EMPTY_ARRAY} = screen
   function renderCircle (isRender) {
     const margin = this.margin || EMPTY_ARRAY

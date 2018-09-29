@@ -1,4 +1,4 @@
-export default function (screen) {
+export default screen => {
   screen.plugins.reposition.push(view => ({
     x: (view.parent.scrollX || 0),
     y: (view.parent.scrollY || 0)
@@ -34,7 +34,7 @@ export default function (screen) {
         active.scrollY = Math.max(Math.min(active.scrollY + dy, 0), -bottom)
         screen.render()
       }
-      active.onMouseMove = function (mouse) {
+      active.onMouseMove = mouse => {
         if (lastMouse) {
           dx = mouse.x - lastMouse.x
           dy = mouse.y - lastMouse.y
@@ -42,10 +42,10 @@ export default function (screen) {
           lastMouse = mouse
         }
       }
-      active.onMouseDown = function (mouse) {
+      active.onMouseDown = mouse => {
         lastMouse = mouse
       }
-      active.onMouseUp = active.onMouseOut = function (mouse) {
+      active.onMouseUp = active.onMouseOut = mouse => {
         lastMouse = null
       }
     }

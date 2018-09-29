@@ -5,7 +5,7 @@ describe('alpha', () => {
     const values = [undefined, 1]
     const screen = {
       canvas: {
-        alpha: function (alpha) {
+        alpha (alpha) {
           expect(alpha).toEqual(values.shift())
           if (!values.length) {
             done()
@@ -25,7 +25,7 @@ describe('alpha', () => {
     const values = [undefined, 0.5]
     const screen = {
       canvas: {
-        alpha: function (alpha) {
+        alpha (alpha) {
           expect(alpha).toEqual(values.shift())
           if (!values.length) {
             done()
@@ -45,7 +45,7 @@ describe('alpha', () => {
     const values = [undefined, 0.25]
     const screen = {
       canvas: {
-        alpha: function (alpha) {
+        alpha (alpha) {
           expect(alpha).toEqual(values.shift())
           if (!values.length) {
             done()
