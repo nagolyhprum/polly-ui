@@ -1,47 +1,42 @@
 // TODO abstract this
 export default function (screen) {
-  screen.textbox = document.createElement('input')
-  document.body.appendChild(screen.textbox)
-  screen.textbox.onblur = e => {
+  screen.textbox = screen.canvas.textbox()
+  screen.textbox.onBlur(() => {
     const view = screen.textbox.view
     if (view) {
       screen.textbox.view = null
       view.textbox = null
       screen.render()
     }
-  }
-  screen.textbox.oninput = e => {
+  })
+  screen.textbox.onInput(() => {
     const view = screen.textbox.view
     if (view) {
-      view.text.display = screen.textbox.value
+      view.text.display = screen.textbox.value()
       screen.render()
     }
-  }
-  screen.input = function (input = 'text') {
+  })
+  screen.input = function (type = 'text') {
     const view = this.active
-    view.input = input
+    const textbox = screen.textbox
+    view.input = type
     view.overflow = false
     view.onClick = () => {
-      view.textbox = this.textbox
-      this.textbox.view = view
-      this.textbox.value = view.text.display
-      this.textbox.type = input
+      view.textbox = textbox
+      textbox.view = view
+      textbox.value(view.text.display)
+      textbox.type(type)
       this.render()
     }
   }
   screen.plugins.prerender.push(function (view) {
-    screen.textbox.style.display = 'none'
+    screen.textbox.visibility(false)
   })
   screen.plugins.render.push(function (view) {
     if (view.textbox) {
-      view.textbox.style.display = 'block'
-      view.textbox.style.left = `${view.bounds.x}px`
-      view.textbox.style.top = `${view.bounds.y}px`
-      view.textbox.style.width = `${view.bounds.width}px`
-      view.textbox.style.height = `${view.bounds.height}px`
-      if (screen.textbox !== document.activeElement) {
-        screen.textbox.focus()
-      }
+      screen.textbox.visibility(true)
+      view.textbox.bounds(view.bounds)
+      view.textbox.focus()
     }
   })
 }

@@ -5,6 +5,41 @@ export default class Canvas {
     this.context = canvas.getContext('2d')
     this.images = {}
   }
+  textbox () {
+    const textbox = document.createElement('input')
+    document.body.appendChild(textbox)
+    return {
+      onBlur (onBlur) {
+        textbox.onblur = onBlur
+      },
+      onInput (onInput) {
+        textbox.oninput = onInput
+      },
+      value (value) {
+        if (arguments.length === 1) {
+          textbox.value = value
+        }
+        return textbox.value
+      },
+      visibility (visible) {
+        textbox.style.display = visible ? 'block' : 'none'
+      },
+      bounds (bounds) {
+        textbox.style.left = `${bounds.x}px`
+        textbox.style.top = `${bounds.y}px`
+        textbox.style.width = `${bounds.width}px`
+        textbox.style.height = `${bounds.height}px`
+      },
+      focus () {
+        if (textbox !== document.activeElement) {
+          textbox.focus()
+        }
+      },
+      input (type) {
+        textbox.type = type
+      }
+    }
+  }
   arc () {
     this.context.arc(...arguments)
   }
