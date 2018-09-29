@@ -1,40 +1,5 @@
 import textbox from 'rave/plugins/textbox'
-const Canvas = () => ({
-  textbox: () => ({
-    onBlur (onBlur) {
-      this.onblur = onBlur
-    },
-    onInput (onInput) {
-      this.oninput = onInput
-    },
-    value (value) {
-      if (arguments.length === 1) {
-        this._value = value
-      }
-      return this._value
-    },
-    type (type) {
-      if (arguments.length === 1) {
-        this._type = type
-      }
-      return this._type
-    },
-    visibility (visibility) {
-      if (arguments.length === 1) {
-        this._visibility = visibility
-      }
-      return this._visibility
-    },
-    bounds (bounds) {
-      if (arguments.length === 1) {
-        this._bounds = bounds
-      }
-      return this._bounds
-    },
-    focus () {
-    }
-  })
-})
+import Screen from 'screen'
 describe('textbox', () => {
   it('responds to events', () => {
     let calls = 0
@@ -46,17 +11,12 @@ describe('textbox', () => {
       },
       bounds: { x: 0, y: 0, width: 0, height: 0 }
     }
-    const screen = {
-      plugins: {
-        prerender: [],
-        render: []
-      },
+    const screen = Screen({
       render () {
         calls++
       },
-      canvas: Canvas(),
       active: view
-    }
+    })
     textbox(screen)
     screen.input()
     // cant blur unless focused

@@ -1,24 +1,5 @@
 import mouse from 'rave/plugins/mouse'
-const Canvas = override => Object.assign({
-  onMouseDown (onmousedown) {
-    this.onmousedown = onmousedown
-  },
-  onMouseOut (onmouseout) {
-    this.onmouseout = onmouseout
-  },
-  onMouseMove (onmousemove) {
-    this.onmousemove = onmousemove
-  },
-  onMouseUp (onmouseup) {
-    this.onmouseup = onmouseup
-  },
-  onClick (onclick) {
-    this.onclick = onclick
-  },
-  isPointInPath () {
-    return true
-  }
-}, override)
+import Screen from 'screen'
 describe('mouse', () => {
   it('can click and skip click', () => {
     const view = {
@@ -26,11 +7,10 @@ describe('mouse', () => {
       isInBounds: true,
       children: []
     }
-    const screen = {
-      canvas: Canvas(),
+    const screen = Screen({
       children: [view],
       active: view
-    }
+    })
     mouse(screen)
     let call = 0
     screen.onClick(function () {
@@ -56,15 +36,15 @@ describe('mouse', () => {
       isInBounds: true,
       children: []
     }
-    const screen = {
-      canvas: Canvas({
+    const screen = Screen({
+      canvas: {
         isPointInPath (x, y) {
           return x === 0 && y === 0
         }
-      }),
+      },
       children: [view],
       active: view
-    }
+    })
     mouse(screen)
     let onMouseIn = 0
     let onMouseOut = 0

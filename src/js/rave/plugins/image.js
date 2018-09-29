@@ -1,6 +1,5 @@
-import { TOP, LEFT, EMPTY_ARRAY } from 'rave/screen'
-
 export default function (screen) {
+  const { TOP, LEFT, EMPTY_ARRAY } = screen
   screen.extend({
     src (view, image) {
       view.image = screen.canvas.image(image, () => {

@@ -1,6 +1,5 @@
-import { LEFT, TOP, EMPTY_ARRAY } from 'rave/screen'
-
 export default isDebug => function (screen) {
+  const { LEFT, TOP, EMPTY_ARRAY } = screen
   screen.plugins.render.push(function (view) {
     if (isDebug) {
       const x = view.bounds.x

@@ -3,12 +3,6 @@ import {
 } from 'utils'
 import Observable from 'rave/observable'
 
-export const TOP = 0
-export const RIGHT = 1
-export const BOTTOM = 2
-export const LEFT = 3
-export const EMPTY_ARRAY = [0, 0, 0, 0]
-
 const COMPLEMENTARY_DIMENSIONS = {
   width: 'x',
   height: 'y',
@@ -27,9 +21,14 @@ const DIMENSIONS = {
   width: 'height',
   height: 'width'
 }
-export const LINE_SPACING = 8
 
 function Screen (canvas, ...plugins) {
+  this.TOP = 0
+  this.RIGHT = 1
+  this.BOTTOM = 2
+  this.LEFT = 3
+  this.EMPTY_ARRAY = [0, 0, 0, 0]
+  this.LINE_SPACING = 8
   this.isInBounds = true
   this.canvas = canvas
   this.plugins = {
@@ -67,8 +66,8 @@ Screen.prototype = {
     })
   },
   reposition (view) {
-    const padding = view.parent.padding instanceof Array ? view.parent.padding : EMPTY_ARRAY
-    const margin = view.parent.margin instanceof Array ? view.parent.margin : EMPTY_ARRAY
+    const padding = view.parent.padding instanceof Array ? view.parent.padding : this.EMPTY_ARRAY
+    const margin = view.parent.margin instanceof Array ? view.parent.margin : this.EMPTY_ARRAY
     return this.plugins.reposition.reduce((position, plugin) => {
       const translate = plugin(view)
       return {
@@ -76,8 +75,8 @@ Screen.prototype = {
         y: position.y + translate.y
       }
     }, {
-      x: view.parent.bounds.x + padding[LEFT] + margin[LEFT] + view.x,
-      y: view.parent.bounds.y + padding[TOP] + margin[TOP] + view.y
+      x: view.parent.bounds.x + padding[this.LEFT] + margin[this.LEFT] + view.x,
+      y: view.parent.bounds.y + padding[this.TOP] + margin[this.TOP] + view.y
     })
   },
   getValue (view, dim) {
@@ -88,10 +87,10 @@ Screen.prototype = {
     }
   },
   getTopBottom (r) {
-    return r instanceof Array ? r[TOP] + r[BOTTOM] : 0
+    return r instanceof Array ? r[this.TOP] + r[this.BOTTOM] : 0
   },
   getLeftRight (r) {
-    return r instanceof Array ? r[RIGHT] + r[LEFT] : 0
+    return r instanceof Array ? r[this.RIGHT] + r[this.LEFT] : 0
   },
   PERCENT (percent) {
     return dim => view => {
@@ -143,7 +142,7 @@ Screen.prototype = {
           const count = view.text.display.split('\n').length
           return {
             height: (
-              view.text.size * count + LINE_SPACING * (count - 1) + spaceAround
+              view.text.size * count + screen.LINE_SPACING * (count - 1) + spaceAround
             )
           }
         }
@@ -247,14 +246,14 @@ Screen.prototype = {
   },
   margin (...margin) {
     if (margin.length === 1) {
-      this.active.margin = [margin[TOP], margin[TOP], margin[TOP], margin[TOP]]
+      this.active.margin = [margin[0], margin[0], margin[0], margin[0]]
     } else {
       this.active.margin = margin
     }
   },
   padding (...padding) {
     if (padding.length === 1) {
-      this.active.padding = [padding[TOP], padding[TOP], padding[TOP], padding[TOP]]
+      this.active.padding = [padding[0], padding[0], padding[0], padding[0]]
     } else {
       this.active.padding = padding
     }

@@ -1,4 +1,3 @@
-import { EMPTY_ARRAY, LEFT, TOP, RIGHT, LINE_SPACING } from 'rave/screen'
 const init = function (view) {
   view.text = view.text || {
     display: '',
@@ -9,6 +8,7 @@ const init = function (view) {
   }
 }
 export default function (screen) {
+  const { EMPTY_ARRAY, LEFT, TOP, RIGHT, LINE_SPACING } = screen
   screen.extend({
     style (view, text) {
       init(view)

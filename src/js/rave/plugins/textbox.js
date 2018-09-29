@@ -1,4 +1,3 @@
-// TODO abstract this
 export default function (screen) {
   screen.textbox = screen.canvas.textbox()
   screen.textbox.onBlur(() => {
@@ -26,7 +25,7 @@ export default function (screen) {
         textbox.view = view
         textbox.value(view.text.display)
         textbox.type(type)
-        this.render()
+        screen.render()
       }
     }
   })

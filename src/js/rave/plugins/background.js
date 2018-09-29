@@ -1,5 +1,5 @@
-import { TOP, LEFT, EMPTY_ARRAY } from 'rave/screen'
 export default function (screen) {
+  const { TOP, LEFT, EMPTY_ARRAY } = screen
   const renderRect = function (isRender) {
     const margin = this.margin || EMPTY_ARRAY
     const x = this.bounds.x + margin[LEFT]

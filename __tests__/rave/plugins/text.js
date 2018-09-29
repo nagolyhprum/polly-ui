@@ -1,4 +1,5 @@
 import text from 'rave/plugins/text'
+import Screen from 'screen'
 describe('text', () => {
   it('draws text properly', () => {
     const display = 'hello world'
@@ -39,7 +40,7 @@ describe('text', () => {
       ['right'],
       ['\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', -10, 70]
     ]
-    const screen = {
+    const screen = Screen({
       canvas: {
         fillStyle (...args) {
           expect(args).toEqual(next.shift())
@@ -57,11 +58,8 @@ describe('text', () => {
           expect(args).toEqual(next.shift())
         }
       },
-      plugins: {
-        render: []
-      },
       active: view
-    }
+    })
     text(screen)
 
     screen.text(display)

@@ -1,4 +1,3 @@
-import { TOP, LEFT, EMPTY_ARRAY } from 'rave/screen'
 function roundRect (canvas, x, y, width, height, radius, fill, stroke) {
   radius = { tl: radius, tr: radius, br: radius, bl: radius }
   canvas.beginPath()
@@ -27,6 +26,7 @@ function roundRect (canvas, x, y, width, height, radius, fill, stroke) {
   }
 }
 export default function (screen) {
+  const { TOP, LEFT, EMPTY_ARRAY } = screen
   function renderRoundRect (isRender) {
     const margin = this.margin || EMPTY_ARRAY
     const x = this.bounds.x + margin[LEFT]
