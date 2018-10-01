@@ -2,6 +2,9 @@ export default extend => Object.assign({
   drawn: [],
   getWidth: () => 0,
   getHeight: () => 0,
+  clear () {
+    this.drawn = []
+  },
   image (src, callback) {
     setTimeout(callback)
     return src
@@ -58,8 +61,20 @@ export default extend => Object.assign({
     focus () {
     }
   }),
+  moveTo () {
+    this.drawn.push(['moveTo', ...arguments])
+  },
+  lineTo () {
+    this.drawn.push(['lineTo', ...arguments])
+  },
+  quadraticCurveTo () {
+    this.drawn.push(['quadraticCurveTo', ...arguments])
+  },
   beginPath () {
     this.drawn.push(['beginPath'])
+  },
+  closePath () {
+    this.drawn.push(['closePath'])
   },
   rect () {
     this.drawn.push(['rect', ...arguments])

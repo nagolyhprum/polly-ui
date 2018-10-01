@@ -20,10 +20,6 @@ const roundRect = (canvas, x, y, width, height, radius, fill, stroke) => {
     canvas.fillStyle(fill)
     canvas.fill()
   }
-  if (stroke) {
-    canvas.strokeStyle(stroke)
-    canvas.stroke()
-  }
 }
 export default screen => {
   const { TOP, LEFT, EMPTY_ARRAY } = screen
