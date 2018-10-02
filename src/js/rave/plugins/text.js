@@ -12,7 +12,7 @@ export default screen => {
   screen.extend({
     style (view, text) {
       init(view)
-      for (var i in text) {
+      for (let i in text) {
         view.text[i] = text[i]
       }
     },

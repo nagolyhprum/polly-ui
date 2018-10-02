@@ -36,6 +36,12 @@ export default (extend = {}) => Object.assign({
   render () {
 
   },
+  getViewPortSize (view) {
+    return {
+      width: view.bounds.width - this.getLeftRight(view.padding) - this.getLeftRight(view.margin),
+      height: view.bounds.height - this.getTopBottom(view.padding) - this.getTopBottom(view.margin)
+    }
+  },
   children: []
 }, extend, {
   canvas: Canvas(extend.canvas)

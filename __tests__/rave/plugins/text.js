@@ -9,6 +9,8 @@ describe('text', () => {
     const size = 16
     const style = { size }
     const view = View({
+      margin : 0,
+      padding : 0,
       textbox: {
         scroll () {
           return 10
@@ -25,13 +27,13 @@ describe('text', () => {
       [16, 'sans-serif'],
       ['top'],
       ['center'],
-      [display, 15, 40],
+      [display, 15, 20],
 
       ['red'],
       [16, 'sans-serif'],
       ['top'],
       ['right'],
-      ['\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', 0, 40]
+      ['\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', 40, 20]
     ]
     const screen = Screen({
       canvas: {

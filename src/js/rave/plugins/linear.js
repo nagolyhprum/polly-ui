@@ -18,10 +18,13 @@ export default screen => {
         view.children.forEach((child, index) => {
           if (index) {
             const previous = view.children[index - 1]
-            if (direction === 'vertical') {
-              child.y = previous.y + previous.bounds.height + spacing
-            } else if (direction === 'horizontal') {
-              child.x = previous.x + previous.bounds.width + spacing
+            switch(direction) {
+              case 'vertical':
+                child.y = previous.y + previous.bounds.height + spacing
+                break
+              case 'horizontal':
+                child.x = previous.x + previous.bounds.width + spacing
+                break
             }
           }
         })
