@@ -84,5 +84,14 @@ export default extend => Object.assign({
   },
   fillStyle () {
     this.drawn.push(['fillStyle', ...arguments])
+  },
+  strokeStyle () {
+    this.drawn.push(['strokeStyle', ...arguments])
+  },
+  setLineDash () {
+    this.drawn.push(['setLineDash', ...arguments])
+  },
+  strokeRect () {
+    this.drawn.push(['strokeRect', ...arguments])
   }
 }, extend)
