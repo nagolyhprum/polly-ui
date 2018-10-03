@@ -9,8 +9,8 @@ describe('text', () => {
     const size = 16
     const style = { size }
     const view = View({
-      margin : 0,
-      padding : 0,
+      margin: 0,
+      padding: 0,
       textbox: {
         scroll () {
           return 10

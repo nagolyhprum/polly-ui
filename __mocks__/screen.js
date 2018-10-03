@@ -12,9 +12,9 @@ export default (extend = {}) => Object.assign({
     prerender: [],
     reposition: []
   },
-  calls : [],
-  highlightArea() {
-    this.calls.push(["highlightArea", ...arguments])
+  calls: [],
+  highlightArea () {
+    this.calls.push(['highlightArea', ...arguments])
   },
   setInterval (interval) {
     this.interval = interval

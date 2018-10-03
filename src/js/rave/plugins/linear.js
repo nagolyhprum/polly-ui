@@ -18,7 +18,7 @@ export default screen => {
         view.children.forEach((child, index) => {
           if (index) {
             const previous = view.children[index - 1]
-            switch(direction) {
+            switch (direction) {
               case 'vertical':
                 child.y = previous.y + previous.bounds.height + spacing
                 break

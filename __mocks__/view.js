@@ -1,10 +1,10 @@
 export default extend => Object.assign({
-  managers : [],
+  managers: [],
   children: [],
-  x : 0,
-  y : 0,
-  width : 0,
-  height : 0,
+  x: 0,
+  y: 0,
+  width: 0,
+  height: 0,
   bounds: {
     x: 10,
     y: 20,

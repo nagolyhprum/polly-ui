@@ -93,5 +93,8 @@ export default extend => Object.assign({
   },
   strokeRect () {
     this.drawn.push(['strokeRect', ...arguments])
+  },
+  arc () {
+    this.drawn.push(['arc', ...arguments])
   }
 }, extend)

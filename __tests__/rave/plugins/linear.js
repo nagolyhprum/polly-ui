@@ -1,18 +1,18 @@
-import linear from "rave/plugins/linear"
-import Screen from "screen"
-import View from "view"
-describe("linear", () => {
-  it("it can set the weight and align", () => {
+import linear from 'rave/plugins/linear'
+import Screen from 'screen'
+import View from 'view'
+describe('linear', () => {
+  it('it can set the weight and align', () => {
     const view = View({
-      bounds : {
-        x : 0,
-        y : 0,
-        width : 300,
-        height : 300
+      bounds: {
+        x: 0,
+        y: 0,
+        width: 300,
+        height: 300
       },
-      padding : 0,
-      margin : 0,
-      children : [
+      padding: 0,
+      margin: 0,
+      children: [
         View(),
         View(),
         View()
@@ -21,7 +21,7 @@ describe("linear", () => {
     const screen = Screen()
     linear(screen)
     view.children.forEach((child, i) => {
-      if(i % 2 === 0) {
+      if (i % 2 === 0) {
         screen.active = child
         expect(child.weight).toEqual(undefined)
         screen.weight(i + 1)
@@ -52,6 +52,6 @@ describe("linear", () => {
       expect(child.weight).toEqual(0)
     })
 
-    view.managers.forEach(manager => manager(view)) //add for coverage only
+    view.managers.forEach(manager => manager(view)) // add for coverage only
   })
 })
