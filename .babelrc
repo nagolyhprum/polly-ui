@@ -8,7 +8,8 @@
         "utils": "./src/js/utils",
         "rave": "./src/js/rave",
         "views": "./src/js/views",
-        "plugins": "./src/js/rave/plugins"
+        "plugins": "./src/js/rave/plugins",
+        "lexicon": "./src/js/lexicon"
       }
     }]
   ]

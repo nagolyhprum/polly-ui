@@ -1,4 +1,5 @@
 import Canvas from 'canvas'
+import View from 'view'
 export default (extend = {}) => Object.assign({
   TOP: 0,
   RIGHT: 1,
@@ -24,6 +25,12 @@ export default (extend = {}) => Object.assign({
       this[key] = (...args) => extension[key](this.active, ...args)
     })
   },
+  position () {
+
+  },
+  anchor () {
+
+  },
   getValue (view, dim) {
     if (typeof view[dim] === 'function') {
       return view[dim](view, dim) || 0
@@ -31,13 +38,29 @@ export default (extend = {}) => Object.assign({
       return view[dim] || 0
     }
   },
+  animateObject () {
+
+  },
   getTopBottom (r) {
     return r instanceof Array ? r[this.TOP] + r[this.BOTTOM] : 0
   },
   getLeftRight (r) {
     return r instanceof Array ? r[this.RIGHT] + r[this.LEFT] : 0
   },
+  container (width, height, callback) {
+    const view = View({
+      parent: this.active
+    })
+    this.active.children.push(view)
+    this.active = view
+    callback(view)
+    this.active = view.parent
+    return view
+  },
   render () {
+
+  },
+  padding () {
 
   },
   getViewPortSize (view) {

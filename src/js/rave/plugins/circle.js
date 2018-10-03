@@ -1,5 +1,5 @@
 export default screen => {
-  const {TOP, LEFT, EMPTY_ARRAY} = screen
+  const { TOP, LEFT, EMPTY_ARRAY } = screen
   function renderCircle (isRender) {
     const margin = this.margin || EMPTY_ARRAY
     const wp = this.bounds.width - screen.getLeftRight(margin)
