@@ -18,9 +18,11 @@ import linear from 'plugins/linear'
 import highlight from 'plugins/highlight'
 import round from 'plugins/round'
 import circle from 'plugins/circle'
+import clear from 'plugins/clear'
 
 const screen = new Screen(
   new Canvas(document.getElementsByTagName('canvas')[0]),
+  clear,
   alpha,
   shadow,
   background,
@@ -29,10 +31,10 @@ const screen = new Screen(
   image,
   overflow,
   separator,
-  textbox,
   text,
   layout(true),
   // not drawn
+  textbox,
   components,
   scrollable,
   mouse,
