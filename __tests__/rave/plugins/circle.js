@@ -2,7 +2,7 @@ import circle from 'rave/plugins/circle'
 import Screen from 'screen'
 import View from 'view'
 describe('circle', () => {
-  it('works', () => {
+  it('draws a circle', () => {
     const view = View({
       background: 'red',
       margin: 0

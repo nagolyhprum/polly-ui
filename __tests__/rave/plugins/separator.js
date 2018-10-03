@@ -2,7 +2,7 @@ import separator from 'rave/plugins/separator'
 import View from 'view'
 import Screen from 'screen'
 describe('separator', () => {
-  it('works!', () => {
+  it('draws a separator!', () => {
     const parent = View({
       parent: {}
     })

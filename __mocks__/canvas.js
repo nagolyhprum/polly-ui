@@ -99,5 +99,8 @@ export default extend => Object.assign({
   },
   stroke () {
     this.drawn.push(['stroke'])
+  },
+  shadow () {
+    this.drawn.push(['shadow', ...arguments])
   }
 }, extend)

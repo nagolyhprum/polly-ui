@@ -2,7 +2,7 @@ import round from 'rave/plugins/round'
 import Screen from 'screen'
 import View from 'view'
 describe('round', () => {
-  it('works', () => {
+  it('draws a round rect', () => {
     const view = View({
       margin: 0
     })
