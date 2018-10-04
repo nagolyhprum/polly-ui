@@ -217,12 +217,6 @@ const Home = (screen, state) => {
             })
             container(MATCH, 0, () => {
               weight(1)
-              container(72, 56, () => {
-                fab()
-                margin(0, 16, 0, 0)
-                anchor(1, .5)
-                position(1, 0)
-              })
               container(MATCH, MATCH, () => {
                 linear()
                 scrollable()
@@ -251,6 +245,12 @@ const Home = (screen, state) => {
                     })
                   })
                 })
+              })
+              container(72, 56, () => {
+                fab()
+                margin(0, 16, 0, 0)
+                anchor(1, .5)
+                position(1, 0)
               })
             })
           })
