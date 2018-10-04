@@ -117,7 +117,7 @@ Screen.prototype = {
       }
     } else if ((view.text && view.text.display) || view.input) {
       if (dim === 'width') {
-        canvas.font(view.text.size, 'sans-serif')
+        canvas.font(view.text.size, 'Roboto')
         return {
           width: Math.max(...view.text.display.split('\n').map(display => canvas.measureText(display))) + spaceAround
         }

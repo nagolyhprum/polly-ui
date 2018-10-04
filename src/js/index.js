@@ -22,6 +22,7 @@ import highlight from 'plugins/highlight'
 import round from 'plugins/round'
 import circle from 'plugins/circle'
 import clear from 'plugins/clear'
+import colorPI from 'plugins/color'
 
 const canvas = document.getElementsByTagName('canvas')[0]
 const screen = new Screen(
@@ -44,7 +45,8 @@ const screen = new Screen(
   scrollable,
   mouse,
   linear,
-  highlight
+  highlight,
+  colorPI
 )
 
 /*
@@ -55,6 +57,35 @@ container(WRAP, WRAP, () => {
   })
 })
 */
+
+const list = [{
+  title : "Demo Capabilities of Poly UI",
+  description : "By showing a list"
+}, {
+  title : "Demo Capabilities of Poly UI",
+  description : "By showing a list"
+}, {
+  title : "Demo Capabilities of Poly UI",
+  description : "By showing a list"
+}, {
+  title : "Demo Capabilities of Poly UI",
+  description : "By showing a list"
+}, {
+  title : "Demo Capabilities of Poly UI",
+  description : "By showing a list"
+}, {
+  title : "Demo Capabilities of Poly UI",
+  description : "By showing a list"
+}, {
+  title : "Demo Capabilities of Poly UI",
+  description : "By showing a list"
+}, {
+  title : "Demo Capabilities of Poly UI",
+  description : "By showing a list"
+}, {
+  title : "Demo Capabilities of Poly UI",
+  description : "By showing a list"
+}]
 
 const Home = (screen, state) => {
   const {
@@ -77,6 +108,10 @@ const Home = (screen, state) => {
     circle,
     tabs,
     textAlign,
+    scrollable,
+    onColorChange,
+    fab,
+    separator,
     MATCH,
     WRAP,
     PERCENT
@@ -90,14 +125,16 @@ const Home = (screen, state) => {
       container(0, WRAP, () => {
         link("/")
         text("Poly UI")
-        textColor("white")
+        textColor(color.text)
         style(font.bold_20)
         anchor(0, .5)
         position(0, .5)
         weight(1)
       })
-      container(WRAP, WRAP, () => {
+      container(32, 32, () => {
         src(drawable.action.feedback)
+        anchor(0, .5)
+        position(0, .5)
       })
     })
     container(MATCH, 0, () => {
@@ -110,7 +147,7 @@ const Home = (screen, state) => {
         margin(64, 64, 64, 0)
         shadow()
         container(MATCH, WRAP, () => {
-          textColor("white")
+          textColor(color.text)
           textAlign("center")
           padding(16)
           background(color.primary)
@@ -145,6 +182,79 @@ const Home = (screen, state) => {
         container(_ => child => ({ width : child.bounds.height * 480 / 856 }), _ => child => ({ height : child.parent.parent.bounds.height * .75 }), () => {
           background("white")
           //CONTENT
+
+          container(MATCH, MATCH, () => {
+            linear()
+            container(MATCH, 16, () => {
+              background(color.dark_primary)
+            })
+            container(MATCH, 16 * 16, () => {
+              background(color.primary)
+              padding(16)
+              container(32, 32, () => {
+                src(drawable.navigation.back)
+              })
+              container(32, 32, () => {
+                src(drawable.navigation.more_vert)
+                anchor(1, 0)
+                position(1, 0)
+              })
+              container(WRAP, WRAP, () => {
+                anchor(.5, .5)
+                position(.5, .5)
+                linear(8)
+                container(WRAP, WRAP, () => {
+                  text("Poly UI Preview")
+                  style(font.bold_36)
+                  textColor(color.text)
+                })
+                container(WRAP, WRAP, () => {
+                  text("Demo of color pallette")
+                  style(font.regular_16)
+                  textColor(color.light_primary)
+                })
+              })
+            })
+            container(MATCH, 0, () => {
+              weight(1)
+              container(72, 56, () => {
+                fab()
+                margin(0, 16, 0, 0)
+                anchor(1, .5)
+                position(1, 0)
+              })
+              container(MATCH, MATCH, () => {
+                linear()
+                scrollable()
+                separator()
+                list.forEach(it => {
+                  container(MATCH, WRAP, () => {
+                    padding(16)
+                    linear(16, "horizontal")
+                    container(24, 24, () => {
+                      src(drawable.navigation.check)
+                      anchor(0, .5)
+                      position(0, .5)
+                    })
+                    container(WRAP, WRAP, () => {
+                      linear(8)
+                      container(WRAP, WRAP, () => {
+                        text(it.title)
+                        textColor(color.primary_text)
+                        style(font.regular_16)
+                      })
+                      container(WRAP, WRAP, () => {
+                        text(it.description)
+                        textColor(color.secondary_text)
+                        style(font.regular_12)
+                      })
+                    })
+                  })
+                })
+              })
+            })
+          })
+          //END CONTENT
         })
         container(30, 15, () => {
           background("#757575")
@@ -160,20 +270,70 @@ const Home = (screen, state) => {
         shadow()
         linear()
         container(MATCH, WRAP, () => {
-          textColor("white")
+          textColor(color.text)
           textAlign("center")
           padding(16)
           background(color.primary)
           text("Resources")
         })
-        tabs("Screens", "Images", "Text", "Colors")
+        const tabs$ = tabs("Screens", "Images", "Text", "Colors")
+        container(MATCH, 0, () => {
+          weight(1)
+          linear()
+          padding(0, 16, 16, 16)
+          state.colors.forEach(c => {
+            container(MATCH, 0, () => {
+              text(c.name)
+              textAlign("center")
+              weight(1)
+              style(font.normal_12)
+            })
+            container(MATCH, 0, () => {
+              weight(1)
+              background(c.value)
+              onColorChange(c, () => {
+                //TODO
+              })
+            })
+          })
+        })
       })
     })
   })
 }
 
 screen.container(screen.MATCH, screen.MATCH, () => {
-  Home(screen, {})
+  Home(screen, {
+    colors : [{
+      name : "Dark Primary",
+      value : "#00796B",
+      key: "dark_primary"
+    }, {
+      name : "Light Primary",
+      value : "#B2DFDB",
+      key: "light_primary"
+    }, {
+      name : "Primary",
+      value : "#009688",
+      key: "primary"
+    }, {
+      name : "Accent",
+      value : "#FF9800",
+      key: "accent"
+    }, {
+      name : "Primary Text",
+      value : "#212121",
+      key: "primary_text"
+    }, {
+      name : "Secondary Text",
+      value : "#757575",
+      key: "secondary_text"
+    }, {
+      name : "Divider",
+      value : "#BDBDBD",
+      key: "divider_color"
+    }]
+  })
 })
 
 const setSize = () => {

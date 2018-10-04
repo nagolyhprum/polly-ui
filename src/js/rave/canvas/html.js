@@ -5,6 +5,22 @@ export default class Canvas {
     this.context = canvas.getContext('2d')
     this.images = {}
   }
+  colorPicker() {
+    const cp = document.createElement('input')
+    cp.type = "color"
+    return {
+      onChange(onchange) {
+        cp.onchange = onchange
+      },
+      value() {
+        return cp.value
+      },
+      choose(color) {
+        cp.value = color
+        cp.click()
+      }
+    }
+  }
   cursor(cursor) {
     this.canvas.style.cursor = cursor
   }

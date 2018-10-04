@@ -8,6 +8,7 @@ export default {
   primary_text: "#212121",
   secondary_text: "#757575",
   divider_color: "#BDBDBD",
+  text : "#ffffff"
 }
 
 //icons: #727272

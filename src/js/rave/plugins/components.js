@@ -7,19 +7,19 @@ const slightRound = 4
 
 export default screen => {
   screen.extend({
-    fab (view, icon = drawable.icons.add_white, color = 'gold') {
-      screen.padding(8)
+    fab (view, icon = drawable.content.add, background = color.accent) {
+      screen.padding(16)
       screen.src(icon)
-      screen.background(color)
+      screen.background(background)
       screen.circle()
     },
-    button (view, color) {
+    button (view, background) {
       screen.textAlign('center')
       screen.padding(16)
       screen.textColor('white')
-      if (color) {
+      if (background) {
         screen.round(child => Math.min(child.bounds.width / 2, child.bounds.height / 2))
-        screen.background(color)
+        screen.background(background)
       }
     },
     card (view) {

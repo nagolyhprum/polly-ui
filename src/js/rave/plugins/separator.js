@@ -1,3 +1,4 @@
+import color from 'color'
 export default screen => {
   screen.extend({
     separator (view, separator = true) {
@@ -17,7 +18,7 @@ export default screen => {
           view.bounds.x + view.bounds.width,
           view.bounds.y
         )
-        screen.canvas.strokeStyle('rgba(0, 0, 0, .7)')
+        screen.canvas.strokeStyle(color.divider_color)
         screen.canvas.stroke()
       }
     }

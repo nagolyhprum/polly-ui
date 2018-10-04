@@ -34,11 +34,11 @@ export default screen => {
       const margin = view.margin || EMPTY_ARRAY
       const padding = view.padding || EMPTY_ARRAY
       const x = view.bounds.x - (view.textbox ? view.textbox.scroll() : 0)
-      const y = view.bounds.y + padding[TOP] + margin[TOP]
+      const y = view.bounds.y + view.bounds.height / 2
       const wpm = view.bounds.width
       screen.canvas.fillStyle(view.text.color)
-      screen.canvas.font(view.text.size, 'sans-serif')
-      screen.canvas.textBaseline('top')
+      screen.canvas.font(view.text.size, 'Roboto')
+      screen.canvas.textBaseline('middle')
       screen.canvas.textAlign(view.text.align)
       const lines = view.text.display.split('\n')
       lines.forEach((line, index) => {
