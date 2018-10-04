@@ -1,5 +1,5 @@
 const detectLanguage = () => 'english'
-const english = require('string/english').default
+import english from 'string/english'
 
 // const base = child => Object.assign({}, english, child.default) //TODO use this for other languages
 

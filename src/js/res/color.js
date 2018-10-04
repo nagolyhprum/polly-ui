@@ -1,30 +1,13 @@
-export default { colorPrimary: '#2196F3',
-  colorPrimaryDark: '#1A78C2',
-  colorAccent: '#ffc107',
-  google: '#4169e1',
-  facebook: '#3b5997',
-  azure: '#2196f3',
-  white: '#fff',
-  aqua: '#0ee3b4',
-  powder_blue: '#bbdefb',
-  ice_blue: '#f1f9ff',
-  aqua_marine: '#50e3c2',
-  streak_highlight: '#FFC107',
-  pinkish_gray: '#bdbdbd',
-  black_333: '#333333',
-  black_21: '#212121',
-  black_55: '#555555',
-  black_25p: '#000000',
-  black: '#000000',
-  warm_gray: '#757575',
-  warm_pink: '#ff4081',
-  blue_purple: '#673ab7',
-  orange_red: '#ff5722',
-  ok_lr: '#e7423b',
-  gray_88: '#88212121',
-  report_ok: '#e7423b',
-  gray_55: '#555555',
-  tip: '#ffeb3b',
-  tip_text: '#9b9b9b',
-  disabled: '#dbdbdb',
-  powder_pink: '#FEA2C1' }
+//https://cdispaces.ca/best-office-colors/
+//https://www.materialpalette.com/teal/orange
+export default {
+  dark_primary: "#00796B",
+  light_primary: "#B2DFDB",
+  primary: "#009688",
+  accent: "#FF9800",
+  primary_text: "#212121",
+  secondary_text: "#757575",
+  divider_color: "#BDBDBD",
+}
+
+//icons: #727272

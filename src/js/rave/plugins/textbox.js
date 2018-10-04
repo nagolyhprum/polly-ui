@@ -18,6 +18,7 @@ export default screen => {
   screen.extend({
     input (view, type = 'text') {
       const textbox = screen.textbox
+      view.cursor = "text"
       view.input = type
       view.overflow = false
       view.onClick = () => {

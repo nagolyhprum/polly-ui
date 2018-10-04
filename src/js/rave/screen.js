@@ -40,22 +40,6 @@ function Screen (canvas, ...plugins) {
   plugins.map(plugin => plugin(this))
   this.children = []
   this.active = this
-  this.bounds = {
-    x: 0,
-    y: 0,
-    width: canvas.getWidth(),
-    height: canvas.getHeight()
-  }
-  this.intersection = {
-    left: 0,
-    top: 0,
-    right: this.bounds.width,
-    bottom: this.bounds.height,
-    x: 0,
-    y: 0,
-    width: this.bounds.width,
-    height: this.bounds.height
-  }
   this.bind()
 }
 
@@ -322,6 +306,22 @@ Screen.prototype = {
     }
   },
   render () {
+    this.bounds = {
+      x: 0,
+      y: 0,
+      width: this.canvas.getWidth(),
+      height: this.canvas.getHeight()
+    }
+    this.intersection = {
+      left: 0,
+      top: 0,
+      right: this.bounds.width,
+      bottom: this.bounds.height,
+      x: 0,
+      y: 0,
+      width: this.bounds.width,
+      height: this.bounds.height
+    }
     const start = Date.now()
     this.plugins.prerender.forEach(plugin => plugin(this))
     this.children.slice(this.children.length - 2).forEach(child => {

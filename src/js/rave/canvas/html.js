@@ -1,9 +1,12 @@
-const SHADOW = 4
+const SHADOW = 5
 export default class Canvas {
   constructor (canvas) {
     this.canvas = canvas
     this.context = canvas.getContext('2d')
     this.images = {}
+  }
+  cursor(cursor) {
+    this.canvas.style.cursor = cursor
   }
   textbox () {
     const textbox = document.createElement('input')
@@ -62,8 +65,8 @@ export default class Canvas {
     if (shadow) {
       this.context.shadowColor = 'rgba(0, 0, 0, .7)'
       this.context.shadowBlur = SHADOW
-      this.context.shadowOffsetX = SHADOW
-      this.context.shadowOffsetY = SHADOW
+      this.context.shadowOffsetX = 0
+      this.context.shadowOffsetY = 0
     } else {
       this.context.shadowColor = 'transparent'
       this.context.shadowBlur = 0

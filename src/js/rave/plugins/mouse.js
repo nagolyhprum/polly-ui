@@ -7,29 +7,38 @@ export default screen => {
     name
   })
 
-  let last = []
+  let previous = []
   let moved = 0
 
   const call = (e, name) => {
     const mouse = getMouse(e, name)
     const mo = mouseOver(mouse, screen)
-    last.forEach(view => {
+    previous.forEach(view => {
       if (!contains(mo, view)) {
         view.onMouseOut && view.onMouseOut(getMouse(e, 'onMouseOut'))
       }
     })
     mo.forEach(view => {
-      if (!contains(last, view)) {
+      if (!contains(previous, view)) {
         view.onMouseIn && view.onMouseIn(getMouse(e, 'onMouseIn'))
       }
     })
-    last = mo
+    previous = mo
     let view = mo[mo.length - 1]
     while (view && !view[name]) {
       view = view.parent
     }
     if (view && view !== screen) {
       view[name](mouse)
+    }
+    screen.canvas.cursor("default")
+    let last = mo[mo.length - 1]
+    while(last) {
+      if(last.cursor) {
+        screen.canvas.cursor(last.cursor)
+        break;
+      }
+      last = last.parent
     }
   }
 
@@ -40,10 +49,10 @@ export default screen => {
 
   canvas.onMouseOut(e => {
     const mouse = getMouse(e, 'onMouseOut')
-    last.forEach(view => {
+    previous.forEach(view => {
       view.onMouseOut && view.onMouseOut(mouse)
     })
-    last = []
+    previous = []
   })
 
   canvas.onMouseMove(e => {
@@ -73,6 +82,7 @@ export default screen => {
 
   screen.extend({
     onClick (view, onClick) {
+      view.cursor = "pointer"
       view.onClick = onClick
     },
     onMouseIn (view, onMouseIn) {

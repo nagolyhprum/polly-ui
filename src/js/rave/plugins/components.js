@@ -1,5 +1,6 @@
 import Observable from 'rave/observable'
 import font from 'font'
+import color from 'color'
 import drawable from 'drawable'
 
 const slightRound = 4
@@ -29,11 +30,12 @@ export default screen => {
     tabs (view, ...tabs) {
       const tab$ = new Observable(0)
       screen.container(screen.MATCH, screen.WRAP, () => {
+        screen.background(color.primary)
         const horizontal = screen.container(screen.MATCH, screen.WRAP, () => {
           screen.linear(0, 'horizontal')
           tabs.forEach((text, index) => {
             screen.container(0, screen.WRAP, () => {
-              screen.textColor(index ? 'black' : 'white')
+              screen.textColor(index ? color.primary_text : 'white')
               screen.padding(16)
               screen.weight(1)
               screen.text(text)
@@ -48,11 +50,11 @@ export default screen => {
         }), 5, () => {
           screen.position(0, 1)
           screen.anchor(0, 1)
-          screen.background('gold')
+          screen.background(color.accent)
         })
         tab$.observe(tab => {
           horizontal.children.forEach(child => {
-            child.text.color = 'black'
+            child.text.color = color.primary_text
           })
           horizontal.children[tab].text.color = 'white'
           screen.animateObject(indicator, {
