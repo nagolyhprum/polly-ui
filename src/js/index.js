@@ -265,7 +265,7 @@ const Home = (screen, state) => {
       })
       container(0, MATCH, () => {
         background("white")
-        weight(1)
+        weight(2)
         margin(64, 0, 64, 64)
         shadow()
         linear()
@@ -276,7 +276,7 @@ const Home = (screen, state) => {
           background(color.primary)
           text("Resources")
         })
-        const tabs$ = tabs("Screens", "Images", "Text", "Colors")
+        const tabs$ = tabs("Screens", "Images", "Text", "Colors", "Fonts")
         container(MATCH, 0, () => {
           weight(1)
           linear()
