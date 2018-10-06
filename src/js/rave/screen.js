@@ -2,6 +2,49 @@ import {
   equals
 } from 'utils'
 import Observable from 'rave/observable'
+// plugins
+import link from 'plugins/link'
+import layout from 'plugins/layout'
+import shadow from 'plugins/shadow'
+import background from 'plugins/background'
+import image from 'plugins/image'
+import alpha from 'plugins/alpha'
+import separator from 'plugins/separator'
+import overflow from 'plugins/overflow'
+import textbox from 'plugins/textbox'
+import text from 'plugins/text'
+import scrollable from 'plugins/scrollable'
+import mouse from 'plugins/mouse'
+import components from 'plugins/components'
+import linear from 'plugins/linear'
+import highlight from 'plugins/highlight'
+import round from 'plugins/round'
+import circle from 'plugins/circle'
+import colorPI from 'plugins/color'
+import screen from 'plugins/screen'
+
+const PLUGINS = [
+  alpha,
+  shadow,
+  background,
+  round,
+  circle,
+  image,
+  overflow,
+  separator,
+  text,
+  screen,
+  layout(false),
+  // not drawn
+  link,
+  textbox,
+  components,
+  scrollable,
+  mouse,
+  linear,
+  highlight,
+  colorPI
+]
 
 const COMPLEMENTARY_DIMENSIONS = {
   width: 'x',
@@ -23,6 +66,8 @@ const DIMENSIONS = {
 }
 
 function Screen (state, resources, canvas, ...plugins) {
+  this.main = this
+  this.bounds = {}
   this.state = state
   this.TOP = 0
   this.RIGHT = 1
@@ -39,7 +84,7 @@ function Screen (state, resources, canvas, ...plugins) {
     reposition: []
   }
   this.resources = resources
-  plugins.map(plugin => plugin(this))
+  PLUGINS.concat(plugins).map(plugin => plugin(this))
   this.children = []
   this.active = this
   this.bind()
@@ -204,7 +249,7 @@ Screen.prototype = {
     this.setTimeout(() => {
       this.active = active
       callback()
-      this.render()
+      this.main.render()
     }, ms)
   },
   margin (...margin) {
@@ -241,7 +286,7 @@ Screen.prototype = {
         clearInterval(interval)
         cb && cb()
       }
-      this.render()
+      this.main.render()
     }
     handler(start)
     const interval = this.setInterval(handler, 1000 / 60)
@@ -266,7 +311,7 @@ Screen.prototype = {
         }, 300)
       }
     })
-    this.render()
+    this.main.render()
     this.firstRender = false
     return this
   },
@@ -288,20 +333,20 @@ Screen.prototype = {
       console.log('TODO')
     }
   },
-  render () {
+  render (width, height) {
     this.bounds = {
-      x: 0,
-      y: 0,
-      width: this.canvas.getWidth(),
-      height: this.canvas.getHeight()
+      x: this.bounds.x || 0,
+      y: this.bounds.y || 0,
+      width: width || this.canvas.getWidth(),
+      height: height || this.canvas.getHeight()
     }
     this.intersection = {
-      left: 0,
-      top: 0,
+      left: this.bounds.x || 0,
+      top: this.bounds.y || 0,
       right: this.bounds.width,
       bottom: this.bounds.height,
-      x: 0,
-      y: 0,
+      x: this.bounds.x || 0,
+      y: this.bounds.y || 0,
       width: this.bounds.width,
       height: this.bounds.height
     }

@@ -7,7 +7,7 @@ export default screen => {
           color.value = cp.value()
           view.background = cp.value()
           onColorChange()
-          screen.render()
+          screen.main.render()
         })
         cp.choose(color.value)
       })

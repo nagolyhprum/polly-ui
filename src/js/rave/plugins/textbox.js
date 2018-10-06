@@ -5,14 +5,14 @@ export default screen => {
     if (view) {
       screen.textbox.view = null
       view.textbox = null
-      screen.render()
+      screen.main.render()
     }
   })
   screen.textbox.onInput(() => {
     const view = screen.textbox.view
     if (view) {
       view.text.display = screen.textbox.value()
-      screen.render()
+      screen.main.render()
     }
   })
   screen.extend({
@@ -26,7 +26,7 @@ export default screen => {
         textbox.view = view
         textbox.value(view.text.display)
         textbox.type(type)
-        screen.render()
+        screen.main.render()
       }
     }
   })

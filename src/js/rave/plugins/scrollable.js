@@ -32,7 +32,7 @@ export default screen => {
         const bottom = Math.max(0, ...active.children.map(child => child.bounds.y + child.bounds.height - (active.bounds.y + active.bounds.height + active.scrollY)))
         active.scrollX = Math.max(Math.min(active.scrollX + dx, 0), -right)
         active.scrollY = Math.max(Math.min(active.scrollY + dy, 0), -bottom)
-        screen.render()
+        screen.main.render()
       }
       active.onMouseMove = mouse => {
         if (lastMouse) {

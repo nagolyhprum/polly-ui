@@ -164,6 +164,12 @@ export default class Canvas {
   restore () {
     this.context.restore()
   }
+  setWidth(width) {
+    this.canvas.width = width
+  }
+  setHeight(height) {
+    this.canvas.height = height
+  }
   getWidth (image) {
     if (image) {
       return image.width
@@ -197,8 +203,12 @@ export default class Canvas {
   fill () {
     this.context.fill(...arguments)
   }
-  drawImage () {
-    this.context.drawImage(...arguments)
+  drawImage (obj, ...rem) {
+    if(obj instanceof Canvas) {
+      this.context.drawImage(obj.canvas, ...rem)
+    } else {
+      this.context.drawImage(...arguments)
+    }
   }
   strokeStyle (strokeStyle) {
     this.context.strokeStyle = strokeStyle

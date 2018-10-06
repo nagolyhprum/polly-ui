@@ -1,3 +1,6 @@
+import Screen from 'rave/screen'
+import Canvas from 'rave/canvas/html'
+
 const LIST = [{
   title: 'Demo Capabilities of Poly UI',
   description: 'By showing a list'
@@ -54,6 +57,7 @@ const content = screen => {
     }
   } = screen
   container(MATCH, MATCH, () => {
+    background("white")
     linear()
     container(MATCH, 16, () => {
       background(color.dark_primary)
@@ -131,10 +135,21 @@ export default screen => {
   const {
     container,
     background,
-    include
+    include,
+    screen: renderScreen
   } = screen
-  container(_ => child => ({ width: child.bounds.height * 480 / 856 }), _ => child => ({ height: child.parent.parent.bounds.height * 0.75 }), () => {
-    background('white')
-    include(content)
+
+  const state = {}
+  const resources = screen.resources
+  const canvas = screen.canvas
+  const child = new Screen(state, resources, canvas)
+  child.start(content)
+
+  container(_ => child => ({
+    width: child.bounds.height * 480 / 856
+  }), _ => child => ({
+    height: child.parent.parent.bounds.height * 0.75
+  }), () => {
+    renderScreen(child)
   })
 }
