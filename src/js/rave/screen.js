@@ -22,25 +22,35 @@ const DIMENSIONS = {
   height: 'width'
 }
 
-function Screen (canvas, ...plugins) {
+function Screen (state, resources, canvas, ...plugins) {
+  this.state = state
   this.TOP = 0
   this.RIGHT = 1
   this.BOTTOM = 2
   this.LEFT = 3
   this.EMPTY_ARRAY = [0, 0, 0, 0]
-  this.LINE_SPACING = 8
   this.isInBounds = true
   this.canvas = canvas
   this.plugins = {
+    wrap: [childrenWrapper],
     prerender: [],
     render: [],
     view: [],
     reposition: []
   }
+  this.resources = resources
   plugins.map(plugin => plugin(this))
   this.children = []
   this.active = this
   this.bind()
+}
+
+const childrenWrapper = (view, dim) => {
+  if (view.children.length) {
+    return {
+      [dim]: Math.max(1, ...view.children.map(child => child[COMPLEMENTARY_DIMENSIONS[dim]] + child.bounds[dim]))
+    }
+  }
 }
 
 Screen.prototype = {
@@ -69,6 +79,9 @@ Screen.prototype = {
     } else {
       return view[dim] || 0
     }
+  },
+  include (component) {
+    component(this)
   },
   getTopBottom (r) {
     return r instanceof Array ? r[this.TOP] + r[this.BOTTOM] : 0
@@ -100,56 +113,24 @@ Screen.prototype = {
     }
   },
   WRAP: dim => (view, screen) => {
-    const { canvas } = screen
     const spaceAround = {
       width: screen.getLeftRight(view.padding) + screen.getLeftRight(view.margin),
       height: screen.getTopBottom(view.padding) + screen.getTopBottom(view.margin)
     }[dim]
-    if (view.image) {
-      const imageBounds = {
-        width: canvas.getWidth(view.image),
-        height: canvas.getHeight(view.image)
+    const size = screen.plugins.wrap.reduce((size, wrap) => {
+      return size || wrap(view, dim)
+    }, null) || {
+        [dim]: 0
       }
-      const other = OPPOSITE_DIMENSIONS[dim]
-      const opposite = Math.max(0, view.bounds[other] - spaceAround) / imageBounds[other] * imageBounds[dim]
-      return {
-        [dim]: (opposite || view.image[dim]) + spaceAround
-      }
-    } else if ((view.text && view.text.display) || view.input) {
-      if (dim === 'width') {
-        canvas.font(view.text.size, 'Roboto')
-        return {
-          width: Math.max(...view.text.display.split('\n').map(display => canvas.measureText(display))) + spaceAround
-        }
-      } else if (dim === 'height') {
-        const count = view.text.display.split('\n').length
-        return {
-          height: (
-            view.text.size * count + screen.LINE_SPACING * (count - 1) + spaceAround
-          )
-        }
-      }
-    } else if (view.children.length) {
-      return {
-        [dim]: Math.max(1, ...view.children.map(
-          child =>
-            child[COMPLEMENTARY_DIMENSIONS[dim]] + // child.x
-            // child.bounds[COMPLEMENTARY_DIMENSIONS[dim]] + //child.bounds.x
-            child.bounds[dim] + // child.bounds.width
-            spaceAround
-        ))
-      }
-    }
-    return {
-      [dim]: spaceAround
-    }
+    size[dim] += spaceAround
+    return size
   },
   view (parent, width, height) {
     return this.plugins.view.reduce((view, plugin) => plugin(view), {
       render: _ => _,
       managers: [
-        typeof width === 'function' ? width('width') : () => ({ width }),
-        typeof height === 'function' ? height('height') : () => ({ height }),
+        typeof width === 'function' ? width('width') : () => ({ width: width * this.canvas.getRatio() }),
+        typeof height === 'function' ? height('height') : () => ({ height: height * this.canvas.getRatio() }),
         this.reposition
       ],
       parent,
@@ -228,16 +209,18 @@ Screen.prototype = {
   },
   margin (...margin) {
     if (margin.length === 1) {
-      this.active.margin = [margin[0], margin[0], margin[0], margin[0]]
+      const scaled = margin[0] * this.canvas.getRatio()
+      this.active.margin = [scaled, scaled, scaled, scaled]
     } else {
-      this.active.margin = margin
+      this.active.margin = margin.map(it => it * this.canvas.getRatio())
     }
   },
   padding (...padding) {
     if (padding.length === 1) {
-      this.active.padding = [padding[0], padding[0], padding[0], padding[0]]
+      const scaled = padding[0] * this.canvas.getRatio()
+      this.active.padding = [scaled, scaled, scaled, scaled]
     } else {
-      this.active.padding = padding
+      this.active.padding = padding.map(it => it * this.canvas.getRatio())
     }
   },
   setInterval (interval, ms) {
@@ -266,11 +249,11 @@ Screen.prototype = {
   animate (from, to, ms, cb) {
     this.animateObject(this.active, from, to, ms, cb)
   },
-  start (view, state) {
+  start (view) {
     this.firstRender = true
     this.active = this
     this.container(this.MATCH, this.MATCH, () => {
-      view(this, state)
+      view(this)
       if (this.children.length > 1) {
         this.animate({
           alpha: 0.25,

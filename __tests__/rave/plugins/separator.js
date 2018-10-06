@@ -1,4 +1,5 @@
 import separator from 'rave/plugins/separator'
+import color from 'color'
 import View from 'view'
 import Screen from 'screen'
 describe('separator', () => {
@@ -26,7 +27,7 @@ describe('separator', () => {
       ['beginPath'],
       ['moveTo', 10, 20],
       ['lineTo', 40, 20],
-      ['strokeStyle', 'rgba(0, 0, 0, .7)'],
+      ['strokeStyle', color.divider_color],
       ['stroke']
     ])
   })

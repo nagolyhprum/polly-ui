@@ -6,7 +6,6 @@ export default (extend = {}) => Object.assign({
   BOTTOM: 2,
   LEFT: 3,
   EMPTY_ARRAY: [0, 0, 0, 0],
-  LINE_SPACING: 8,
   plugins: {
     render: [],
     view: [],

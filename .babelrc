@@ -3,13 +3,11 @@
   "plugins": [
     ["module-resolver", {
       "alias": {
-        "drawable": "./src/js/res/drawable",
-        "color": "./src/js/res/color",
-        "font": "./src/js/res/font",
         "utils": "./src/js/utils",
         "rave": "./src/js/rave",
         "views": "./src/js/lexicon/views",
-        "plugins": "./src/js/rave/plugins"
+        "plugins": "./src/js/rave/plugins",
+        "app": "./src/js/app"
       }
     }]
   ]

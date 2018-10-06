@@ -3,12 +3,12 @@ const init = view => {
     display: '',
     size: 12,
     color: 'black',
-    weight: 'normal',
+    weight: '',
     align: 'left'
   }
 }
 export default screen => {
-  const { EMPTY_ARRAY, LEFT, TOP, RIGHT, LINE_SPACING } = screen
+  const { EMPTY_ARRAY, LEFT, RIGHT } = screen
   screen.extend({
     style (view, text) {
       init(view)
@@ -29,6 +29,15 @@ export default screen => {
       view.text.align = align
     }
   })
+  screen.plugins.wrap.unshift((view, dim) => {
+    if ((view.text && view.text.display) || view.input) {
+      screen.canvas.font(view.text.size * screen.canvas.getRatio(), 'Roboto, sans-serif', view.text.weight)
+      const mt = screen.canvas.measureText(view.text.display)
+      return {
+        [dim]: mt[dim]
+      }
+    }
+  })
   screen.plugins.render.push(view => {
     if (view.text && view.text.display) {
       const margin = view.margin || EMPTY_ARRAY
@@ -37,22 +46,20 @@ export default screen => {
       const y = view.bounds.y + view.bounds.height / 2
       const wpm = view.bounds.width
       screen.canvas.fillStyle(view.text.color)
-      screen.canvas.font(view.text.size, 'Roboto')
+      screen.canvas.font(view.text.size * screen.canvas.getRatio(), 'Roboto, sans-serif', view.text.weight)
       screen.canvas.textBaseline('middle')
       screen.canvas.textAlign(view.text.align)
-      const lines = view.text.display.split('\n')
-      lines.forEach((line, index) => {
-        let offsetX = padding[LEFT] + margin[LEFT]
-        switch (view.text.align) {
-          case 'right' : offsetX = wpm - padding[RIGHT] - margin[RIGHT]; break
-          case 'center' : offsetX = wpm / 2; break
-        }
-        screen.canvas.fillText(
-          view.input === 'password' ? line.split('').map(it => '\u2022').join('') : line,
-          x + offsetX,
-          y + index * (view.text.size + LINE_SPACING)
-        )
-      })
+      let offsetX = padding[LEFT] + margin[LEFT]
+      switch (view.text.align) {
+        case 'right' : offsetX = wpm - padding[RIGHT] - margin[RIGHT]; break
+        case 'center' : offsetX = wpm / 2; break
+      }
+      const line = view.text.display
+      screen.canvas.fillText(
+        view.input === 'password' ? line.split('').map(it => '\u2022').join('') : line,
+        x + offsetX,
+        y
+      )
     }
   })
 }

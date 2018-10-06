@@ -2,8 +2,8 @@ import { contains } from 'utils'
 export default screen => {
   const canvas = screen.canvas
   const getMouse = (e, name) => ({
-    x: e.x,
-    y: e.y,
+    x: e.x * screen.canvas.getRatio(),
+    y: e.y * screen.canvas.getRatio(),
     name
   })
 
@@ -31,12 +31,12 @@ export default screen => {
     if (view && view !== screen) {
       view[name](mouse)
     }
-    screen.canvas.cursor("default")
+    screen.canvas.cursor('default')
     let last = mo[mo.length - 1]
-    while(last) {
-      if(last.cursor) {
+    while (last) {
+      if (last.cursor) {
         screen.canvas.cursor(last.cursor)
-        break;
+        break
       }
       last = last.parent
     }
@@ -82,7 +82,7 @@ export default screen => {
 
   screen.extend({
     onClick (view, onClick) {
-      view.cursor = "pointer"
+      view.cursor = 'pointer'
       view.onClick = onClick
     },
     onMouseIn (view, onMouseIn) {

@@ -14,7 +14,9 @@
       "Image",
       "describe",
       "it",
-      "expect"
+      "expect",
+      "fetch",
+      "btoa"
     ]
   },
   "repository": {

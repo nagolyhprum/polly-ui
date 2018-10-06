@@ -1,27 +1,30 @@
-const SHADOW = 5
+const SHADOW = 8
 export default class Canvas {
+  getRatio () {
+    return window.devicePixelRatio || 1
+  }
   constructor (canvas) {
     this.canvas = canvas
     this.context = canvas.getContext('2d')
     this.images = {}
   }
-  colorPicker() {
+  colorPicker () {
     const cp = document.createElement('input')
-    cp.type = "color"
+    cp.type = 'color'
     return {
-      onChange(onchange) {
+      onChange (onchange) {
         cp.onchange = onchange
       },
-      value() {
+      value () {
         return cp.value
       },
-      choose(color) {
+      choose (color) {
         cp.value = color
         cp.click()
       }
     }
   }
-  cursor(cursor) {
+  cursor (cursor) {
     this.canvas.style.cursor = cursor
   }
   textbox () {
@@ -82,7 +85,7 @@ export default class Canvas {
       this.context.shadowColor = 'rgba(0, 0, 0, .7)'
       this.context.shadowBlur = SHADOW
       this.context.shadowOffsetX = 0
-      this.context.shadowOffsetY = 0
+      this.context.shadowOffsetY = SHADOW
     } else {
       this.context.shadowColor = 'transparent'
       this.context.shadowBlur = 0
@@ -203,23 +206,26 @@ export default class Canvas {
   stroke () {
     this.context.stroke(...arguments)
   }
-  font (size, style) {
-    this.context.font = `${size}px ${style}`
+  font (size, style, weight) {
+    const font = `${weight} ${size}px ${style}`.trim()
+    this.context.font = font
   }
   clear () {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
   }
   measureText (text) {
-    return this.context.measureText(text).width
-  }
-  image (src, cb) {
-    if (!this.images[src]) {
-      const image = this.images[src] = new Image()
-      image.onload = () => {
-        cb(image)
-      }
-      image.src = src
+    return {
+      height: parseInt(this.context.font.replace(/[^\d.]+/g, '')),
+      width: this.context.measureText(text).width
     }
-    return this.images[src]
+  }
+  image (src, color) {
+    const key = `${src}_${color}`
+    this.images[key] = this.images[key] || fetch(src).then(res => res.text()).then(text => {
+      const image = new Image()
+      image.src = `data:image/svg+xml;base64,${btoa(text.replace(/<path/g, '<path fill="' + color + '"'))}`
+      return image
+    })
+    return this.images[key]
   }
 }

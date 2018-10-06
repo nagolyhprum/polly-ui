@@ -1,17 +1,33 @@
 import Observable from 'rave/observable'
-import font from 'font'
-import color from 'color'
-import drawable from 'drawable'
 
 const slightRound = 4
 
 export default screen => {
+  const {
+    resources: {
+      font,
+      color,
+      drawable
+    }
+  } = screen
   screen.extend({
+    pager (view, tab$, render) {
+      screen.container(screen.MATCH, screen.MATCH, pager => {
+        render()
+        screen.observe(tab$, tab => {
+          pager.children.forEach((child, index) => {
+            screen.active = child
+            screen.animateVisibility(index === tab)
+          })
+        })
+      })
+    },
     fab (view, icon = drawable.content.add, background = color.accent) {
       screen.padding(16)
       screen.src(icon)
       screen.background(background)
       screen.circle()
+      screen.shadow()
     },
     button (view, background) {
       screen.textAlign('center')

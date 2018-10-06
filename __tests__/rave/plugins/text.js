@@ -24,16 +24,16 @@ describe('text', () => {
       // textAlign
       // fillText
       ['red'],
-      [16, 'sans-serif'],
-      ['top'],
+      [16, 'Roboto, sans-serif'],
+      ['middle'],
       ['center'],
-      [display, 15, 20],
+      [display, 15, 40],
 
       ['red'],
-      [16, 'sans-serif'],
-      ['top'],
+      [16, 'Roboto, sans-serif'],
+      ['middle'],
       ['right'],
-      ['\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', 40, 20]
+      ['\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', 40, 40]
     ]
     const screen = Screen({
       canvas: {

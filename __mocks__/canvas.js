@@ -5,6 +5,12 @@ export default extend => Object.assign({
   clear () {
     this.drawn = []
   },
+  cursor () {
+
+  },
+  getRatio () {
+    return 1
+  },
   image (src, callback) {
     setTimeout(callback)
     return src
