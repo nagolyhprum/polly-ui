@@ -21,6 +21,7 @@ describe('components', () => {
     circle(screen)
     background(screen)
     image(screen)
+    shadow(screen)
     // test it out
     components(screen)
     screen.fab()

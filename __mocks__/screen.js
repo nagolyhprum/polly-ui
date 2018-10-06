@@ -1,6 +1,14 @@
 import Canvas from 'canvas'
 import View from 'view'
 export default (extend = {}) => Object.assign({
+  resources: {
+    color: {},
+    drawable: {
+      content: {}
+    },
+    string: {},
+    font: {}
+  },
   TOP: 0,
   RIGHT: 1,
   BOTTOM: 2,
@@ -10,7 +18,8 @@ export default (extend = {}) => Object.assign({
     render: [],
     view: [],
     prerender: [],
-    reposition: []
+    reposition: [],
+    wrap: []
   },
   calls: [],
   highlightArea () {

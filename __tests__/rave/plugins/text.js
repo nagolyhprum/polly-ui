@@ -24,13 +24,13 @@ describe('text', () => {
       // textAlign
       // fillText
       ['red'],
-      [16, 'Roboto, sans-serif'],
+      [16, 'Roboto, sans-serif', ''],
       ['middle'],
       ['center'],
       [display, 15, 40],
 
       ['red'],
-      [16, 'Roboto, sans-serif'],
+      [16, 'Roboto, sans-serif', ''],
       ['middle'],
       ['right'],
       ['\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', 40, 40]
@@ -61,7 +61,7 @@ describe('text', () => {
     expect(view.text.display).toEqual(display)
     expect(view.text.size).toEqual(12)
     expect(view.text.color).toEqual('black')
-    expect(view.text.weight).toEqual('normal')
+    expect(view.text.weight).toEqual('')
     expect(view.text.align).toEqual('left')
 
     screen.textColor(color)

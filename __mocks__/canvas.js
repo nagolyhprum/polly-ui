@@ -12,8 +12,7 @@ export default extend => Object.assign({
     return 1
   },
   image (src, callback) {
-    setTimeout(callback)
-    return src
+    return Promise.resolve(src)
   },
   onMouseDown (onmousedown) {
     this.onmousedown = onmousedown
