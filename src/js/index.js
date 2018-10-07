@@ -11,6 +11,13 @@ import Home from 'app/index'
 
 import state from 'app/state'
 
+const state$ = new Observable(state)
+
+state$.observe(state => {
+  console.log("writing state", state)
+  localStorage.state = JSON.stringify(state)
+})
+
 const canvas = new Canvas(document.getElementsByTagName('canvas')[0])
 const resources = {
   color,
@@ -20,7 +27,7 @@ const resources = {
 }
 
 const screen = new Screen(
-  new Observable(state),
+  state$,
   resources,
   canvas
 )

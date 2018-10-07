@@ -7,6 +7,7 @@ const mapObject = arr => arr.reduce((map, obj) => Object.assign(map, {
   [obj.key] : obj.value
 }), {})
 
+const getFonts = state => mapObject(state.fonts)
 const getStrings = state => mapObject(state.strings)
 const getColors = state => mapObject(state.colors)
 const getDrawables = state => mapObject(state.drawables)
@@ -62,12 +63,12 @@ const content = screen => {
         linear(8)
         container(WRAP, WRAP, () => {
           text(string.title)
-          style(font.bold_36)
+          style(font.title)
           textColor(color.text)
         })
         container(WRAP, WRAP, () => {
           text(string.subtitle)
-          style(font.regular_16)
+          style(font.subtitle)
           textColor(color.light_primary)
         })
       })
@@ -92,12 +93,12 @@ const content = screen => {
               container(WRAP, WRAP, () => {
                 text(string.list_title)
                 textColor(color.primary_text)
-                style(font.regular_16)
+                style(font.list_title)
               })
               container(WRAP, WRAP, () => {
                 text(string.list_subtitle)
                 textColor(color.secondary_text)
-                style(font.regular_12)
+                style(font.list_subtitle)
               })
             })
           })
@@ -120,17 +121,20 @@ export default screen => {
     screen: renderScreen,
     state$
   } = screen
-
-  const resources = {
-    color : getColors(state$.get()),
-    drawable : getDrawables(state$.get()),
-    font : screen.resources.font,
-    string : getStrings(state$.get())
-  }
-  const canvas = screen.canvas
-  const child = new Screen(null, resources, canvas)
-  child.start(content)
-
+  const child = new Screen(null, {
+    color : {},
+    drawable : {},
+    font : {},
+    string : {}
+  }, screen.canvas)
+  state$.observe(it => {
+    child.children = []
+    Object.assign(child.resources.color, getColors(it))
+    Object.assign(child.resources.drawable, getDrawables(it))
+    Object.assign(child.resources.font, getFonts(it))
+    Object.assign(child.resources.string, getStrings(it))
+    child.start(content, true)
+  })
   container(_ => child => ({
     width: child.bounds.height * 480 / 856
   }), _ => child => ({

@@ -1,5 +1,7 @@
 import colorsComponent from 'app/colors'
 import stringsComponent from 'app/strings'
+import drawablesComponent from 'app/drawables'
+import fontsComponent from 'app/fonts'
 export default screen => {
   const {
     container,
@@ -37,9 +39,10 @@ export default screen => {
       padding(0, 16, 16, 16)
       pager(tabs$, () => {
         container(0, 0, () => {})
-        container(0, 0, () => {})
+        drawablesComponent(screen)
         stringsComponent(screen)
         colorsComponent(screen)
+        fontsComponent(screen)
       })
     })
   })

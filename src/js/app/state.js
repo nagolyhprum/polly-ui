@@ -1,4 +1,26 @@
-export default {
+export default JSON.parse(localStorage.state || "false") || {
+  fonts : [{
+    key : "title",
+    value : {
+      size : 36,
+      weight : "bold"
+    }
+  }, {
+    key : "subtitle",
+    value : {
+      size : 16
+    }
+  }, {
+    key : "list_title",
+    value : {
+      size : 14
+    }
+  }, {
+    key : "list_subtitle",
+    value : {
+      size : 12
+    }
+  }],
   drawables: [{
     key : "back",
     value: require("../res/drawable/back.svg")

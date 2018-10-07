@@ -296,7 +296,7 @@ Screen.prototype = {
   animate (from, to, ms, cb) {
     this.animateObject(this.active, from, to, ms, cb)
   },
-  start (view) {
+  start (view, clear) {
     this.firstRender = true
     this.active = this
     this.container(this.MATCH, this.MATCH, () => {
