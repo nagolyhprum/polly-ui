@@ -12,6 +12,7 @@ export default screen => {
     padding,
     separator,
     input,
+    onTextChange,
     MATCH,
     WRAP,
     state$,
@@ -37,7 +38,8 @@ export default screen => {
           weight(1)
           text(c.value.size)
           style(font.normal_12)
-          input("number")
+          input()
+          onTextChange(value => state$.set(assign(state$.get(), "fonts", index, "value", "size", value)))
         })
         container(0, WRAP, () => {
           padding(8)

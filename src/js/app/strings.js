@@ -12,6 +12,7 @@ export default screen => {
     padding,
     separator,
     input,
+    onTextChange,
     MATCH,
     WRAP,
     state$,
@@ -38,6 +39,7 @@ export default screen => {
           text(c.value)
           style(font.normal_12)
           input()
+          onTextChange(value => state$.set(assign(state$.get(), "strings", index, "value", value)))
         })
       })
     })

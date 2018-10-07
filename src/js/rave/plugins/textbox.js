@@ -12,6 +12,9 @@ export default screen => {
     const view = screen.textbox.view()
     if (view) {
       view.text.display = screen.textbox.value()
+      if(view.onTextChange) {
+        view.onTextChange(view.text.display)
+      }
       screen.main.render()
     }
   })
@@ -28,6 +31,9 @@ export default screen => {
         textbox.type(type)
         screen.main.render()
       }
+    },
+    onTextChange(view, onTextChange) {
+      view.onTextChange = onTextChange
     }
   })
   screen.plugins.prerender.push(view => screen.textbox.visibility(false))
