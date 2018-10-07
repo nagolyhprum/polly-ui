@@ -1,34 +1,15 @@
 import Screen from 'rave/screen'
 import Canvas from 'rave/canvas/html'
 
-const LIST = [{
-  title: 'Demo Capabilities of Poly UI',
-  description: 'By showing a list'
-}, {
-  title: 'Demo Capabilities of Poly UI',
-  description: 'By showing a list'
-}, {
-  title: 'Demo Capabilities of Poly UI',
-  description: 'By showing a list'
-}, {
-  title: 'Demo Capabilities of Poly UI',
-  description: 'By showing a list'
-}, {
-  title: 'Demo Capabilities of Poly UI',
-  description: 'By showing a list'
-}, {
-  title: 'Demo Capabilities of Poly UI',
-  description: 'By showing a list'
-}, {
-  title: 'Demo Capabilities of Poly UI',
-  description: 'By showing a list'
-}, {
-  title: 'Demo Capabilities of Poly UI',
-  description: 'By showing a list'
-}, {
-  title: 'Demo Capabilities of Poly UI',
-  description: 'By showing a list'
-}]
+const LIST = [{}, {}, {}, {}, {}, {}, {}, {}]
+
+const mapObject = arr => arr.reduce((map, obj) => Object.assign(map, {
+  [obj.key] : obj.value
+}), {})
+
+const getStrings = state => mapObject(state.strings)
+const getColors = state => mapObject(state.colors)
+const getDrawables = state => mapObject(state.drawables)
 
 const content = screen => {
   const {
@@ -53,7 +34,8 @@ const content = screen => {
     resources: {
       color,
       drawable,
-      font
+      font,
+      string
     }
   } = screen
   container(MATCH, MATCH, () => {
@@ -67,10 +49,10 @@ const content = screen => {
       padding(16)
       shadow()
       container(32, 32, () => {
-        src(drawable.navigation.back)
+        src(drawable.back)
       })
       container(32, 32, () => {
-        src(drawable.navigation.more_vert)
+        src(drawable.more_vert)
         anchor(1, 0)
         position(1, 0)
       })
@@ -79,12 +61,12 @@ const content = screen => {
         position(0.5, 0.5)
         linear(8)
         container(WRAP, WRAP, () => {
-          text('Poly UI')
+          text(string.title)
           style(font.bold_36)
           textColor(color.text)
         })
         container(WRAP, WRAP, () => {
-          text('Demo of color pallette')
+          text(string.subtitle)
           style(font.regular_16)
           textColor(color.light_primary)
         })
@@ -101,19 +83,19 @@ const content = screen => {
             padding(16)
             linear(16, 'horizontal')
             container(24, 24, () => {
-              src(drawable.navigation.check, color.secondary_text)
+              src(drawable.check, color.secondary_text)
               anchor(0, 0.5)
               position(0, 0.5)
             })
             container(WRAP, WRAP, () => {
               linear(8)
               container(WRAP, WRAP, () => {
-                text(it.title)
+                text(string.list_title)
                 textColor(color.primary_text)
                 style(font.regular_16)
               })
               container(WRAP, WRAP, () => {
-                text(it.description)
+                text(string.list_subtitle)
                 textColor(color.secondary_text)
                 style(font.regular_12)
               })
@@ -122,7 +104,7 @@ const content = screen => {
         })
       })
       container(72, 56, () => {
-        fab()
+        fab(drawable.add)
         margin(0, 16, 0, 0)
         anchor(1, 0.5)
         position(1, 0)
@@ -135,14 +117,18 @@ export default screen => {
   const {
     container,
     background,
-    include,
-    screen: renderScreen
+    screen: renderScreen,
+    state$
   } = screen
 
-  const state = {}
-  const resources = screen.resources
+  const resources = {
+    color : getColors(state$.get()),
+    drawable : getDrawables(state$.get()),
+    font : screen.resources.font,
+    string : getStrings(state$.get())
+  }
   const canvas = screen.canvas
-  const child = new Screen(state, resources, canvas)
+  const child = new Screen(null, resources, canvas)
   child.start(content)
 
   container(_ => child => ({

@@ -1,12 +1,29 @@
 const SHADOW = 8
-export default class Canvas {
+import Parent from './'
+export default class Canvas extends Parent {
   getRatio () {
     return window.devicePixelRatio || 1
   }
   constructor (canvas) {
+    super()
     this.canvas = canvas
     this.context = canvas.getContext('2d')
     this.images = {}
+    canvas.onmousemove = e => {
+      this.events.call("onmousemove", this.getMouse(e))
+    }
+    canvas.onmouseup = e => {
+      this.events.call("onmouseup", this.getMouse(e))
+    }
+    canvas.onclick = e => {
+      this.events.call("onclick", this.getMouse(e))
+    }
+    canvas.onmouseout = e => {
+      this.events.call("onmouseout", this.getMouse(e))
+    }
+    canvas.onmousedown = e => {
+      this.events.call("onmousedown", this.getMouse(e))
+    }
   }
   colorPicker () {
     const cp = document.createElement('input')
@@ -28,9 +45,18 @@ export default class Canvas {
     this.canvas.style.cursor = cursor
   }
   textbox () {
-    const textbox = document.createElement('input')
-    document.body.appendChild(textbox)
+    if(!this._textbox) {
+      document.body.appendChild(this._textbox = document.createElement('input'))
+    }
+    const textbox = this._textbox
+    const screen = this
     return {
+      view(view) {
+        if (arguments.length === 1) {
+          textbox.view = view
+        }
+        return textbox.view
+      },
       onBlur (onBlur) {
         textbox.onblur = onBlur
       },
@@ -49,11 +75,13 @@ export default class Canvas {
       visibility (visible) {
         textbox.style.display = visible ? 'block' : 'none'
       },
-      bounds (bounds) {
-        textbox.style.left = `${bounds.x}px`
-        textbox.style.top = `${bounds.y}px`
-        textbox.style.width = `${bounds.width}px`
-        textbox.style.height = `${bounds.height}px`
+      bounds (bounds, padding = [], margin = []) {
+        textbox.style.left = `${bounds.x / screen.getRatio()}px`
+        textbox.style.top = `${bounds.y / screen.getRatio()}px`
+        textbox.style.width = `${bounds.width / screen.getRatio()}px`
+        textbox.style.height = `${bounds.height / screen.getRatio()}px`
+        textbox.style.padding = padding.map(it => `${it / screen.getRatio()}px`).join(" ")
+        textbox.style.margin = margin.map(it => `${it / screen.getRatio()}px`).join(" ")
       },
       focus () {
         if (textbox !== document.activeElement) {
@@ -110,31 +138,6 @@ export default class Canvas {
     return {
       x: e.pageX - bounds.left,
       y: e.pageY - bounds.top
-    }
-  }
-  onMouseMove (cb) {
-    this.canvas.onmousemove = e => {
-      cb(this.getMouse(e))
-    }
-  }
-  onMouseUp (cb) {
-    this.canvas.onmouseup = e => {
-      cb(this.getMouse(e))
-    }
-  }
-  onClick (cb) {
-    this.canvas.onclick = e => {
-      cb(this.getMouse(e))
-    }
-  }
-  onMouseOut (cb) {
-    this.canvas.onmouseout = e => {
-      cb(this.getMouse(e))
-    }
-  }
-  onMouseDown (cb) {
-    this.canvas.onmousedown = e => {
-      cb(this.getMouse(e))
     }
   }
   textBaseline (textBaseline) {

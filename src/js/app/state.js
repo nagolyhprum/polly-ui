@@ -1,4 +1,17 @@
 export default {
+  drawables: [{
+    key : "back",
+    value: require("../res/drawable/back.svg")
+  }, {
+    key : "more_vert",
+    value: require("../res/drawable/more_vert.svg")
+  }, {
+    key: "add",
+    value: require("../res/drawable/add.svg")
+  }, {
+    key: "check",
+    value: require("../res/drawable/check.svg")
+  }],
   strings: [{
     key : "title",
     value : "Poly UI"
@@ -13,32 +26,28 @@ export default {
     value : "By showing a list"
   }],
   colors: [{
-    name: 'Dark Primary',
     value: '#00796B',
     key: 'dark_primary'
   }, {
-    name: 'Light Primary',
     value: '#B2DFDB',
     key: 'light_primary'
   }, {
-    name: 'Primary',
     value: '#009688',
     key: 'primary'
   }, {
-    name: 'Accent',
     value: '#FF9800',
     key: 'accent'
   }, {
-    name: 'Primary Text',
     value: '#212121',
     key: 'primary_text'
   }, {
-    name: 'Secondary Text',
     value: '#757575',
     key: 'secondary_text'
   }, {
-    name: 'Divider',
     value: '#BDBDBD',
     key: 'divider_color'
+  }, {
+    value : "#ffffff",
+    key: "text"
   }]
 }

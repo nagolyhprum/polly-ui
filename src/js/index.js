@@ -1,5 +1,6 @@
 import Screen from 'rave/screen'
 import Canvas from 'rave/canvas/html'
+import Observable from 'rave/observable'
 // resources
 import color from './res/color'
 import drawable from './res/drawable'
@@ -10,7 +11,7 @@ import Home from 'app/index'
 
 import state from 'app/state'
 
-const canvas = document.getElementsByTagName('canvas')[0]
+const canvas = new Canvas(document.getElementsByTagName('canvas')[0])
 const resources = {
   color,
   drawable,
@@ -19,17 +20,17 @@ const resources = {
 }
 
 const screen = new Screen(
-  state,
+  new Observable(state),
   resources,
-  new Canvas(canvas)
+  canvas
 )
 
 const setSize = () => {
-  const ratio = window.devicePixelRatio || 1
-  canvas.width = window.innerWidth * ratio
-  canvas.height = window.innerHeight * ratio
-  canvas.style.width = window.innerWidth + 'px'
-  canvas.style.height = window.innerHeight + 'px'
+  const ratio = canvas.getRatio() || 1
+  canvas.canvas.width = window.innerWidth * ratio
+  canvas.canvas.height = window.innerHeight * ratio
+  canvas.canvas.style.width = window.innerWidth + 'px'
+  canvas.canvas.style.height = window.innerHeight + 'px'
 }
 setSize()
 screen.start(Home)

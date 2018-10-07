@@ -4,10 +4,6 @@ export default class Observable {
     this.value = value
   }
 
-  assign (value = {}) {
-    this.set(Object.assign({}, this.get(), value))
-  }
-
   observe (callback) {
     this.callbacks.push(callback)
     callback(this.value)

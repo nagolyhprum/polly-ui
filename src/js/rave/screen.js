@@ -22,8 +22,10 @@ import round from 'plugins/round'
 import circle from 'plugins/circle'
 import colorPI from 'plugins/color'
 import screen from 'plugins/screen'
+import clear from 'plugins/clear'
 
 const PLUGINS = [
+  clear,
   alpha,
   shadow,
   background,
@@ -65,10 +67,10 @@ const DIMENSIONS = {
   height: 'width'
 }
 
-function Screen (state, resources, canvas, ...plugins) {
+function Screen (state$, resources, canvas, ...plugins) {
   this.main = this
   this.bounds = {}
-  this.state = state
+  this.state$ = state$
   this.TOP = 0
   this.RIGHT = 1
   this.BOTTOM = 2
@@ -99,6 +101,9 @@ const childrenWrapper = (view, dim) => {
 }
 
 Screen.prototype = {
+  select(view) {
+    this.active = view
+  },
   extend (extension) {
     Object.keys(extension).forEach(key => {
       this[key] = (...args) => extension[key](this.active, ...args)
@@ -124,9 +129,6 @@ Screen.prototype = {
     } else {
       return view[dim] || 0
     }
-  },
-  include (component) {
-    component(this)
   },
   getTopBottom (r) {
     return r instanceof Array ? r[this.TOP] + r[this.BOTTOM] : 0
@@ -333,22 +335,27 @@ Screen.prototype = {
       console.log('TODO')
     }
   },
-  render (width, height) {
+  render (bounds = {
+    x: 0,
+    y: 0,
+    width: this.canvas.getWidth(),
+    height: this.canvas.getHeight()
+  }) {
     this.bounds = {
-      x: this.bounds.x || 0,
-      y: this.bounds.y || 0,
-      width: width || this.canvas.getWidth(),
-      height: height || this.canvas.getHeight()
+      x: bounds.x,
+      y: bounds.y,
+      width: bounds.width,
+      height: bounds.height
     }
     this.intersection = {
-      left: this.bounds.x || 0,
-      top: this.bounds.y || 0,
-      right: this.bounds.width,
-      bottom: this.bounds.height,
-      x: this.bounds.x || 0,
-      y: this.bounds.y || 0,
-      width: this.bounds.width,
-      height: this.bounds.height
+      left: bounds.x,
+      top: bounds.y,
+      right: bounds.width,
+      bottom: bounds.height,
+      x: bounds.x,
+      y: bounds.y,
+      width: bounds.width,
+      height: bounds.height
     }
     const start = Date.now()
     this.plugins.prerender.forEach(plugin => plugin(this))

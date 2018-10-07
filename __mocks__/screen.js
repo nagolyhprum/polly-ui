@@ -1,6 +1,7 @@
 import Canvas from 'canvas'
 import View from 'view'
-export default (extend = {}) => Object.assign({
+export default (extend = {}, self = {}) => Object.assign(self, {
+  main: self,
   resources: {
     color: {},
     drawable: {

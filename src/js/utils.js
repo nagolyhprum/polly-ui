@@ -1,3 +1,13 @@
+export const assign = (data, ...path) => {
+  const value = path.pop()
+  const key = path.pop()
+  const root = Object.assign({}, data)
+  path.reduce((obj, path) => {
+    return (obj[path] = Object.assign({}, obj[path]))
+  }, root)[key] = value
+  return root
+}
+
 export const equals = (a, b) => {
   let i
   if (a === b) {

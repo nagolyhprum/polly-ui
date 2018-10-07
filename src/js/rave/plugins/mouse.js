@@ -31,7 +31,9 @@ export default screen => {
     if (view && view !== screen) {
       view[name](mouse)
     }
-    screen.canvas.cursor('default')
+    if(screen === screen.main) {
+      screen.canvas.cursor('default')
+    }
     let last = mo[mo.length - 1]
     while (last) {
       if (last.cursor) {

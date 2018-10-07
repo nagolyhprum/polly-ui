@@ -19,7 +19,6 @@ export default screen => {
     round,
     circle,
     textAlign,
-    include,
     MATCH,
     WRAP,
     resources: {
@@ -91,7 +90,7 @@ export default screen => {
             circle()
           })
         })
-        include(phoneComponent)
+        phoneComponent(screen)
         container(30, 15, () => {
           background('#757575')
           round(5)
@@ -102,7 +101,7 @@ export default screen => {
       container(0, MATCH, () => {
         weight(2)
         margin(64, 0, 64, 64)
-        include(resourcesComponent)
+        resourcesComponent(screen)
       })
     })
   })

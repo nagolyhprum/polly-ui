@@ -16,7 +16,7 @@ export default screen => {
         render()
         screen.observe(tab$, tab => {
           pager.children.forEach((child, index) => {
-            screen.active = child
+            screen.select(child)
             screen.animateVisibility(index === tab)
           })
         })
