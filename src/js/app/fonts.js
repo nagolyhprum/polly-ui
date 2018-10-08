@@ -1,4 +1,4 @@
-import { assign } from "utils"
+import { assign } from 'utils'
 export default screen => {
   const {
     container,
@@ -25,8 +25,8 @@ export default screen => {
     separator()
     state$.get().fonts.forEach((c, index) => {
       container(MATCH, WRAP, () => {
-        separator("horizontal")
-        linear(0, "horizontal")
+        separator('horizontal')
+        linear(0, 'horizontal')
         container(0, WRAP, () => {
           padding(8)
           weight(1)
@@ -39,12 +39,12 @@ export default screen => {
           text(c.value.size)
           style(font.normal_12)
           input()
-          onTextChange(value => state$.set(assign(state$.get(), "fonts", index, "value", "size", value)))
+          onTextChange(value => state$.set(assign(state$.get(), 'fonts', index, 'value', 'size', value)))
         })
         container(0, WRAP, () => {
           padding(8)
           weight(1)
-          text(c.value.weight || "regular")
+          text(c.value.weight || 'regular')
           style(font.normal_12)
           input()
         })

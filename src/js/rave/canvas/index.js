@@ -1,21 +1,21 @@
 import Events from 'events'
 export default class Canvas {
-  constructor() {
+  constructor () {
     this.events = new Events()
   }
   onMouseMove (cb) {
-    this.events.add("onmousemove", cb)
+    this.events.add('onmousemove', cb)
   }
   onMouseUp (cb) {
-    this.events.add("onmouseup", cb)
+    this.events.add('onmouseup', cb)
   }
   onClick (cb) {
-    this.events.add("onclick", cb)
+    this.events.add('onclick', cb)
   }
   onMouseOut (cb) {
-    this.events.add("onmouseout", cb)
+    this.events.add('onmouseout', cb)
   }
   onMouseDown (cb) {
-    this.events.add("onmousedown", cb)
+    this.events.add('onmousedown', cb)
   }
 }

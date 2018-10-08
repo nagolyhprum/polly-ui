@@ -3,7 +3,7 @@ export const assign = (data, ...path) => {
   const key = path.pop()
   const root = Object.assign({}, data)
   path.reduce((obj, path) => {
-    if(obj[path] instanceof Array) {
+    if (obj[path] instanceof Array) {
       return (obj[path] = obj[path].slice(0))
     } else {
       return (obj[path] = Object.assign({}, obj[path]))

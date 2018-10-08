@@ -101,7 +101,7 @@ const childrenWrapper = (view, dim) => {
 }
 
 Screen.prototype = {
-  select(view) {
+  select (view) {
     this.active = view
   },
   extend (extension) {

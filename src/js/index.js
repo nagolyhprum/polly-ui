@@ -14,7 +14,7 @@ import state from 'app/state'
 const state$ = new Observable(state)
 
 state$.observe(state => {
-  console.log("writing state", state)
+  console.log('writing state', state)
   localStorage.state = JSON.stringify(state)
 })
 

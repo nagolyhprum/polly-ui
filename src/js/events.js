@@ -1,12 +1,12 @@
 export default class Events {
-  constructor() {
+  constructor () {
     this.events = {}
   }
-  add(name, cb) {
+  add (name, cb) {
     this.events[name] = this.events[name] || []
     this.events[name].push(cb)
   }
-  call(name, ...args) {
+  call (name, ...args) {
     (this.events[name] || []).forEach(event => event(...args))
   }
 }

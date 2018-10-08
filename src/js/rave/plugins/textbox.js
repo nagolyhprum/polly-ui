@@ -12,7 +12,7 @@ export default screen => {
     const view = screen.textbox.view()
     if (view) {
       view.text.display = screen.textbox.value()
-      if(view.onTextChange) {
+      if (view.onTextChange) {
         view.onTextChange(view.text.display)
       }
       screen.main.render()
@@ -32,7 +32,7 @@ export default screen => {
         screen.main.render()
       }
     },
-    onTextChange(view, onTextChange) {
+    onTextChange (view, onTextChange) {
       view.onTextChange = onTextChange
     }
   })

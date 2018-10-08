@@ -10,19 +10,19 @@ export default class Canvas extends Parent {
     this.context = canvas.getContext('2d')
     this.images = {}
     canvas.onmousemove = e => {
-      this.events.call("onmousemove", this.getMouse(e))
+      this.events.call('onmousemove', this.getMouse(e))
     }
     canvas.onmouseup = e => {
-      this.events.call("onmouseup", this.getMouse(e))
+      this.events.call('onmouseup', this.getMouse(e))
     }
     canvas.onclick = e => {
-      this.events.call("onclick", this.getMouse(e))
+      this.events.call('onclick', this.getMouse(e))
     }
     canvas.onmouseout = e => {
-      this.events.call("onmouseout", this.getMouse(e))
+      this.events.call('onmouseout', this.getMouse(e))
     }
     canvas.onmousedown = e => {
-      this.events.call("onmousedown", this.getMouse(e))
+      this.events.call('onmousedown', this.getMouse(e))
     }
   }
   colorPicker () {
@@ -45,13 +45,13 @@ export default class Canvas extends Parent {
     this.canvas.style.cursor = cursor
   }
   textbox () {
-    if(!this._textbox) {
+    if (!this._textbox) {
       document.body.appendChild(this._textbox = document.createElement('input'))
     }
     const textbox = this._textbox
     const screen = this
     return {
-      view(view) {
+      view (view) {
         if (arguments.length === 1) {
           textbox.view = view
         }
@@ -80,8 +80,8 @@ export default class Canvas extends Parent {
         textbox.style.top = `${bounds.y / screen.getRatio()}px`
         textbox.style.width = `${bounds.width / screen.getRatio()}px`
         textbox.style.height = `${bounds.height / screen.getRatio()}px`
-        textbox.style.padding = padding.map(it => `${it / screen.getRatio()}px`).join(" ")
-        textbox.style.margin = margin.map(it => `${it / screen.getRatio()}px`).join(" ")
+        textbox.style.padding = padding.map(it => `${it / screen.getRatio()}px`).join(' ')
+        textbox.style.margin = margin.map(it => `${it / screen.getRatio()}px`).join(' ')
       },
       focus () {
         if (textbox !== document.activeElement) {
@@ -167,10 +167,10 @@ export default class Canvas extends Parent {
   restore () {
     this.context.restore()
   }
-  setWidth(width) {
+  setWidth (width) {
     this.canvas.width = width
   }
-  setHeight(height) {
+  setHeight (height) {
     this.canvas.height = height
   }
   getWidth (image) {
@@ -207,7 +207,7 @@ export default class Canvas extends Parent {
     this.context.fill(...arguments)
   }
   drawImage (obj, ...rem) {
-    if(obj instanceof Canvas) {
+    if (obj instanceof Canvas) {
       this.context.drawImage(obj.canvas, ...rem)
     } else {
       this.context.drawImage(...arguments)
