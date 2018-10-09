@@ -32,7 +32,7 @@ const tree = (screen, views) => {
                 background(state.component === top ? color.light_primary : 'white')
               })
               onClick(() => {
-                state$.set(assign(state$.get(), 'component', top))
+                state$.assign('component', top)
               })
             })
             tree(screen, views)
@@ -88,7 +88,7 @@ export default screen => {
           text(c.key)
           style(font.normal_12)
           onClick(() => {
-            state$.set(assign(state$.get(), 'view', c.key))
+            state$.assign('view', c.key)
           })
         })
       })

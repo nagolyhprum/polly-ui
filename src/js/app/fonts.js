@@ -36,7 +36,7 @@ export default screen => {
           text(c.value.size)
           style(font.normal_12)
           input()
-          onTextChange(value => state$.set(assign(state$.get(), 'fonts', index, 'value', 'size', value)))
+          onTextChange(value => state$.assign('fonts', index, 'value', 'size', value))
         })
         container(0, WRAP, () => {
           padding(8)

@@ -1,4 +1,3 @@
-import { assign } from 'utils'
 export default screen => {
   const {
     container,
@@ -31,7 +30,7 @@ export default screen => {
         background(c.value)
         onColorChange(c.value, value => {
           background(value)
-          state$.set(assign(state$.get(), 'colors', index, 'value', value))
+          state$.assign('colors', index, 'value', value)
         })
       })
     })

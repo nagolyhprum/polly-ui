@@ -36,7 +36,7 @@ export default screen => {
           text(c.value)
           style(font.normal_12)
           input()
-          onTextChange(value => state$.set(assign(state$.get(), 'strings', index, 'value', value)))
+          onTextChange(value => state$.assign('strings', index, 'value', value))
         })
       })
     })

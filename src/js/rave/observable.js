@@ -1,3 +1,4 @@
+import { assign } from 'utils'
 export default class Observable {
   constructor (value) {
     this.callbacks = []
@@ -25,6 +26,10 @@ export default class Observable {
 
   get () {
     return this.value
+  }
+
+  assign(...path) {
+    this.set(assign(this.value, ...path))
   }
 
   static derive (...args) {
