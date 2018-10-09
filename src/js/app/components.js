@@ -29,7 +29,7 @@ const tree = (screen, views) => {
               const hint = top.text || top.src || (top.adapter && top.adapter[0]) || (top.fab && top.fab[0]) || `${top.width}, ${top.height}`
               text(`${top.type}${hint ? ` (${hint})` : ''}`)
               observe(state$, state => {
-                background(state.component === top ? color.light_primary : 'white')
+                background(getComponent(state) === top ? color.light_primary : 'white')
               })
               onClick(() => {
                 state$.assign('component', top)
@@ -49,8 +49,11 @@ const tree = (screen, views) => {
   console.log(views)
 }
 
+const getComponent = state => state.component || state.views.find(it => it.key === state.view).value[0]
+
 export default screen => {
   const {
+    scrollable,
     container,
     linear,
     text,
@@ -89,6 +92,7 @@ export default screen => {
           style(font.normal_12)
           onClick(() => {
             state$.assign('view', c.key)
+            state$.assign('component', c.value[0])
           })
         })
       })
@@ -97,6 +101,7 @@ export default screen => {
       weight(2)
       linear(16)
       padding(16, 0, 0, 0)
+      scrollable()
       observe(state$, state => {
         clear()
         const view = state.views.find(it => it.key === state.view).value

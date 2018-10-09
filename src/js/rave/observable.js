@@ -28,7 +28,7 @@ export default class Observable {
     return this.value
   }
 
-  assign(...path) {
+  assign (...path) {
     this.set(assign(this.value, ...path))
   }
 
