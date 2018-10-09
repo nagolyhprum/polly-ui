@@ -4,11 +4,8 @@ export default screen => {
     container,
     linear,
     text,
-    textAlign,
     weight,
     style,
-    background,
-    onColorChange,
     padding,
     separator,
     input,
@@ -35,7 +32,7 @@ export default screen => {
         })
         container(0, WRAP, () => {
           padding(8)
-          weight(1)
+          weight(3)
           text(c.value)
           style(font.normal_12)
           input()

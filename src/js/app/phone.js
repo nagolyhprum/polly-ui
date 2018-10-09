@@ -1,5 +1,6 @@
 import Screen from 'rave/screen'
-import Canvas from 'rave/canvas/html'
+import Observable from 'rave/observable'
+import { getter } from 'utils'
 
 const mapObject = arr => arr.reduce((map, obj) => Object.assign(map, {
   [obj.key]: obj.value
@@ -17,10 +18,10 @@ const parseNumber = (screen, input) => {
   return parseInt(input)
 }
 
-const generateContent = views => screen => {
+const generateContent = (views, component) => screen => {
   let start
-  while (views.length) {
-    const top = views.shift()
+  while (component.length) {
+    const top = component.shift()
     start = start || top
     const {
       container,
@@ -39,6 +40,7 @@ const generateContent = views => screen => {
       margin,
       scrollable,
       separator,
+      adapter,
       resources: {
         color,
         string,
@@ -62,7 +64,7 @@ const generateContent = views => screen => {
             padding(...top.padding)
           }
           if (top.src) {
-            src(drawable[top.src])
+            src(drawable[top.src[0]], color[top.src[1]])
           }
           if (top.linear) {
             linear(...top.linear)
@@ -75,6 +77,11 @@ const generateContent = views => screen => {
           }
           if (top.position) {
             position(...top.position)
+          }
+          if (top.adapter) {
+            const subview = screen => generateContent(views, views.find(it => it.key === top.adapter[0]).value.slice(0))(screen)
+            const property = Observable.derive(screen.state$, state => getter(state, ...top.adapter[1]))
+            adapter(property, subview)
           }
           if (top.text) {
             text(string[top.text] || top.text)
@@ -94,21 +101,20 @@ const generateContent = views => screen => {
           if (top.separator) {
             separator(top.separator)
           }
-          generateContent(views)(screen)
+          generateContent(views, component)(screen)
         })
         break
       case 'pop':
         return
     }
   }
-  console.log('unbalanced push to pop', start)
 }
 
 export default screen => {
   const {
     container,
-    background,
     screen: renderScreen,
+    linear,
     state$
   } = screen
   const child = new Screen(null, {
@@ -119,11 +125,12 @@ export default screen => {
   }, screen.canvas)
   state$.observe(it => {
     child.children = []
+    child.state$ = new Observable(it.state)
     Object.assign(child.resources.color, getColors(it))
     Object.assign(child.resources.drawable, getDrawables(it))
     Object.assign(child.resources.font, getFonts(it))
     Object.assign(child.resources.string, getStrings(it))
-    child.start(generateContent(it.views.slice(0)))
+    child.start(generateContent(it.views, it.views[0].value.slice(0)))
   })
   container(_ => child => ({
     width: child.bounds.height * 480 / 856

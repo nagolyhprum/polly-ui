@@ -9,6 +9,7 @@ export default screen => {
     style,
     background,
     onColorChange,
+    padding,
     MATCH,
     state$,
     resources: {
@@ -17,6 +18,7 @@ export default screen => {
   } = screen
   container(MATCH, MATCH, () => {
     linear()
+    padding(0, 16, 16, 16)
     state$.get().colors.forEach((c, index) => {
       container(MATCH, 0, () => {
         text(c.key)

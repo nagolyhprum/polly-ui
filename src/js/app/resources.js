@@ -2,6 +2,7 @@ import colorsComponent from 'app/colors'
 import stringsComponent from 'app/strings'
 import drawablesComponent from 'app/drawables'
 import fontsComponent from 'app/fonts'
+import componentsComponent from 'app/components'
 export default screen => {
   const {
     container,
@@ -25,20 +26,12 @@ export default screen => {
     background('white')
     shadow()
     linear()
-    container(MATCH, WRAP, () => {
-      textColor(color.text)
-      textAlign('center')
-      padding(16)
-      background(color.primary)
-      text('Resources')
-    })
-    const tabs$ = tabs('Screens', 'Images', 'Text', 'Colors', 'Fonts')
+    const tabs$ = tabs('Components', 'Images', 'Text', 'Colors', 'Fonts', 'State')
     container(MATCH, 0, () => {
       weight(1)
       linear()
-      padding(0, 16, 16, 16)
       pager(tabs$, () => {
-        container(0, 0, () => {})
+        componentsComponent(screen)
         drawablesComponent(screen)
         stringsComponent(screen)
         colorsComponent(screen)

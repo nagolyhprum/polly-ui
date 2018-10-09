@@ -1,5 +1,5 @@
-const SHADOW = 8
 import Parent from './'
+const SHADOW = 8
 export default class Canvas extends Parent {
   getRatio () {
     return window.devicePixelRatio || 1

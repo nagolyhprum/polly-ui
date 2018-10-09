@@ -12,6 +12,8 @@ export const assign = (data, ...path) => {
   return root
 }
 
+export const getter = (data, ...path) => path.reduce((obj, path) => obj[path], data)
+
 export const equals = (a, b) => {
   let i
   if (a === b) {

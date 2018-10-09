@@ -101,6 +101,15 @@ const childrenWrapper = (view, dim) => {
 }
 
 Screen.prototype = {
+  adapter (list$, cb) {
+    this.observe(list$, list => {
+      this.clear()
+      list.forEach(it => cb(this, it))
+    })
+  },
+  clear () {
+    this.active.children = []
+  },
   select (view) {
     this.active = view
   },

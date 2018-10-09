@@ -1,154 +1,192 @@
 // JSON.parse(localStorage.state || 'false') ||
 
-const LIST = [{}, {}, {}, {}, {}, {}, {}, {}]
-
-/*
-
-  container(MATCH, WRAP, () => {
-    padding(16)
-    linear(16, 'horizontal')
-    container(24, 24, () => {
-      src(drawable.check, color.secondary_text)
-      anchor(0, 0.5)
-      position(0, 0.5)
-    })
-    container(WRAP, WRAP, () => {
-      linear(8)
-      container(WRAP, WRAP, () => {
-        text(string.list_title)
-        textColor(color.primary_text)
-        style(font.list_title)
-      })
-      container(WRAP, WRAP, () => {
-        text(string.list_subtitle)
-        textColor(color.secondary_text)
-        style(font.list_subtitle)
-      })
-    })
-  })
-*/
-
 export default {
-  views: [
-    {
+  view: 'main',
+  state: {
+    list: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
+  },
+  views: [{
+    key: 'main',
+    value: [
+      {
+        type: 'container',
+        action: 'push',
+        width: 'MATCH',
+        height: 'MATCH',
+        background: 'white',
+        linear: []
+      },
+      {
+        type: 'container',
+        action: 'push',
+        width: 'MATCH',
+        height: '16',
+        background: 'dark_primary'
+      },
+      { // status end
+        action: 'pop'
+      },
+      { // action container
+        type: 'container',
+        action: 'push',
+        width: 'MATCH',
+        height: '40%',
+        background: 'primary',
+        padding: [16],
+        shadow: true
+      },
+      { // back
+        type: 'image',
+        action: 'push',
+        width: '32',
+        height: '32',
+        src: ['back']
+      },
+      {
+        action: 'pop'
+      },
+      { // more
+        type: 'image',
+        action: 'push',
+        width: '32',
+        height: '32',
+        src: ['more_vert'],
+        anchor: [1, 0],
+        position: [1, 0]
+      },
+      {
+        action: 'pop'
+      },
+      { // title container
+        type: 'container',
+        action: 'push',
+        width: 'WRAP',
+        height: 'WRAP',
+        anchor: [0.5, 0.5],
+        position: [0.5, 0.5],
+        linear: [8]
+      },
+      { // title
+        type: 'text',
+        action: 'push',
+        width: 'WRAP',
+        height: 'WRAP',
+        text: 'title',
+        style: 'title',
+        textColor: 'text'
+      },
+      {
+        action: 'pop'
+      },
+      { // subtitle
+        type: 'text',
+        action: 'push',
+        width: 'WRAP',
+        height: 'WRAP',
+        text: 'subtitle',
+        style: 'subtitle',
+        textColor: 'light_primary'
+      },
+      {
+        action: 'pop'
+      },
+      { // title container end
+        action: 'pop'
+      },
+      { // action container end
+        action: 'pop'
+      },
+      { // list container
+        type: 'container',
+        action: 'push',
+        width: 'MATCH',
+        height: '0',
+        weight: 1
+      },
+      {// list
+        type: 'list',
+        action: 'push',
+        width: 'MATCH',
+        height: 'MATCH',
+        linear: [],
+        scrollable: true,
+        separator: 'vertical',
+        adapter: ['subview', ['list']]
+      },
+      {
+        action: 'pop'
+      },
+      { // fab
+        type: 'fab',
+        action: 'push',
+        width: '72',
+        height: '56',
+        fab: ['add'],
+        margin: [0, 16, 0, 0],
+        anchor: [1, 0.5],
+        position: [1, 0]
+      },
+      {
+        action: 'pop'
+      },
+      { // list container
+        action: 'pop'
+      },
+      { // main
+        action: 'pop'
+      }
+    ]
+  }, {
+    key: 'subview',
+    value: [{
+      type: 'container',
       action: 'push',
       width: 'MATCH',
-      height: 'MATCH',
-      background: 'white',
-      linear: []
-    },
-    {
-      action: 'push',
-      width: 'MATCH',
-      height: '16',
-      background: 'dark_primary'
-    },
-    { // status end
-      action: 'pop'
-    },
-    { // action container
-      action: 'push',
-      width: 'MATCH',
-      height: '40%',
-      background: 'primary',
+      height: 'WRAP',
       padding: [16],
-      shadow: true
-    },
-    { // back
+      linear: [16, 'horizontal']
+    }, {
+      type: 'image',
       action: 'push',
-      width: '32',
-      height: '32',
-      src: 'back'
-    },
-    {
+      width: '24',
+      height: '24',
+      src: ['check', 'secondary_text'],
+      anchor: [0, 0.5],
+      position: [0, 0.5]
+    }, {
       action: 'pop'
-    },
-    { // more
-      action: 'push',
-      width: '32',
-      height: '32',
-      src: 'more_vert',
-      anchor: [1, 0],
-      position: [1, 0]
-    },
-    {
-      action: 'pop'
-    },
-    { // title container
+    }, {
+      type: 'container',
       action: 'push',
       width: 'WRAP',
       height: 'WRAP',
-      anchor: [0.5, 0.5],
-      position: [0.5, 0.5],
       linear: [8]
-    },
-    { // title
+    }, {
+      type: 'text',
       action: 'push',
       width: 'WRAP',
       height: 'WRAP',
-      text: 'title',
-      style: 'title',
-      textColor: 'text'
-    },
-    {
+      text: 'list_title',
+      style: 'list_title',
+      textColor: 'primary_text'
+    }, {
       action: 'pop'
-    },
-    { // subtitle
+    }, {
+      type: 'text',
       action: 'push',
       width: 'WRAP',
       height: 'WRAP',
-      text: 'subtitle',
-      style: 'subtitle',
-      textColor: 'light_primary'
-    },
-    {
+      text: 'list_subtitle',
+      style: 'list_subtitle',
+      textColor: 'secondary_text'
+    }, {
       action: 'pop'
-    },
-    { // title container end
+    }, {
       action: 'pop'
-    },
-    { // action container end
+    }, {
       action: 'pop'
-    },
-    { // list container
-      action: 'push',
-      width: 'MATCH',
-      height: '0',
-      weight: 1,
-      background: 'yellow'
-    },
-    {// list
-      action: 'push',
-      background: 'blue',
-      width: 'MATCH',
-      height: 'MATCH',
-      linear: [],
-      scrollable: true,
-      separator: 'vertical'
-    },
-    // TODO add list here
-    {
-      action: 'pop'
-    },
-    { // fab
-      action: 'push',
-      width: '72',
-      height: '56',
-      fab: ['add'],
-      margin: [0, 16, 0, 0],
-      anchor: [1, 0.5],
-      position: [1, 0]
-    },
-    {
-      action: 'pop'
-    },
-    { // list container
-      action: 'pop'
-    },
-    { // main
-      action: 'pop'
-    }
-  ],
+    }]
+  }],
   fonts: [{
     key: 'title',
     value: {
