@@ -7,9 +7,9 @@ const mapObject = arr => arr.reduce((map, obj) => Object.assign(map, {
 }), {})
 
 const getFonts = state => mapObject(state.fonts)
-const getStrings = state => mapObject(state.strings)
+const getText = state => mapObject(state.text)
 const getColors = state => mapObject(state.colors)
-const getDrawables = state => mapObject(state.drawables)
+const getImages = state => mapObject(state.images)
 
 const parseNumber = (screen, input) => {
   if (input.match(/\d+%/)) {
@@ -18,7 +18,7 @@ const parseNumber = (screen, input) => {
   return parseInt(input)
 }
 
-const generateContent = (views, component) => screen => {
+const generateContent = (components, component) => screen => {
   let start
   while (component.length) {
     const top = component.shift()
@@ -79,7 +79,7 @@ const generateContent = (views, component) => screen => {
             position(...top.position)
           }
           if (top.adapter) {
-            const subview = screen => generateContent(views, views.find(it => it.key === top.adapter[0]).value.slice(0))(screen)
+            const subview = screen => generateContent(components, components.find(it => it.key === top.adapter[0]).value.slice(0))(screen)
             const property = Observable.derive(screen.state$, state => getter(state, ...top.adapter[1]))
             adapter(property, subview)
           }
@@ -101,7 +101,7 @@ const generateContent = (views, component) => screen => {
           if (top.separator) {
             separator(top.separator)
           }
-          generateContent(views, component)(screen)
+          generateContent(components, component)(screen)
         })
         break
       case 'pop':
@@ -127,10 +127,10 @@ export default screen => {
     child.children = []
     child.state$ = new Observable(it.state)
     Object.assign(child.resources.color, getColors(it))
-    Object.assign(child.resources.drawable, getDrawables(it))
+    Object.assign(child.resources.drawable, getImages(it))
     Object.assign(child.resources.font, getFonts(it))
-    Object.assign(child.resources.string, getStrings(it))
-    child.start(generateContent(it.views, it.views[0].value.slice(0)))
+    Object.assign(child.resources.string, getText(it))
+    child.start(generateContent(it.components, it.components[0].value.slice(0)))
   })
   container(_ => child => ({
     width: child.bounds.height * 480 / 856

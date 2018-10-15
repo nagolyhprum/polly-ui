@@ -1,5 +1,6 @@
 import resourcesComponent from 'app/resources'
 import phoneComponent from 'app/phone'
+import treeComponent from 'app/tree'
 export default screen => {
   const {
     style,
@@ -18,8 +19,11 @@ export default screen => {
     shadow,
     round,
     circle,
+    scrollable,
     textAlign,
+    card,
     MATCH,
+    state$,
     WRAP,
     resources: {
       color,
@@ -50,14 +54,37 @@ export default screen => {
       weight(1)
       background(color.light_primary)
       linear(0, 'horizontal')
+      container(WRAP, MATCH, () => {
+        card()
+
+        scrollable()
+
+        const isArray = input => console.log('isArray', input) || (input instanceof Array ? input : [])
+
+        const resources = [
+          'Audio',
+          'Colors',
+          'Components',
+          'Fonts',
+          'Images',
+          'Scripts',
+          'State',
+          'Text'
+        ].map(key => ({
+          key,
+          children: isArray(state$.get()[key.toLowerCase()])
+        }))
+
+        treeComponent(screen, resources)
+      })
       container(WRAP, WRAP, () => {
-        padding(16)
-        anchor(0, 0.5)
         position(0, 0.5)
+        anchor(0, 0.5)
+        padding(16)
+        margin(0, 64, 0, 64)
         background('black')
         round(20)
         linear(16)
-        margin(0, 64, 0, 64)
         container(WRAP, WRAP, () => {
           linear(16, 'horizontal')
           anchor(0.5, 0)
@@ -83,11 +110,6 @@ export default screen => {
           anchor(0.5, 0)
           position(0.5, 0)
         })
-      })
-      container(0, MATCH, () => {
-        weight(1)
-        margin(64, 0, 64, 0)
-        resourcesComponent(screen)
       })
     })
   })

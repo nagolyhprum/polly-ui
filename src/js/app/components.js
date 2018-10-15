@@ -1,55 +1,6 @@
 import { assign } from 'utils'
 
-const tree = (screen, views) => {
-  const {
-    container,
-    text,
-    linear,
-    padding,
-    onClick,
-    background,
-    state$,
-    observe,
-    resources: {
-      color
-    },
-    WRAP,
-    MATCH
-  } = screen
-  while (views.length) {
-    const top = views.shift()
-    switch (top.action) {
-      case 'push':
-        container(WRAP, WRAP, () => {
-          padding(0, 0, 0, 16)
-          container(WRAP, WRAP, () => {
-            linear(8)
-            container(WRAP, WRAP, () => {
-              padding(8)
-              const hint = top.text || top.src || (top.adapter && top.adapter[0]) || (top.fab && top.fab[0]) || `${top.width}, ${top.height}`
-              text(`${top.type}${hint ? ` (${hint})` : ''}`)
-              observe(state$, state => {
-                background(getComponent(state) === top ? color.light_primary : 'white')
-              })
-              onClick(() => {
-                state$.assign('component', top)
-              })
-            })
-            tree(screen, views)
-          })
-          container(1, MATCH, () => {
-            background('black')
-          })
-        })
-        break
-      case 'pop':
-        return
-    }
-  }
-  console.log(views)
-}
-
-const getComponent = state => state.component || state.views.find(it => it.key === state.view).value[0]
+const getComponent = state => state.component || state.components.find(it => it.key === state.view).value[0]
 
 export default screen => {
   const {
@@ -82,7 +33,7 @@ export default screen => {
       weight(1)
       linear()
       separator()
-      state$.get().views.forEach((c, index) => {
+      state$.get().components.forEach((c, index) => {
         container(MATCH, WRAP, () => {
           observe(state$, state => {
             background(state.view === c.key ? color.light_primary : 'white')
@@ -104,7 +55,7 @@ export default screen => {
       scrollable()
       observe(state$, state => {
         clear()
-        const view = state.views.find(it => it.key === state.view).value
+        const view = state.components.find(it => it.key === state.view).value
         tree(screen, view.slice(0))
       })
     })

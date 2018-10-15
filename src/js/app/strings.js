@@ -20,7 +20,7 @@ export default screen => {
   container(MATCH, MATCH, () => {
     linear()
     separator()
-    state$.get().strings.forEach((c, index) => {
+    state$.get().text.forEach((c, index) => {
       container(MATCH, WRAP, () => {
         separator('horizontal')
         linear(0, 'horizontal')
@@ -36,7 +36,7 @@ export default screen => {
           text(c.value)
           style(font.normal_12)
           input()
-          onTextChange(value => state$.assign('strings', index, 'value', value))
+          onTextChange(value => state$.assign('text', index, 'value', value))
         })
       })
     })

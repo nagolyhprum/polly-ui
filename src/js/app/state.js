@@ -5,7 +5,7 @@ export default {
   state: {
     list: [{}, {}, {}, {}, {}, {}, {}, {}, {}, {}]
   },
-  views: [{
+  components: [{
     key: 'main',
     value: [
       {
@@ -209,7 +209,7 @@ export default {
       size: 12
     }
   }],
-  drawables: [{
+  images: [{
     key: 'back',
     value: require('../res/drawable/back.svg')
   }, {
@@ -222,7 +222,7 @@ export default {
     key: 'check',
     value: require('../res/drawable/check.svg')
   }],
-  strings: [{
+  text: [{
     key: 'title',
     value: 'Poly UI'
   }, {

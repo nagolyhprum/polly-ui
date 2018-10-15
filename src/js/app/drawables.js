@@ -22,11 +22,11 @@ export default screen => {
     linear()
     separator()
     const COLUMNS = 2
-    Array.from({ length: Math.ceil(state$.get().drawables.length / COLUMNS) }).forEach((_, i) => {
+    Array.from({ length: Math.ceil(state$.get().images.length / COLUMNS) }).forEach((_, i) => {
       container(MATCH, WRAP, () => {
         linear(0, 'horizontal')
         separator('horizontal')
-        state$.get().drawables.slice(i * COLUMNS, i * COLUMNS + COLUMNS).forEach((c, index) => {
+        state$.get().images.slice(i * COLUMNS, i * COLUMNS + COLUMNS).forEach((c, index) => {
           container(0, WRAP, () => {
             padding(8)
             weight(1)
