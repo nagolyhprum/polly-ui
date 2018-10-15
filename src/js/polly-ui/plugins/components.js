@@ -1,4 +1,4 @@
-import Observable from 'rave/observable'
+import Observable from 'polly-ui/observable'
 
 const slightRound = 4
 

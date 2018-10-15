@@ -1,4 +1,4 @@
-import separator from 'rave/plugins/separator'
+import separator from '/plugins/separator'
 import color from 'color'
 import View from 'view'
 import Screen from 'screen'

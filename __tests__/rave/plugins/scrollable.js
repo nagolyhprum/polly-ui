@@ -1,6 +1,6 @@
 import Screen from 'screen'
 import View from 'view'
-import scrollable from 'rave/plugins/scrollable'
+import scrollable from '/plugins/scrollable'
 describe('scrollable', () => {
   it('repositions', () => {
     const view = View({

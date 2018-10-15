@@ -1,4 +1,4 @@
-import background from 'rave/plugins/background'
+import background from '/plugins/background'
 import Screen from 'screen'
 import View from 'view'
 describe('background', () => {

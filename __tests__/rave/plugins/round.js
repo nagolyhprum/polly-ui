@@ -1,4 +1,4 @@
-import round from 'rave/plugins/round'
+import round from '/plugins/round'
 import Screen from 'screen'
 import View from 'view'
 describe('round', () => {

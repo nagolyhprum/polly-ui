@@ -1,6 +1,6 @@
 {
-  "name": "rave",
-  "version": "1.0.0",
+  "name": "polly-ui",
+  "version": "0.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -21,11 +21,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://bitbucket.org/nagolyhprum/rave.git"
+    "url": "git+https://bitbucket.org/nagolyhprum/polly-ui.git"
   },
   "author": "",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/nagolyhprum/rave#readme",
+  "homepage": "https://bitbucket.org/nagolyhprum/polly-ui#readme",
   "dependencies": {
     "babel-core": "^6.26.3",
     "babel-plugin-module-resolver": "^3.1.1",

@@ -1,4 +1,4 @@
-import alpha from 'rave/plugins/alpha'
+import alpha from '/plugins/alpha'
 import View from 'view'
 describe('alpha', () => {
   it('defaults to 1', done => {

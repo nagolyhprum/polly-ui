@@ -1,4 +1,4 @@
-import shadow from 'rave/plugins/shadow'
+import shadow from '/plugins/shadow'
 import Screen from 'screen'
 import View from 'view'
 describe('shadow', () => {

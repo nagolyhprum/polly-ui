@@ -1,4 +1,4 @@
-import text from 'rave/plugins/text'
+import text from '/plugins/text'
 import Screen from 'screen'
 import View from 'view'
 describe('text', () => {

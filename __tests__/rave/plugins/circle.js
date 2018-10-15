@@ -1,4 +1,4 @@
-import circle from 'rave/plugins/circle'
+import circle from '/plugins/circle'
 import Screen from 'screen'
 import View from 'view'
 describe('circle', () => {

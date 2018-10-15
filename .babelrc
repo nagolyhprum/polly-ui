@@ -4,12 +4,12 @@
     ["module-resolver", {
       "alias": {
         "utils": "./src/js/utils",
-        "rave": "./src/js/rave",
+        "polly-ui": "./src/js/polly-ui",
         "views": "./src/js/lexicon/views",
-        "plugins": "./src/js/rave/plugins",
+        "plugins": "./src/js/polly-ui/plugins",
         "app": "./src/js/app",
         "events": "./src/js/events",
-        "env": "./src/js/rave/canvas/html"
+        "env": "./src/js/polly-ui/canvas/html"
       }
     }]
   ]

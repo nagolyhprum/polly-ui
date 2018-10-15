@@ -1,4 +1,4 @@
-import layout from 'rave/plugins/layout'
+import layout from '/plugins/layout'
 import Screen from 'screen'
 import View from 'view'
 describe('layout', () => {

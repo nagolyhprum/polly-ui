@@ -1,7 +1,7 @@
 import {
   equals
 } from 'utils'
-import Observable from 'rave/observable'
+import Observable from 'polly-ui/observable'
 // plugins
 import link from 'plugins/link'
 import layout from 'plugins/layout'

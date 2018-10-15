@@ -1,4 +1,4 @@
-import textbox from 'rave/plugins/textbox'
+import textbox from '/plugins/textbox'
 import Screen from 'screen'
 import View from 'view'
 describe('textbox', () => {

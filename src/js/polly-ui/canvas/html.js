@@ -1,6 +1,6 @@
 import Parent from './'
-import Screen from 'rave/screen'
-import Observable from 'rave/observable'
+import Screen from 'polly-ui/screen'
+import Observable from 'polly-ui/observable'
 const SHADOW = 8
 export default class Canvas extends Parent {
   getRatio () {

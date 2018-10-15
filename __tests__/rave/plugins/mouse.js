@@ -1,4 +1,4 @@
-import mouse from 'rave/plugins/mouse'
+import mouse from '/plugins/mouse'
 import Screen from 'screen'
 import View from 'view'
 describe('mouse', () => {
