@@ -1,5 +1,5 @@
 dev:
-	npm run parcel -- index.html --port 8080 --no-source-maps --no-cache
+	npm run parcel -- build index.js
 
 lint:
 	npm run standard -- --fix

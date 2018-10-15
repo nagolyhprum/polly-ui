@@ -101,10 +101,10 @@ const childrenWrapper = (view, dim) => {
 }
 
 Screen.prototype = {
-  adapter (list$, cb) {
+  adapter (list$, generator) {
     this.observe(list$, list => {
       this.clear()
-      list.forEach(it => cb(this, it))
+      list.forEach(it => generator(this, it))
     })
   },
   clear () {

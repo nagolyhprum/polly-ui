@@ -1,4 +1,6 @@
 import Parent from './'
+import Screen from 'rave/screen'
+import Observable from 'rave/observable'
 const SHADOW = 8
 export default class Canvas extends Parent {
   getRatio () {
@@ -240,5 +242,30 @@ export default class Canvas extends Parent {
       return image
     })
     return this.images[key]
+  }
+  static start (view, resources, state) {
+    const canvas = new Canvas(document.getElementsByTagName('canvas')[0])
+
+    const state$ = new Observable(state)
+
+    const screen = new Screen(
+      state$,
+      resources,
+      canvas
+    )
+
+    const setSize = () => {
+      const ratio = canvas.getRatio() || 1
+      canvas.canvas.width = window.innerWidth * ratio
+      canvas.canvas.height = window.innerHeight * ratio
+      canvas.canvas.style.width = window.innerWidth + 'px'
+      canvas.canvas.style.height = window.innerHeight + 'px'
+    }
+    setSize()
+    screen.start(view)
+    window.onresize = function () {
+      setSize()
+      screen.render()
+    }
   }
 }

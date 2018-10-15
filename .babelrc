@@ -8,7 +8,8 @@
         "views": "./src/js/lexicon/views",
         "plugins": "./src/js/rave/plugins",
         "app": "./src/js/app",
-        "events": "./src/js/events"
+        "events": "./src/js/events",
+        "env": "./src/js/rave/canvas/html"
       }
     }]
   ]

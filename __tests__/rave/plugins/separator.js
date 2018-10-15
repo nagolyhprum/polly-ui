@@ -19,7 +19,7 @@ describe('separator', () => {
     })
     separator(screen)
     screen.separator()
-    expect(parent.separator).toEqual(true)
+    expect(parent.separator).toEqual('vertical')
     screen.plugins.render[0](parent)
     screen.plugins.render[0](a)
     screen.plugins.render[0](b)

@@ -29,7 +29,7 @@ describe('textbox', () => {
     view.onClick()
     expect(calls).toEqual(1)
     expect(view.textbox).toEqual(screen.textbox)
-    expect(screen.textbox.view).toEqual(view)
+    expect(screen.textbox.view()).toEqual(view)
     expect(screen.textbox.value()).toEqual(display)
     expect(screen.textbox.type()).toEqual('text')
     // draw it
@@ -46,7 +46,7 @@ describe('textbox', () => {
     expect(view.text.display).toEqual(change)
     // detect unfocus
     screen.textbox.onblur()
-    expect(screen.textbox.view).toEqual(null)
+    expect(screen.textbox.view()).toEqual(null)
     expect(view.textbox).toEqual(null)
     expect(calls).toEqual(3)
     // it no longer draws

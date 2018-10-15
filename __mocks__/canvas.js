@@ -57,13 +57,19 @@ export default extend => Object.assign({
       }
       return this._visibility
     },
-    bounds (bounds) {
-      if (arguments.length === 1) {
+    bounds (bounds, padding, margin) {
+      if (arguments.length === 3) {
         this._bounds = bounds
       }
       return this._bounds
     },
     focus () {
+    },
+    view (view) {
+      if (arguments.length === 1) {
+        this._view = view
+      }
+      return this._view
     }
   }),
   moveTo () {
