@@ -23,18 +23,20 @@
     "type": "git",
     "url": "git+https://bitbucket.org/nagolyhprum/polly-ui.git"
   },
-  "author": "",
+  "author": "Logan Murphy",
   "license": "ISC",
   "homepage": "https://bitbucket.org/nagolyhprum/polly-ui#readme",
   "dependencies": {
     "babel-core": "^6.26.3",
     "babel-plugin-module-resolver": "^3.1.1",
     "babel-preset-env": "^1.7.0",
+    "css-loader": "^1.0.0",
     "identity-obj-proxy": "^3.0.0",
     "jest": "^23.6.0",
     "node-sass": "^4.9.3",
     "nsp": "^3.2.1",
     "parcel-bundler": "^1.10.0",
-    "standard": "^12.0.1"
+    "standard": "^12.0.1",
+    "style-loader": "^0.23.1"
   }
 }
