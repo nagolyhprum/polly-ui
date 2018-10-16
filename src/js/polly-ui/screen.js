@@ -452,6 +452,7 @@ Screen.prototype = {
         const values = observables$.map(it => it.get())
         values[i] = observable
         onChange(...values)
+        this.render()
       }))
     })
     onChange(...observables$.map(it => it.get()))

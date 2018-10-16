@@ -11,9 +11,9 @@ export default screen => {
     }
   } = screen
   screen.extend({
-    pager (view, tab$, render) {
+    pager (view, tab$, page) {
       screen.container(screen.MATCH, screen.MATCH, pager => {
-        render()
+        page()
         screen.observe(tab$, tab => {
           pager.children.forEach((child, index) => {
             screen.select(child)
