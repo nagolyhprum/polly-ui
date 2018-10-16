@@ -16,7 +16,7 @@ export default screen => {
           })
         }
         view.children.forEach((child, index) => {
-          if (index) {
+          if (index && !child.hidden) {
             const previous = view.children[index - 1]
             switch (direction) {
               case 'vertical':
