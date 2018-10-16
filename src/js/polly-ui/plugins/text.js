@@ -31,7 +31,7 @@ export default screen => {
   })
   screen.plugins.wrap.unshift((view, dim) => {
     if ((view.text && view.text.display) || view.input) {
-      screen.canvas.font(view.text.size * screen.canvas.getRatio(), 'Roboto, sans-serif', view.text.weight)
+      screen.canvas.font(view.text.size * screen.canvas.getRatio(), 'Polly, sans-serif', view.text.weight)
       const mt = screen.canvas.measureText(view.text.display)
       return {
         [dim]: mt[dim]
@@ -46,7 +46,7 @@ export default screen => {
       const y = view.bounds.y + view.bounds.height / 2
       const wpm = view.bounds.width
       screen.canvas.fillStyle(view.text.color)
-      screen.canvas.font(view.text.size * screen.canvas.getRatio(), 'Roboto, sans-serif', view.text.weight)
+      screen.canvas.font(view.text.size * screen.canvas.getRatio(), 'Polly, sans-serif', view.text.weight)
       screen.canvas.textBaseline('middle')
       screen.canvas.textAlign(view.text.align)
       let offsetX = padding[LEFT] + margin[LEFT]

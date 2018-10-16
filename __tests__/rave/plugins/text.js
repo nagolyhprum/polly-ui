@@ -24,13 +24,13 @@ describe('text', () => {
       // textAlign
       // fillText
       ['red'],
-      [16, 'Roboto, sans-serif', ''],
+      [16, 'Polly, sans-serif', ''],
       ['middle'],
       ['center'],
       [display, 15, 40],
 
       ['red'],
-      [16, 'Roboto, sans-serif', ''],
+      [16, 'Polly, sans-serif', ''],
       ['middle'],
       ['right'],
       ['\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', 40, 40]
