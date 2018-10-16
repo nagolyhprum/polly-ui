@@ -102,6 +102,8 @@ const childrenWrapper = (view, dim) => {
 
 Screen.prototype = {
   adapter (list$, generator) {
+    this.scrollable()
+    this.linear()
     this.observe(list$, list => {
       this.clear()
       list.forEach(it => generator(this, it))
