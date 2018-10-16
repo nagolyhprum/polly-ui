@@ -15,12 +15,12 @@ export default screen => {
     const mo = mouseOver(mouse, screen)
     previous.forEach(view => {
       if (!contains(mo, view)) {
-        view.onMouseOut && view.onMouseOut(getMouse(e, 'onMouseOut'))
+        view.events.call('onMouseOut', getMouse(e, 'onMouseOut'))
       }
     })
     mo.forEach(view => {
       if (!contains(previous, view)) {
-        view.onMouseIn && view.onMouseIn(getMouse(e, 'onMouseIn'))
+        view.events.call('onMouseIn', getMouse(e, 'onMouseIn'))
       }
     })
     previous = mo
@@ -52,7 +52,7 @@ export default screen => {
   canvas.onMouseOut(e => {
     const mouse = getMouse(e, 'onMouseOut')
     previous.forEach(view => {
-      view.onMouseOut && view.onMouseOut(mouse)
+      view.events.call('onMouseOut', mouse)
     })
     previous = []
   })
@@ -85,13 +85,13 @@ export default screen => {
   screen.extend({
     onClick (view, onClick) {
       view.cursor = 'pointer'
-      view.onClick = onClick
+      view.events.add('onClick', onClick)
     },
     onMouseIn (view, onMouseIn) {
-      view.onMouseIn = onMouseIn
+      view.events.add('onMouseIn', onMouseIn)
     },
     onMouseOut (view, onMouseOut) {
-      view.onMouseOut = onMouseOut
+      view.events.add('onMouseOut', onMouseOut)
     }
   })
 }

@@ -34,20 +34,23 @@ export default screen => {
         active.scrollY = Math.max(Math.min(active.scrollY + dy, 0), -bottom)
         screen.main.render()
       }
-      active.onMouseMove = mouse => {
+      active.events.add('onMouseMove', mouse => {
         if (lastMouse) {
           dx = mouse.x - lastMouse.x
           dy = mouse.y - lastMouse.y
           update()
           lastMouse = mouse
         }
-      }
-      active.onMouseDown = mouse => {
+      })
+      active.events.add('onMouseDown', mouse => {
         lastMouse = mouse
-      }
-      active.onMouseUp = active.onMouseOut = mouse => {
+      })
+      active.events.add('onMouseUp', mouse => {
         lastMouse = null
-      }
+      })
+      active.events.add('onMouseOut', mouse => {
+        lastMouse = null
+      })
     }
   })
 }

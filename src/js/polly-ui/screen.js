@@ -2,6 +2,7 @@ import {
   equals
 } from 'utils'
 import Observable from 'polly-ui/observable'
+import Events from '../events'
 // plugins
 import link from 'plugins/link'
 import layout from 'plugins/layout'
@@ -118,6 +119,7 @@ Screen.prototype = {
     })
   },
   clear () {
+    this.remove(this.active.children)
     this.active.children = []
   },
   select (view) {
@@ -199,6 +201,7 @@ Screen.prototype = {
         typeof height === 'function' ? height('height') : () => ({ height: height * this.canvas.getRatio() }),
         this.reposition
       ],
+      events: new Events(),
       parent,
       x: 0,
       y: 0,
@@ -452,18 +455,25 @@ Screen.prototype = {
       this.canvas.restore()
     }
   },
+  remove (children) {
+    children.forEach(child => {
+      child.events.call('onRemove')
+      this.remove(child.children)
+    })
+  },
   observe (...args) {
     const observables$ = args
     const onChange = observables$.pop()
     const view = this.active
     observables$.forEach((observable$, i) => {
-      observable$.observe(Observable.skipFirst(observable => {
+      const cb = observable$.observe(Observable.skipFirst(observable => {
         this.active = view
         const values = observables$.map(it => it.get())
         values[i] = observable
         onChange(...values)
         this.render()
       }))
+      view.events.add('onRemove', () => observable$.remove(cb))
     })
     onChange(...observables$.map(it => it.get()))
   },

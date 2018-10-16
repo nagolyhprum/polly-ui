@@ -12,9 +12,7 @@ export default screen => {
     const view = screen.textbox.view()
     if (view) {
       view.text.display = screen.textbox.value()
-      if (view.onTextChange) {
-        view.onTextChange(view.text.display)
-      }
+      view.events.call('onTextChange', view.text.display)
       screen.main.render()
     }
   })
@@ -24,16 +22,16 @@ export default screen => {
       view.cursor = 'text'
       view.input = type
       view.overflow = false
-      view.onClick = () => {
+      view.events.add('onClick', () => {
         view.textbox = textbox
         textbox.view(view)
         textbox.value(view.text.display)
         textbox.type(type)
         screen.main.render()
-      }
+      })
     },
     onTextChange (view, onTextChange) {
-      view.onTextChange = onTextChange
+      view.events.add('onTextChange', onTextChange)
     }
   })
   screen.plugins.prerender.push(view => screen.textbox.visibility(false))
