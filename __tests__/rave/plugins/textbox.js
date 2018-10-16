@@ -26,7 +26,7 @@ describe('textbox', () => {
     screen.textbox.oninput()
     expect(calls).toEqual(0)
     // focus it
-    view.onClick()
+    view.events.call('onClick')
     expect(calls).toEqual(1)
     expect(view.textbox).toEqual(screen.textbox)
     expect(screen.textbox.view()).toEqual(view)

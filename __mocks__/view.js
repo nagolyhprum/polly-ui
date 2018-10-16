@@ -1,4 +1,14 @@
 export default extend => Object.assign({
+  events: {
+    add (name, cb) {
+      this[name] = cb
+    },
+    call (name, ...args) {
+      if (this[name]) {
+        this[name](...args)
+      }
+    }
+  },
   managers: [],
   children: [],
   x: 0,
