@@ -50,16 +50,15 @@ export default class Canvas extends Parent {
     if (!this._textbox) {
       document.body.appendChild(this._textbox = document.createElement('input'))
 
-
-        this._textbox.style.boxSizing = "border-box";
-        this._textbox.style.padding = 0;
-        this._textbox.style.border = 0;
-        this._textbox.style.margin = 0;
-        this._textbox.style.color = this._textbox.style.background = "transparent";
-        this._textbox.style.outline = "none";
-        this._textbox.style.position = "absolute";
-        this._textbox.style.caretColor = "black";
-        this._textbox.style.font = "12px sans-serif";
+      this._textbox.style.boxSizing = 'border-box'
+      this._textbox.style.padding = 0
+      this._textbox.style.border = 0
+      this._textbox.style.margin = 0
+      this._textbox.style.color = this._textbox.style.background = 'transparent'
+      this._textbox.style.outline = 'none'
+      this._textbox.style.position = 'absolute'
+      this._textbox.style.caretColor = 'black'
+      this._textbox.style.font = '12px sans-serif'
     }
     const textbox = this._textbox
     const screen = this
@@ -269,11 +268,11 @@ export default class Canvas extends Parent {
       const ratio = canvas.getRatio() || 1
       canvas.canvas.width = window.innerWidth * ratio
       canvas.canvas.height = window.innerHeight * ratio
-      canvas.canvas.style.position = "absolute";
-      canvas.canvas.style.left = 0;
-      canvas.canvas.style.top = 0;
-      canvas.canvas.style.width = "100%"
-      canvas.canvas.style.height = "100%"
+      canvas.canvas.style.position = 'absolute'
+      canvas.canvas.style.left = 0
+      canvas.canvas.style.top = 0
+      canvas.canvas.style.width = '100%'
+      canvas.canvas.style.height = '100%'
     }
     setSize()
     screen.start(view)

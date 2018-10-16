@@ -11,7 +11,7 @@ audit:
 	npm audit --fix
 
 integration:
-	make nsp
+	make audit
 	npm run standard
 	make test
 
