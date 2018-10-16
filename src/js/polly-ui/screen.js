@@ -69,6 +69,7 @@ const DIMENSIONS = {
 }
 
 function Screen (state$, resources, canvas, ...plugins) {
+  this.events = new Events()
   this.main = this
   this.bounds = {}
   this.state$ = state$
