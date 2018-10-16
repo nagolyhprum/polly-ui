@@ -1,4 +1,4 @@
-import alpha from '/plugins/alpha'
+import alpha from 'polly-ui/plugins/alpha'
 import View from 'view'
 describe('alpha', () => {
   it('defaults to 1', done => {

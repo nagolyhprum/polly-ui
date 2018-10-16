@@ -1,4 +1,4 @@
-import linear from '/plugins/linear'
+import linear from 'polly-ui/plugins/linear'
 import Screen from 'screen'
 import View from 'view'
 describe('linear', () => {

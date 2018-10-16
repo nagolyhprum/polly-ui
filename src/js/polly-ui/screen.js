@@ -176,8 +176,8 @@ Screen.prototype = {
     const size = screen.plugins.wrap.reduce((size, wrap) => {
       return size || wrap(view, dim)
     }, null) || {
-        [dim]: 0
-      }
+      [dim]: 0
+    }
     size[dim] += spaceAround
     return size
   },

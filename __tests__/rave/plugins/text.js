@@ -1,4 +1,4 @@
-import text from '/plugins/text'
+import text from 'polly-ui/plugins/text'
 import Screen from 'screen'
 import View from 'view'
 describe('text', () => {

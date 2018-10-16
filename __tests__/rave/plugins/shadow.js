@@ -1,4 +1,4 @@
-import shadow from '/plugins/shadow'
+import shadow from 'polly-ui/plugins/shadow'
 import Screen from 'screen'
 import View from 'view'
 describe('shadow', () => {

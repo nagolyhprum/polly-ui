@@ -1,4 +1,4 @@
-import textbox from '/plugins/textbox'
+import textbox from 'polly-ui/plugins/textbox'
 import Screen from 'screen'
 import View from 'view'
 describe('textbox', () => {

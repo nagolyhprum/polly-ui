@@ -1,4 +1,4 @@
-import layout from '/plugins/layout'
+import layout from 'polly-ui/plugins/layout'
 import Screen from 'screen'
 import View from 'view'
 describe('layout', () => {

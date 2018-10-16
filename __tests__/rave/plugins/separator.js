@@ -1,4 +1,4 @@
-import separator from '/plugins/separator'
+import separator from 'polly-ui/plugins/separator'
 import color from 'color'
 import View from 'view'
 import Screen from 'screen'

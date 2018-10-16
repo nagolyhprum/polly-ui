@@ -1,4 +1,4 @@
-import round from '/plugins/round'
+import round from 'polly-ui/plugins/round'
 import Screen from 'screen'
 import View from 'view'
 describe('round', () => {

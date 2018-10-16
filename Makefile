@@ -1,4 +1,4 @@
-dev:
+build:
 	npm run parcel -- build index.js
 
 lint:
@@ -14,3 +14,13 @@ integration:
 	make nsp
 	npm run standard
 	make test
+
+patch: integration build
+	npm version patch
+	npm publish
+minor: integration build
+	npm version minor
+	npm publish
+major: integration build
+	npm version major
+	npm publish

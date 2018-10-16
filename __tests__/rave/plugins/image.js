@@ -1,4 +1,4 @@
-import image from '/plugins/image'
+import image from 'polly-ui/plugins/image'
 import Screen from 'screen'
 import View from 'view'
 describe('image', () => {
