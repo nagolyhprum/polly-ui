@@ -16,14 +16,14 @@ export default screen => {
           })
         }
         view.children.forEach((child, index) => {
-          if (index && !child.hidden) {
+          if (index) {
             const previous = view.children[index - 1]
             switch (direction) {
               case 'vertical':
-                child.y = previous.y + previous.bounds.height + spacing
+                child.y = previous.y + previous.bounds.height + (child.hidden ? 0 : spacing)
                 break
               case 'horizontal':
-                child.x = previous.x + previous.bounds.width + spacing
+                child.x = previous.x + previous.bounds.width + (child.hidden ? 0 : spacing)
                 break
             }
           }
