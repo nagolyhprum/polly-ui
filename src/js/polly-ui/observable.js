@@ -32,6 +32,12 @@ export default class Observable {
     this.set(assign(this.value, ...path))
   }
 
+  prop (...path) {
+    const observable$ = new Observable()
+    this.observe(it => observable$.set(path.reduce((value, path) => value[path], it)))
+    return observable$
+  }
+
   static derive (...args) {
     const obs = args.slice(0, args.length - 1)
     const observe = args[args.length - 1]
