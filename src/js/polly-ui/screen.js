@@ -101,6 +101,14 @@ const childrenWrapper = (view, dim) => {
 }
 
 Screen.prototype = {
+  id (id) {
+    this.active.id = id
+  },
+  find (id, children = this.children) {
+    return children.reduce((active, child) => {
+      return active || (child.id === id && child) || this.find(id, child.children)
+    }, null)
+  },
   adapter (list$, generator) {
     this.scrollable()
     this.linear()
