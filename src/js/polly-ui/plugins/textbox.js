@@ -14,8 +14,11 @@ export default screen => {
       if (keyCode === 13) {
         view.events.call('onSubmit')
       } else {
-        view.text.display = screen.textbox.value()
-        view.events.call('onTextChange', view.text.display)
+        const value = screen.textbox.value()
+        if (value !== view.text.display) {
+          view.text.display = value
+          view.events.call('onTextChange', value)
+        }
       }
       screen.main.render()
     }
