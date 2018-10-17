@@ -12,6 +12,9 @@ describe('text', () => {
       margin: 0,
       padding: 0,
       textbox: {
+        value () {
+
+        },
         scroll () {
           return 10
         }
