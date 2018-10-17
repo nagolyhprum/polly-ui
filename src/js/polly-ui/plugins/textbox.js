@@ -17,7 +17,7 @@ export default screen => {
     }
   })
   screen.extend({
-    bind(view, text$) {
+    bind (view, text$) {
       screen.observe(text$, text => screen.text(text))
       screen.onTextChange(text => text$.set(text))
     },
