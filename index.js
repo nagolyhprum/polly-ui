@@ -1,4 +1,6 @@
 import Canvas from 'env'
-import Obs from 'polly-ui/Observable'
+import Observable from 'polly-ui/observable'
+import { assign, push } from 'utils'
+
 export default Canvas
-export const Observable = Obs
+export { Observable, assign, push }
