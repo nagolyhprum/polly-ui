@@ -63,6 +63,20 @@ export default class Canvas extends Parent {
     const textbox = this._textbox
     const screen = this
     return {
+      onSubmit (onSubmit) {
+        let handled
+        textbox.onkeydown = it => {
+          if (!handled && it.which === 13) {
+            handled = true
+            onSubmit()
+          }
+        }
+        textbox.onkeyup = it => {
+          if (it.which === 13) {
+            handled = false
+          }
+        }
+      },
       view (view) {
         if (arguments.length === 1) {
           textbox.view = view

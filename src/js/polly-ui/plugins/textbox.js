@@ -1,5 +1,11 @@
 export default screen => {
   screen.textbox = screen.canvas.textbox()
+  screen.textbox.onSubmit(() => {
+    const view = screen.textbox.view()
+    if (view) {
+      view.events.call('onSubmit')
+    }
+  })
   screen.textbox.onBlur(() => {
     const view = screen.textbox.view()
     if (view) {
@@ -36,6 +42,9 @@ export default screen => {
     },
     onTextChange (view, onTextChange) {
       view.events.add('onTextChange', onTextChange)
+    },
+    onSubmit (view, onSubmit) {
+      view.events.add('onSubmit', onSubmit)
     }
   })
   screen.plugins.prerender.push(view => screen.textbox.visibility(false))
