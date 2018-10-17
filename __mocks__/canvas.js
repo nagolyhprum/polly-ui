@@ -33,6 +33,9 @@ export default extend => Object.assign({
     return true
   },
   textbox: () => ({
+    onSubmit () {
+
+    },
     onBlur (onBlur) {
       this.onblur = onBlur
     },
