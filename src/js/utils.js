@@ -16,13 +16,14 @@ export const push = (data, ...path) => {
   const value = path.pop()
   const key = path.pop()
   const root = Object.assign({}, data)
-  path.reduce((obj, path) => {
+  const r = path.reduce((obj, path) => {
     if (obj[path] instanceof Array) {
       return (obj[path] = obj[path].slice(0))
     } else {
       return (obj[path] = Object.assign({}, obj[path]))
     }
-  }, root)[key].push(value)
+  }, root)
+  r[key] = r[key].slice(0).concat(value)
   return root
 }
 
