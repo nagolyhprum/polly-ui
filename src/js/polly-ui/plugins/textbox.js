@@ -1,11 +1,5 @@
 export default screen => {
   screen.textbox = screen.canvas.textbox()
-  screen.textbox.onSubmit(() => {
-    const view = screen.textbox.view()
-    if (view) {
-      view.events.call('onSubmit')
-    }
-  })
   screen.textbox.onBlur(() => {
     const view = screen.textbox.view()
     if (view) {
@@ -14,11 +8,14 @@ export default screen => {
       screen.main.render()
     }
   })
-  screen.textbox.onInput(() => {
+  screen.textbox.onInput(keyCode => {
     const view = screen.textbox.view()
     if (view) {
       view.text.display = screen.textbox.value()
       view.events.call('onTextChange', view.text.display)
+      if (keyCode === 13) {
+        view.events.call('onSubmit')
+      }
       screen.main.render()
     }
   })

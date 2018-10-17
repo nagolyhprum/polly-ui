@@ -63,20 +63,6 @@ export default class Canvas extends Parent {
     const textbox = this._textbox
     const screen = this
     return {
-      onSubmit (onSubmit) {
-        let handled
-        textbox.onkeydown = it => {
-          if (!handled && it.which === 13) {
-            handled = true
-            onSubmit()
-          }
-        }
-        textbox.onkeyup = it => {
-          if (it.which === 13) {
-            handled = false
-          }
-        }
-      },
       view (view) {
         if (arguments.length === 1) {
           textbox.view = view
@@ -88,9 +74,9 @@ export default class Canvas extends Parent {
       },
       onInput (onInput) {
         textbox.oninput = onInput
-        textbox.onkeydown = onInput
-        textbox.onmousedown = onInput
-        window.onselect = onInput
+        textbox.onkeydown = e => onInput(e.which)
+        textbox.onchange = onInput
+        textbox.onselect = onInput
       },
       value (value) {
         if (arguments.length === 1) {
