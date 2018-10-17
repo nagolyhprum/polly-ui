@@ -17,6 +17,10 @@ export default screen => {
     }
   })
   screen.extend({
+    bind(view, text$) {
+      screen.observe(text$, text => screen.text(text))
+      screen.onTextChange(text => text$.set(text))
+    },
     input (view, type = 'text') {
       const textbox = screen.textbox
       view.cursor = 'text'
