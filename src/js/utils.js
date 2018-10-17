@@ -12,6 +12,20 @@ export const assign = (data, ...path) => {
   return root
 }
 
+export const push = (data, ...path) => {
+  const value = path.pop()
+  const key = path.pop()
+  const root = Object.assign({}, data)
+  path.reduce((obj, path) => {
+    if (obj[path] instanceof Array) {
+      return (obj[path] = obj[path].slice(0))
+    } else {
+      return (obj[path] = Object.assign({}, obj[path]))
+    }
+  }, root)[key].push(value)
+  return root
+}
+
 export const getter = (data, ...path) => path.reduce((obj, path) => obj[path], data)
 
 export const equals = (a, b) => {

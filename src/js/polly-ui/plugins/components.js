@@ -23,7 +23,6 @@ export default screen => {
       })
     },
     fab (view, icon = drawable.content.add, background = color.accent) {
-      screen.padding(16)
       screen.src(icon)
       screen.background(background)
       screen.circle()
