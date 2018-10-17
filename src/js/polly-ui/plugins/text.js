@@ -19,6 +19,9 @@ export default screen => {
     text (view, display) {
       init(view)
       view.text.display = display
+      if (view.textbox) {
+        view.textbox.value(display)
+      }
     },
     textColor (view, textColor) {
       init(view)
