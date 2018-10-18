@@ -1,3 +1,21 @@
+export const splice = (data, ...path) => {
+  const key = path.pop()
+  const root = Object.assign({}, data)
+  const found = path.reduce((obj, path) => {
+    if (obj[path] instanceof Array) {
+      return (obj[path] = obj[path].slice(0))
+    } else {
+      return (obj[path] = Object.assign({}, obj[path]))
+    }
+  }, root)
+  if (found instanceof Array) {
+    found.splice(key, 1)
+  } else {
+    delete found[key]
+  }
+  return root
+}
+
 export const assign = (data, ...path) => {
   const value = path.pop()
   const key = path.pop()

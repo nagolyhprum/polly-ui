@@ -1,4 +1,4 @@
-import { assign, push } from 'utils'
+import { assign, push, splice } from 'utils'
 export default class Observable {
   constructor (value) {
     this.callbacks = []
@@ -26,6 +26,10 @@ export default class Observable {
 
   get () {
     return this.value
+  }
+
+  splice (...path) {
+    this.set(splice(this.value, ...path))
   }
 
   push (...path) {
