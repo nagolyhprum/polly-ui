@@ -47,67 +47,89 @@ export default class Canvas extends Parent {
     this.canvas.style.cursor = cursor
   }
   textbox () {
-    if (!this._textbox) {
-      document.body.appendChild(this._textbox = document.createElement('input'))
-
-      this._textbox.style.boxSizing = 'border-box'
-      this._textbox.style.padding = 0
-      this._textbox.style.border = 0
-      this._textbox.style.margin = 0
-      this._textbox.style.color = this._textbox.style.background = 'transparent'
-      this._textbox.style.outline = 'none'
-      this._textbox.style.position = 'absolute'
-      this._textbox.style.caretColor = 'black'
-      this._textbox.style.font = '12px sans-serif'
+    const inputs = [this._textarea, this._input]
+    if (!this._input) {
+      this._input = document.createElement('input')
+      this._textarea = document.createElement('textarea')
+      document.body.appendChild(this._input)
+      document.body.appendChild(this._textarea)
+      inputs[0] = this._input
+      inputs[1] = this._textarea
+      inputs.forEach(textbox => {
+        textbox.style.whiteSpace = 'nowrap'
+        textbox.style.overflow = 'auto'
+        textbox.style.boxSizing = 'border-box'
+        textbox.style.padding = 0
+        textbox.style.border = 0
+        textbox.style.margin = 0
+        textbox.style.color = textbox.style.background = 'transparent'
+        textbox.style.outline = 'none'
+        textbox.style.position = 'absolute'
+        textbox.style.caretColor = 'black'
+        textbox.style.font = '12px sans-serif'
+      })
     }
-    const textbox = this._textbox
     const screen = this
     return {
       view (view) {
         if (arguments.length === 1) {
-          textbox.view = view
+          inputs.forEach(textbox => {
+            textbox.view = view
+          })
         }
-        return textbox.view
+        return screen._input.view
       },
       onBlur (onBlur) {
-        textbox.onblur = onBlur
+        inputs.forEach(textbox => {
+          textbox.onblur = onBlur
+        })
       },
       onInput (onInput) {
-        textbox.oninput = onInput
-        textbox.onkeydown = e => onInput(e.which)
-        textbox.onchange = onInput
-        textbox.onselect = onInput
+        inputs.forEach(textbox => {
+          textbox.oninput = onInput
+          textbox.onkeydown = e => onInput(e.which)
+          textbox.onchange = onInput
+          textbox.onselect = onInput
+        })
       },
       value (value) {
         if (arguments.length === 1) {
-          textbox.value = value
+          inputs.forEach(textbox => {
+            textbox.value = value
+            textbox.innerHTML = value
+          })
         }
-        return textbox.value
+        return screen._input.value
       },
-      visibility (visible) {
-        textbox.style.display = visible ? 'block' : 'none'
+      visibility (type) {
+        screen._input.style.display = type === 'single' ? 'block' : 'none'
+        screen._textarea.style.display = type === 'multi' ? 'block' : 'none'
       },
       bounds (bounds, padding = [], margin = []) {
-        textbox.style.left = `${bounds.x / screen.getRatio()}px`
-        textbox.style.top = `${bounds.y / screen.getRatio()}px`
-        textbox.style.width = `${bounds.width / screen.getRatio()}px`
-        textbox.style.height = `${bounds.height / screen.getRatio()}px`
-        textbox.style.padding = padding.map(it => `${it / screen.getRatio()}px`).join(' ')
-        textbox.style.margin = margin.map(it => `${it / screen.getRatio()}px`).join(' ')
+        inputs.forEach(textbox => {
+          textbox.style.left = `${bounds.x / screen.getRatio()}px`
+          textbox.style.top = `${bounds.y / screen.getRatio()}px`
+          textbox.style.width = `${bounds.width / screen.getRatio()}px`
+          textbox.style.height = `${bounds.height / screen.getRatio()}px`
+          textbox.style.padding = padding.map(it => `${it / screen.getRatio()}px`).join(' ')
+          textbox.style.margin = margin.map(it => `${it / screen.getRatio()}px`).join(' ')
+        })
       },
       focus () {
-        if (textbox !== document.activeElement) {
-          textbox.focus()
-        }
-      },
-      input (type) {
-        textbox.type = type
+        inputs.forEach(textbox => {
+          if (textbox !== document.activeElement) {
+            textbox.focus()
+          }
+        })
       },
       scroll () {
-        return textbox.scrollLeft
+        return [
+          inputs.reduce((total, textbox) => total + textbox.scrollLeft, 0),
+          inputs.reduce((total, textbox) => total + textbox.scrollTop, 0)
+        ]
       },
       type (type) {
-        textbox.type = type
+        screen._input.type = type
       }
     }
   }
@@ -239,9 +261,10 @@ export default class Canvas extends Parent {
     this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
   }
   measureText (text) {
+    const lines = text.split('\n')
     return {
-      height: parseInt(this.context.font.replace(/[^\d.]+/g, '')),
-      width: this.context.measureText(text).width
+      height: lines.length * parseInt(this.context.font.replace(/[^\d.]+/g, '')),
+      width: Math.max(...lines.map(line => this.context.measureText(line).width))
     }
   }
   image (src, color) {

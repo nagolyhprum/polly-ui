@@ -18,7 +18,7 @@ describe('textbox', () => {
       active: view
     })
     textbox(screen)
-    screen.input()
+    screen.input("multi")
     // cant blur unless focused
     screen.textbox.onblur()
     expect(calls).toEqual(0)
@@ -31,10 +31,10 @@ describe('textbox', () => {
     expect(view.textbox).toEqual(screen.textbox)
     expect(screen.textbox.view()).toEqual(view)
     expect(screen.textbox.value()).toEqual(display)
-    expect(screen.textbox.type()).toEqual('text')
+    expect(screen.textbox.type()).toEqual('multi')
     // draw it
     screen.plugins.render[0](view)
-    expect(screen.textbox.visibility()).toEqual(true)
+    expect(screen.textbox.visibility()).toEqual("multi")
     expect(screen.textbox.bounds()).toEqual(view.bounds)
     // undraw it
     screen.plugins.prerender[0](view)

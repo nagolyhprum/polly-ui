@@ -16,7 +16,7 @@ describe('text', () => {
 
         },
         scroll () {
-          return 10
+          return [10, 20]
         }
       }
     })
@@ -28,15 +28,15 @@ describe('text', () => {
       // fillText
       ['red'],
       [16, 'Polly, sans-serif', ''],
-      ['middle'],
+      ['top'],
       ['center'],
-      [display, 15, 40],
+      [display, 15, 0],
 
       ['red'],
       [16, 'Polly, sans-serif', ''],
-      ['middle'],
+      ['top'],
       ['right'],
-      ['\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', 40, 40]
+      ['\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', 40, 20]
     ]
     const screen = Screen({
       canvas: {

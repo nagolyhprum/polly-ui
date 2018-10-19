@@ -51,7 +51,7 @@ export default screen => {
   screen.plugins.prerender.push(view => screen.textbox.visibility(false))
   screen.plugins.render.push(view => {
     if (view.textbox) {
-      screen.textbox.visibility(true)
+      screen.textbox.visibility(view.input === 'multi' ? 'multi' : 'single')
       view.textbox.bounds(view.bounds, view.padding, view.margin)
       view.textbox.focus()
     }
