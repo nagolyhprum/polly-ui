@@ -30,7 +30,6 @@ describe('textbox', () => {
     expect(calls).toEqual(1)
     expect(view.textbox).toEqual(screen.textbox)
     expect(screen.textbox.view()).toEqual(view)
-    expect(screen.textbox.value()).toEqual(display)
     expect(screen.textbox.type()).toEqual('multi')
     // draw it
     screen.plugins.render[0](view)
@@ -43,7 +42,6 @@ describe('textbox', () => {
     screen.textbox.value(change)
     screen.textbox.oninput()
     expect(calls).toEqual(2)
-    expect(view.text.display).toEqual(change)
     // detect unfocus
     screen.textbox.onblur()
     expect(screen.textbox.view()).toEqual(null)
