@@ -37,7 +37,7 @@ const PLUGINS = [
   separator,
   text,
   screen,
-  layout(true),
+  layout(false),
   // not drawn
   link,
   textbox,
