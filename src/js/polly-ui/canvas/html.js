@@ -2,6 +2,7 @@ import Parent from './'
 import Screen from 'polly-ui/screen'
 import Observable from 'polly-ui/observable'
 const SHADOW = 8
+const EMPTY_ARRAY = [0, 0, 0, 0]
 export default class Canvas extends Parent {
   getRatio () {
     return window.devicePixelRatio || 1
@@ -62,11 +63,13 @@ export default class Canvas extends Parent {
         textbox.style.padding = 0
         textbox.style.border = 0
         textbox.style.margin = 0
-        textbox.style.color = textbox.style.background = 'transparent'
+        textbox.style.color = 'transparent'
+        textbox.style.background = 'transparent'
         textbox.style.outline = 'none'
         textbox.style.position = 'absolute'
         textbox.style.caretColor = 'black'
         textbox.style.font = '12px sans-serif'
+        textbox.style.lineHeight = '100%'
       })
     }
     const screen = this
@@ -86,26 +89,24 @@ export default class Canvas extends Parent {
       },
       onInput (onInput) {
         inputs.forEach(textbox => {
-          textbox.oninput = onInput
-          textbox.onkeydown = e => onInput(e.which)
-          textbox.onchange = onInput
-          textbox.onselect = onInput
+          textbox.oninput = e => onInput(-1, textbox.value)
+          textbox.onkeydown = e => onInput(e.which, textbox.value)
+          textbox.onchange = e => onInput(-1, textbox.value)
+          textbox.onselect = e => onInput(-1, textbox.value)
         })
       },
       value (value) {
         if (arguments.length === 1) {
           inputs.forEach(textbox => {
             textbox.value = value
-            textbox.innerHTML = value
           })
         }
-        return screen._input.value
       },
       visibility (type) {
         screen._input.style.display = type === 'single' ? 'block' : 'none'
         screen._textarea.style.display = type === 'multi' ? 'block' : 'none'
       },
-      bounds (bounds, padding = [], margin = []) {
+      bounds (bounds, padding = EMPTY_ARRAY, margin = EMPTY_ARRAY) {
         inputs.forEach(textbox => {
           textbox.style.left = `${bounds.x / screen.getRatio()}px`
           textbox.style.top = `${bounds.y / screen.getRatio()}px`

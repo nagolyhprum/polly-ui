@@ -8,13 +8,12 @@ export default screen => {
       screen.main.render()
     }
   })
-  screen.textbox.onInput(keyCode => {
+  screen.textbox.onInput((keyCode, value) => {
     const view = screen.textbox.view()
     if (view) {
       if (keyCode === 13) {
         view.events.call('onSubmit')
       } else {
-        const value = screen.textbox.value()
         if (value !== view.text.display) {
           view.text.display = value
           view.events.call('onTextChange', value)
