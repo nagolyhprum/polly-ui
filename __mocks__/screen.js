@@ -34,6 +34,9 @@ export default (extend = {}, self = {}) => Object.assign(self, {
       this[key] = (...args) => extension[key](this.active, ...args)
     })
   },
+  setDirty (view) {
+    view.isDirty = true
+  },
   position () {
 
   },

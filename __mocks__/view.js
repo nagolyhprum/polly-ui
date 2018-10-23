@@ -9,6 +9,7 @@ export default extend => Object.assign({
       }
     }
   },
+  isDirty: true,
   managers: [],
   children: [],
   x: 0,
