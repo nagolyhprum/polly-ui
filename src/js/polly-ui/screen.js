@@ -23,10 +23,8 @@ import round from 'plugins/round'
 import circle from 'plugins/circle'
 import colorPI from 'plugins/color'
 import screen from 'plugins/screen'
-import clear from 'plugins/clear'
 
 const PLUGINS = [
-  clear,
   alpha,
   shadow,
   background,
@@ -103,6 +101,15 @@ const childrenWrapper = (view, dim) => {
 }
 
 Screen.prototype = {
+  setDirty (view = this) {
+    if ((view && !view.isDirty) || view === this) {
+      view.isDirty = true
+      if (!view.background) {
+        this.setDirty(view.parent)
+      }
+      view.children.forEach(child => this.setDirty(child))
+    }
+  },
   id (id) {
     this.active.id = id
   },
@@ -128,7 +135,10 @@ Screen.prototype = {
   },
   extend (extension) {
     Object.keys(extension).forEach(key => {
-      this[key] = (...args) => extension[key](this.active, ...args)
+      this[key] = (...args) => {
+        this.setDirty(this.active)
+        extension[key](this.active, ...args)
+      }
     })
   },
   reposition (view) {
@@ -249,6 +259,7 @@ Screen.prototype = {
   },
   visibility (visible) {
     this.active.hidden = !visible
+    this.setDirty(this.active)
   },
   animateVisibility (visible) {
     const view = this.active
@@ -448,12 +459,15 @@ Screen.prototype = {
   },
   renderView (view) {
     if (view.isInBounds) {
-      this.canvas.save()
-      this.plugins.render.forEach(plugin => plugin(view))
+      view.isDirty && this.canvas.save()
+      if (view.isDirty) {
+        this.plugins.render.forEach(plugin => plugin(view))
+      }
       view.children.forEach((child, index) => {
         this.renderView(child)
       })
-      this.canvas.restore()
+      view.isDirty && this.canvas.restore()
+      view.isDirty = false
     }
   },
   remove (children) {

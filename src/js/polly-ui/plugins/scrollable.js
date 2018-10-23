@@ -1,10 +1,13 @@
 export default screen => {
+  const { BOTTOM, RIGHT } = screen
   screen.plugins.reposition.push(view => ({
     x: (view.parent.scrollX || 0),
     y: (view.parent.scrollY || 0)
   }))
   screen.extend({
     scrollable (active) {
+      const padding = active.padding || screen.EMPTY_ARRAY
+      const margin = active.margin || screen.EMPTY_ARRAY
       active.scrollX = 0
       active.scrollY = 0
       active.overflow = false
@@ -28,10 +31,15 @@ export default screen => {
         }
       }, 1000 / 60)
       const update = () => {
-        const right = Math.max(0, ...active.children.map(child => child.bounds.x + child.bounds.width - (active.bounds.x + active.bounds.width + active.scrollX)))
-        const bottom = Math.max(0, ...active.children.map(child => child.bounds.y + child.bounds.height - (active.bounds.y + active.bounds.height + active.scrollY)))
+        const right = Math.max(0, ...active.children.map(
+          child => child.bounds.x + child.bounds.width - (active.bounds.x + active.bounds.width + active.scrollX))
+        ) + padding[RIGHT] + margin[RIGHT]
+        const bottom = Math.max(0, ...active.children.map(
+          child => child.bounds.y + child.bounds.height - (active.bounds.y + active.bounds.height + active.scrollY))
+        ) + padding[BOTTOM] + margin[BOTTOM]
         active.scrollX = Math.max(Math.min(active.scrollX + dx, 0), -right)
         active.scrollY = Math.max(Math.min(active.scrollY + dy, 0), -bottom)
+        screen.setDirty(active)
         screen.main.render()
       }
       active.events.add('onMouseMove', mouse => {
