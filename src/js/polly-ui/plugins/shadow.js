@@ -4,5 +4,9 @@ export default screen => {
       view.shadow = shadow
     }
   })
-  screen.plugins.render.push(view => screen.canvas.shadow(view.shadow))
+  screen.plugins.render.push(view => {
+    if (view.parent && view.parent.isDirty) {
+      screen.canvas.shadow(view.shadow)
+    }
+  })
 }

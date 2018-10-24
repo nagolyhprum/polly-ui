@@ -3,7 +3,9 @@ import Screen from 'screen'
 import View from 'view'
 describe('shadow', () => {
   it('draws a shadow', () => {
-    const view = View()
+    const view = View({
+      parent: View()
+    })
     const screen = Screen({
       active: view
     })

@@ -302,6 +302,7 @@ export default class Canvas extends Parent {
     screen.start(view)
     window.onresize = function () {
       setSize()
+      screen.setDirty()
       screen.render()
     }
   }
