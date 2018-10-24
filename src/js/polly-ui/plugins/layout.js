@@ -1,7 +1,7 @@
 export default isDebug => screen => {
   const { LEFT, TOP, EMPTY_ARRAY } = screen
   screen.plugins.render.push(view => {
-    if (isDebug) {
+    if (isDebug && view.isDirty) {
       const x = view.bounds.x
       const y = view.bounds.y
       const margin = view.margin || EMPTY_ARRAY

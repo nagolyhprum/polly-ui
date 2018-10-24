@@ -42,7 +42,7 @@ export default screen => {
     }
   })
   screen.plugins.render.push(view => {
-    if (view.text && view.text.display) {
+    if (view.text && view.text.display && view.isDirty) {
       const margin = view.margin || EMPTY_ARRAY
       const padding = view.padding || EMPTY_ARRAY
       const scroll = view.textbox ? view.textbox.scroll() : [0, 0]

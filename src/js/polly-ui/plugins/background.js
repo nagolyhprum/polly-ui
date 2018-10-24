@@ -22,5 +22,5 @@ export default screen => {
       view.background = background
     }
   })
-  screen.plugins.render.push(view => view.render(true))
+  screen.plugins.render.push(view => view.render(view.isDirty))
 }

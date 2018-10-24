@@ -32,7 +32,7 @@ export default screen => {
     }
   })
   screen.plugins.render.push(view => {
-    if (view.image && view.image.complete) {
+    if (view.image && view.image.complete && view.isDirty) {
       screen.canvas.shadow(false)
       const margin = view.margin || EMPTY_ARRAY
       const padding = view.padding || EMPTY_ARRAY

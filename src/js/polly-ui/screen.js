@@ -464,14 +464,12 @@ Screen.prototype = {
   },
   renderView (view) {
     if (view.isInBounds) {
-      view.isDirty && this.canvas.save()
-      if (view.isDirty) {
-        this.plugins.render.forEach(plugin => plugin(view))
-      }
+      this.canvas.save()
+      this.plugins.render.forEach(plugin => plugin(view))
       view.children.forEach((child, index) => {
         this.renderView(child)
       })
-      view.isDirty && this.canvas.restore()
+      this.canvas.restore()
       view.isDirty = false
     }
   },
