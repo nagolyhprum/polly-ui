@@ -375,32 +375,37 @@ Screen.prototype = {
     width: this.canvas.getWidth(),
     height: this.canvas.getHeight()
   }) {
-    this.bounds = {
-      x: bounds.x,
-      y: bounds.y,
-      width: bounds.width,
-      height: bounds.height
-    }
-    this.intersection = {
-      left: bounds.x,
-      top: bounds.y,
-      right: bounds.width,
-      bottom: bounds.height,
-      x: bounds.x,
-      y: bounds.y,
-      width: bounds.width,
-      height: bounds.height
-    }
-    const start = Date.now()
-    this.plugins.prerender.forEach(plugin => plugin(this))
-    this.children.slice(this.children.length - 2).forEach(child => {
-      this.layoutView(child)
-      this.renderView(child)
+    clearTimeout(this.renderTimeout)
+    this.renderTimeout = setTimeout(() => {
+      this.bounds = {
+        x: bounds.x,
+        y: bounds.y,
+        width: bounds.width,
+        height: bounds.height
+      }
+      this.intersection = {
+        left: bounds.x,
+        top: bounds.y,
+        right: bounds.width,
+        bottom: bounds.height,
+        x: bounds.x,
+        y: bounds.y,
+        width: bounds.width,
+        height: bounds.height
+      }
+      const start = Date.now()
+      this.plugins.prerender.forEach(plugin => plugin(this))
+      //this.canvas.clear() //test proper drawing here
+      this.children.slice(this.children.length - 2).forEach(child => {
+        this.layoutView(child)
+        this.renderView(child)
+      })
+      const diff = Date.now() - start
+      if (diff >= 1000 / 60) {
+        console.log('slow draw', diff, 'ms')
+      }
     })
-    const diff = Date.now() - start
-    if (diff >= 1000 / 60) {
-      console.log('slow draw', diff, 'ms')
-    }
+
   },
   highlightArea (
     color,
