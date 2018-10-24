@@ -116,7 +116,7 @@ Screen.prototype = {
     this.linear()
     this.observe(list$, list => {
       this.clear()
-      list.forEach((it, index) => generator(this, it, index))
+      list && list.forEach((it, index) => generator(this, it, index))
     })
   },
   clear () {
