@@ -5,7 +5,7 @@ export default screen => {
     }
   })
   screen.plugins.render.push(view => {
-    if (view.parent) {
+    if (view.parent && view.parent.isDirty) {
       screen.canvas.shadow(view.shadow)
     }
   })

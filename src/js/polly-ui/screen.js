@@ -395,7 +395,7 @@ Screen.prototype = {
       }
       const start = Date.now()
       this.plugins.prerender.forEach(plugin => plugin(this))
-      //this.canvas.clear() //test proper drawing here
+      // this.canvas.clear() //test proper drawing here
       this.children.slice(this.children.length - 2).forEach(child => {
         this.layoutView(child)
         this.renderView(child)
@@ -405,7 +405,6 @@ Screen.prototype = {
         console.log('slow draw', diff, 'ms')
       }
     })
-
   },
   highlightArea (
     color,
@@ -438,24 +437,27 @@ Screen.prototype = {
     }
   },
   layoutView (view) {
-    const bounds = view.hidden ? { x: 0, y: 0, width: 0, height: 0 } : view.managers.reduce((bounds, manager) => {
-      const wrapper = manager(view, this)
-      const current = typeof wrapper === 'function' ? wrapper() : wrapper
-      return {
-        x: Math.round((current.x || 0) + bounds.x),
-        y: Math.round((current.y || 0) + bounds.y),
-        width: Math.round((current.width || 0) + bounds.width),
-        height: Math.round((current.height || 0) + bounds.height)
-      }
-    }, {
-      x: 0,
-      y: 0,
-      width: view.width,
-      height: view.height
-    })
-    const moved = !equals(view.bounds, bounds)
-    view.bounds = bounds
-    this.getIntersection(view)
+    let moved = false
+    if (view.isDirty) {
+      const bounds = view.hidden ? { x: 0, y: 0, width: 0, height: 0 } : view.managers.reduce((bounds, manager) => {
+        const wrapper = manager(view, this)
+        const current = typeof wrapper === 'function' ? wrapper() : wrapper
+        return {
+          x: Math.round((current.x || 0) + bounds.x),
+          y: Math.round((current.y || 0) + bounds.y),
+          width: Math.round((current.width || 0) + bounds.width),
+          height: Math.round((current.height || 0) + bounds.height)
+        }
+      }, {
+        x: 0,
+        y: 0,
+        width: view.width,
+        height: view.height
+      })
+      moved = !equals(view.bounds, bounds)
+      view.bounds = bounds
+      this.getIntersection(view)
+    }
     if (view.isInBounds && view.children.reduce((moved, child) => this.layoutView(child) || moved, moved)) {
       this.layoutView(view)
       return true

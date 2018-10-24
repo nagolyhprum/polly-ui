@@ -48,21 +48,21 @@ export const push = (data, ...path) => {
 export const getter = (data, ...path) => path.reduce((obj, path) => obj[path], data)
 
 export const equals = (a, b) => {
-  let i
-  if (a === b) {
+  if (typeof a === 'object' && typeof b === 'object') {
+    let i
+    for (i in a) {
+      if (!equals(a[i], b[i])) {
+        return false
+      }
+    }
+    for (i in b) {
+      if (!equals(a[i], b[i])) {
+        return false
+      }
+    }
     return true
   }
-  for (i in a) {
-    if (a[i] !== b[i]) {
-      return false
-    }
-  }
-  for (i in b) {
-    if (a[i] !== b[i]) {
-      return false
-    }
-  }
-  return true
+  return a === b
 }
 
 export const contains = (arr, item) => arr.indexOf(item) !== -1
