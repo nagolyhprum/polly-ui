@@ -472,8 +472,8 @@ Screen.prototype = {
         this.renderView(child)
       })
       this.canvas.restore()
-      view.isDirty = false
     }
+    view.isDirty = false
   },
   remove (children) {
     children.forEach(child => {
