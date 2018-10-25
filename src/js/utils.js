@@ -65,4 +65,19 @@ export const equals = (a, b) => {
   return a === b
 }
 
+const echo = _ => _
+
+export const deepFreeze = input => clone(input, Object.freeze)
+
+export const clone = (src, mutate = echo) => {
+  if (src instanceof Array) {
+    return mutate(src.map(it => clone(it, mutate)))
+  } else if (typeof src === 'object') {
+    return mutate(Object.keys(src).reduce((obj, key) => Object.assign(obj, {
+      [key]: clone(src[key], mutate)
+    }), {}))
+  }
+  return src
+}
+
 export const contains = (arr, item) => arr.indexOf(item) !== -1

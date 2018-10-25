@@ -1,8 +1,8 @@
-import { assign, push, splice } from 'utils'
+import { assign, push, splice, deepFreeze } from 'utils'
 export default class Observable {
   constructor (value) {
     this.callbacks = []
-    this.value = value
+    this.value = deepFreeze(value)
   }
 
   observe (callback) {
@@ -20,7 +20,7 @@ export default class Observable {
 
   set (value) {
     if (value === this.value) return
-    this.value = value
+    this.value = deepFreeze(value)
     this.callbacks.forEach(callback => callback(value))
   }
 

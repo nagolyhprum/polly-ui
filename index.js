@@ -1,6 +1,6 @@
 import Canvas from 'env'
 import Observable from 'polly-ui/observable'
-import { assign, push, splice } from 'utils'
+import { assign, push, splice, clone } from 'utils'
 
 export default Canvas
-export { Observable, assign, push, splice }
+export { Observable, assign, push, splice, clone }
