@@ -1,4 +1,4 @@
-import { assign, push, splice, deepFreeze } from 'utils'
+import { assign, push, splice, deepFreeze, equals } from 'utils'
 export default class Observable {
   constructor (value) {
     this.callbacks = []
@@ -19,7 +19,7 @@ export default class Observable {
   }
 
   set (value) {
-    if (value === this.value) return
+    if (equals(value, this.value)) return
     this.value = deepFreeze(value)
     this.callbacks.forEach(callback => callback(value))
   }
