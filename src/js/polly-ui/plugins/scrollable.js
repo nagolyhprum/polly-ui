@@ -1,10 +1,10 @@
 const getBottom = (view, padding, margin, BOTTOM) => Math.max(0, ...view.children.map(
-  child => child.bounds.y + child.bounds.height - (view.bounds.y + view.bounds.height + view.scrollY))
-) + padding[BOTTOM] + margin[BOTTOM]
+  child => child.bounds.y + child.bounds.height - (view.bounds.y + view.bounds.height + view.scrollY) + padding[BOTTOM] + margin[BOTTOM]
+))
 
 const getRight = (view, padding, margin, RIGHT) => Math.max(0, ...view.children.map(
-  child => child.bounds.x + child.bounds.width - (view.bounds.x + view.bounds.width + view.scrollX))
-) + padding[RIGHT] + margin[RIGHT]
+  child => child.bounds.x + child.bounds.width - (view.bounds.x + view.bounds.width + view.scrollX) + padding[RIGHT] + margin[RIGHT]
+))
 
 export default screen => {
   const { BOTTOM, RIGHT } = screen

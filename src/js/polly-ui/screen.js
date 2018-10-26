@@ -212,6 +212,7 @@ Screen.prototype = {
         typeof height === 'function' ? height('height') : () => ({ height: height * this.canvas.getRatio() }),
         this.reposition
       ],
+      isEnabled: true,
       events: new Events(),
       parent,
       x: 0,
@@ -256,6 +257,10 @@ Screen.prototype = {
       x: -Math.max(view.bounds.width, 0) * x,
       y: -Math.max(view.bounds.height, 0) * y
     }))
+  },
+  isEnabled (isEnabled) {
+    this.active.isEnabled = isEnabled
+    this.setDirty(this.active)
   },
   visibility (visible) {
     this.active.hidden = !visible

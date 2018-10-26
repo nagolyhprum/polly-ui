@@ -15,18 +15,18 @@ export default screen => {
     const mo = mouseOver(mouse, screen)
     previous.forEach(view => {
       if (!contains(mo, view)) {
-        view.events.call('onMouseOut', getMouse(e, 'onMouseOut'))
+        view.isEnabled && view.events.call('onMouseOut', getMouse(e, 'onMouseOut'))
       }
     })
     mo.forEach(view => {
       if (!contains(previous, view)) {
-        view.events.call('onMouseIn', getMouse(e, 'onMouseIn'))
+        view.isEnabled && view.events.call('onMouseIn', getMouse(e, 'onMouseIn'))
       }
     })
     previous = mo
     let view = mo[mo.length - 1]
     while (view) {
-      view.events.call(name, mouse)
+      view.isEnabled && view.events.call(name, mouse)
       view = view.parent
     }
     if (screen === screen.main) {
@@ -34,7 +34,7 @@ export default screen => {
     }
     let last = mo[mo.length - 1]
     while (last) {
-      if (last.cursor) {
+      if (last.cursor && last.isEnabled) {
         screen.canvas.cursor(last.cursor)
         break
       }
@@ -50,7 +50,7 @@ export default screen => {
   canvas.onMouseOut(e => {
     const mouse = getMouse(e, 'onMouseOut')
     previous.forEach(view => {
-      view.events.call('onMouseOut', mouse)
+      view.isEnabled && view.events.call('onMouseOut', mouse)
     })
     previous = []
   })
