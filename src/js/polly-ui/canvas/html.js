@@ -303,7 +303,12 @@ export default class Canvas extends Parent {
     window.onresize = function () {
       setSize()
       screen.setDirty()
-      screen.render()
+      screen.render({
+        x: 0,
+        y: 0,
+        width: canvas.getWidth(),
+        height: canvas.getHeight()
+      }, true)
     }
   }
 }

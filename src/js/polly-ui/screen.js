@@ -379,9 +379,9 @@ Screen.prototype = {
     y: 0,
     width: this.canvas.getWidth(),
     height: this.canvas.getHeight()
-  }) {
+  }, instant = false) {
     clearTimeout(this.renderTimeout)
-    this.renderTimeout = setTimeout(() => {
+    const render = () => {
       this.bounds = {
         x: bounds.x,
         y: bounds.y,
@@ -409,7 +409,12 @@ Screen.prototype = {
       if (diff >= 1000 / 60) {
         console.log('slow draw', diff, 'ms')
       }
-    })
+    }
+    if (instant) {
+      render()
+    } else {
+      this.renderTimeout = setTimeout(render)
+    }
   },
   highlightArea (
     color,
