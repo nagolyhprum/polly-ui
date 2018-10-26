@@ -272,7 +272,11 @@ export default class Canvas extends Parent {
     const key = `${src}_${color}`
     this.images[key] = this.images[key] || fetch(src).then(res => res.text()).then(text => {
       const image = new Image()
-      image.src = `data:image/svg+xml;base64,${btoa(text.replace(/<path/g, '<path fill="' + color + '"'))}`
+      if (color) {
+        image.src = `data:image/svg+xml;base64,${btoa(text.replace(/<path/g, '<path fill="' + color + '"'))}`
+      } else {
+        image.src = `data:image/svg+xml;base64,${btoa(text)}`
+      }
       return image
     })
     return this.images[key]

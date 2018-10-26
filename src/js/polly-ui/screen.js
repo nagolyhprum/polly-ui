@@ -101,9 +101,16 @@ const childrenWrapper = (view, dim) => {
 }
 
 Screen.prototype = {
+  modal (width, height, callback) {
+    return this.container(width, height, view => {
+      view.events.add('onDirty', () => this.setDirty())
+      callback(view)
+    })
+  },
   setDirty (view = this) {
     if ((view && !view.isDirty) || view === this) {
       view.isDirty = true
+      view.events.call('onDirty')
       if (!view.background) {
         this.setDirty(view.parent)
       }
@@ -328,6 +335,7 @@ Screen.prototype = {
         clearInterval(interval)
         cb && cb()
       }
+      this.setDirty(object)
       this.main.render()
     }
     handler(start)
@@ -469,8 +477,8 @@ Screen.prototype = {
       view.bounds = bounds
       this.getIntersection(view)
     }
-    // TODO removing view.isInBounds && but may cause performance issues
-    if (view.children.reduce((moved, child) => this.layoutView(child) || moved, moved)) {
+    // TODO removing  && but may cause performance issues
+    if (view.parent.isInBounds && view.children.reduce((moved, child) => this.layoutView(child) || moved, moved)) {
       this.layoutView(view)
       return true
     }
