@@ -37,6 +37,7 @@ export default screen => {
         textbox.view(view)
         textbox.value(view.text.display)
         textbox.type(type)
+        screen.setDirty(view)
         screen.main.render()
       })
     },

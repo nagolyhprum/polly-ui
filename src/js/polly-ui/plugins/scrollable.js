@@ -1,3 +1,11 @@
+const getBottom = (view, padding, margin, BOTTOM) => Math.max(0, ...view.children.map(
+  child => child.bounds.y + child.bounds.height - (view.bounds.y + view.bounds.height + view.scrollY))
+) + padding[BOTTOM] + margin[BOTTOM]
+
+const getRight = (view, padding, margin, RIGHT) => Math.max(0, ...view.children.map(
+  child => child.bounds.x + child.bounds.width - (view.bounds.x + view.bounds.width + view.scrollX))
+) + padding[RIGHT] + margin[RIGHT]
+
 export default screen => {
   const { BOTTOM, RIGHT } = screen
   screen.plugins.reposition.push(view => ({
@@ -5,6 +13,22 @@ export default screen => {
     y: (view.parent.scrollY || 0)
   }))
   screen.extend({
+    scrollTo (active, x, y) {
+      setTimeout(() => {
+        if (arguments.length === 3) {
+          const padding = active.padding || screen.EMPTY_ARRAY
+          const margin = active.margin || screen.EMPTY_ARRAY
+          const right = getRight(active, padding, margin, RIGHT)
+          const bottom = getBottom(active, padding, margin, BOTTOM)
+          active.scrollX = Math.max(Math.min(-right * x, 0), -right)
+          active.scrollY = Math.max(Math.min(-bottom * y, 0), -bottom)
+          screen.setDirty(active)
+          screen.main.render()
+        } else {
+          console.log('TODO')
+        }
+      }, 1000 / 60)
+    },
     scrollable (active) {
       const padding = active.padding || screen.EMPTY_ARRAY
       const margin = active.margin || screen.EMPTY_ARRAY
@@ -31,12 +55,8 @@ export default screen => {
         }
       }, 1000 / 60)
       const update = () => {
-        const right = Math.max(0, ...active.children.map(
-          child => child.bounds.x + child.bounds.width - (active.bounds.x + active.bounds.width + active.scrollX))
-        ) + padding[RIGHT] + margin[RIGHT]
-        const bottom = Math.max(0, ...active.children.map(
-          child => child.bounds.y + child.bounds.height - (active.bounds.y + active.bounds.height + active.scrollY))
-        ) + padding[BOTTOM] + margin[BOTTOM]
+        const right = getRight(active, padding, margin, RIGHT)
+        const bottom = getBottom(active, padding, margin, BOTTOM)
         active.scrollX = Math.max(Math.min(active.scrollX + dx, 0), -right)
         active.scrollY = Math.max(Math.min(active.scrollY + dy, 0), -bottom)
         screen.setDirty(active)
