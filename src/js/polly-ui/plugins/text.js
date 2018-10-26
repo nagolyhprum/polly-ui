@@ -1,3 +1,5 @@
+const SCALE = 1.25
+
 const init = view => {
   view.text = view.text || {
     display: '',
@@ -36,6 +38,7 @@ export default screen => {
     if ((view.text && view.text.display) || view.input) {
       screen.canvas.font(view.text.size * screen.canvas.getRatio(), 'Polly, sans-serif', view.text.weight)
       const mt = screen.canvas.measureText(view.text.display)
+      mt.height *= SCALE
       return {
         [dim]: mt[dim]
       }
@@ -59,11 +62,12 @@ export default screen => {
         case 'center' : offsetX = wpm / 2; break
       }
       const display = view.input === 'password' ? view.text.display.split('').map(it => '\u2022').join('') : view.text.display
+      const cy = (view.text.size * SCALE * screen.canvas.getRatio() / 2) - (view.text.size * screen.canvas.getRatio() / 2)
       display.split('\n').forEach((line, index) => {
         screen.canvas.fillText(
           line,
           x + offsetX,
-          y + view.text.size * index * screen.canvas.getRatio()
+          y + cy + view.text.size * SCALE * screen.canvas.getRatio() * index
         )
       })
     }
