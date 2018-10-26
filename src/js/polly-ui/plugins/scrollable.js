@@ -14,26 +14,28 @@ export default screen => {
   }))
   screen.extend({
     scrollTo (active, x, y) {
-      setTimeout(() => {
+      const scrollable = arguments.length === 3 ? active : active.parent
+      clearTimeout(scrollable.scrollTimeout)
+      scrollable.scrollTimeout = setTimeout(() => {
         if (arguments.length === 3) {
-          const padding = active.padding || screen.EMPTY_ARRAY
-          const margin = active.margin || screen.EMPTY_ARRAY
-          const right = getRight(active, padding, margin, RIGHT)
-          const bottom = getBottom(active, padding, margin, BOTTOM)
-          active.scrollX = Math.max(Math.min(-right * x, 0), -right)
-          active.scrollY = Math.max(Math.min(-bottom * y, 0), -bottom)
-          screen.setDirty(active)
+          const padding = scrollable.padding || screen.EMPTY_ARRAY
+          const margin = scrollable.margin || screen.EMPTY_ARRAY
+          const right = getRight(scrollable, padding, margin, RIGHT)
+          const bottom = getBottom(scrollable, padding, margin, BOTTOM)
+          scrollable.scrollX = Math.max(Math.min(-right * x, 0), -right)
+          scrollable.scrollY = Math.max(Math.min(-bottom * y, 0), -bottom)
+          screen.setDirty(scrollable)
           screen.main.render()
         } else {
-          const padding = active.parent.padding || screen.EMPTY_ARRAY
-          const margin = active.parent.margin || screen.EMPTY_ARRAY
-          const right = getRight(active.parent, padding, margin, RIGHT)
-          const bottom = getBottom(active.parent, padding, margin, BOTTOM)
-          const goalX = active.parent.bounds.x - active.bounds.x - active.bounds.width / 2 + active.parent.scrollX + active.parent.bounds.width / 2
-          const goalY = active.parent.bounds.y - active.bounds.y - active.bounds.height / 2 + active.parent.scrollY + active.parent.bounds.height / 2
-          active.parent.scrollX = Math.max(Math.min(goalX, 0), -right)
-          active.parent.scrollY = Math.max(Math.min(goalY, 0), -bottom)
-          screen.setDirty(active.parent)
+          const padding = scrollable.padding || screen.EMPTY_ARRAY
+          const margin = scrollable.margin || screen.EMPTY_ARRAY
+          const right = getRight(scrollable, padding, margin, RIGHT)
+          const bottom = getBottom(scrollable, padding, margin, BOTTOM)
+          const goalX = scrollable.bounds.x - active.bounds.x - active.bounds.width / 2 + scrollable.scrollX + scrollable.bounds.width / 2
+          const goalY = scrollable.bounds.y - active.bounds.y - active.bounds.height / 2 + scrollable.scrollY + scrollable.bounds.height / 2
+          scrollable.scrollX = Math.max(Math.min(goalX, 0), -right)
+          scrollable.scrollY = Math.max(Math.min(goalY, 0), -bottom)
+          screen.setDirty(scrollable)
           screen.main.render()
         }
       }, 1000 / 60)

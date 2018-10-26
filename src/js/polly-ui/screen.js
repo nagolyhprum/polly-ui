@@ -129,6 +129,7 @@ Screen.prototype = {
   clear () {
     this.remove(this.active.children)
     this.active.children = []
+    this.setDirty(this.active)
   },
   select (view) {
     this.active = view
@@ -468,7 +469,8 @@ Screen.prototype = {
       view.bounds = bounds
       this.getIntersection(view)
     }
-    if (view.isInBounds && view.children.reduce((moved, child) => this.layoutView(child) || moved, moved)) {
+    // TODO removing view.isInBounds && but may cause performance issues
+    if (view.children.reduce((moved, child) => this.layoutView(child) || moved, moved)) {
       this.layoutView(view)
       return true
     }
