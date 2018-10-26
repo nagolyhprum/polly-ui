@@ -25,7 +25,16 @@ export default screen => {
           screen.setDirty(active)
           screen.main.render()
         } else {
-          console.log('TODO')
+          const padding = active.parent.padding || screen.EMPTY_ARRAY
+          const margin = active.parent.margin || screen.EMPTY_ARRAY
+          const right = getRight(active.parent, padding, margin, RIGHT)
+          const bottom = getBottom(active.parent, padding, margin, BOTTOM)
+          const goalX = active.parent.bounds.x - active.bounds.x - active.bounds.width / 2 + active.parent.scrollX + active.parent.bounds.width / 2
+          const goalY = active.parent.bounds.y - active.bounds.y - active.bounds.height / 2 + active.parent.scrollY + active.parent.bounds.height / 2
+          active.parent.scrollX = Math.max(Math.min(goalX, 0), -right)
+          active.parent.scrollY = Math.max(Math.min(goalY, 0), -bottom)
+          screen.setDirty(active.parent)
+          screen.main.render()
         }
       }, 1000 / 60)
     },
