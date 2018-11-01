@@ -10,6 +10,7 @@ export default screen => {
     src (view, image, color = screen.resources.color.text) {
       screen.canvas.image(image, color).then(image => {
         view.image = image
+        screen.setDirty(view)
         screen.main.render()
       })
     }
