@@ -1,4 +1,5 @@
 export default extend => Object.assign({
+  isEnabled: true,
   events: {
     add (name, cb) {
       this[name] = cb

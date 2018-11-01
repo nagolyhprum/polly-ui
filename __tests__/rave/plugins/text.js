@@ -30,13 +30,13 @@ describe('text', () => {
       [16, 'Polly, sans-serif', ''],
       ['top'],
       ['center'],
-      [display, 15, 0],
+      [display, 15, 2],
 
       ['red'],
       [16, 'Polly, sans-serif', ''],
       ['top'],
       ['right'],
-      ['\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', 40, 20]
+      ['\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022', 40, 22]
     ]
     const screen = Screen({
       canvas: {
