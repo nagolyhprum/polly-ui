@@ -7,6 +7,17 @@ export default class Canvas extends Parent {
   getRatio () {
     return window.devicePixelRatio || 1
   }
+  onScroll(onscroll) {
+    this.canvas.onmousewheel = e => {
+      e.preventDefault && e.preventDefault()
+      e.stopPropagation && e.stopPropagation()
+      onscroll(Object.assign({
+        deltaX : e.wheelDeltaX,
+        deltaY : e.wheelDeltaY
+      }, this.getMouse (e)))
+      return false
+    }
+  }
   constructor (canvas) {
     super()
     this.canvas = canvas

@@ -73,6 +73,14 @@ export default screen => {
         screen.setDirty(active)
         screen.main.render()
       }
+      active.events.add('onScroll', e => {
+        const right = getRight(active, padding, margin, RIGHT)
+        const bottom = getBottom(active, padding, margin, BOTTOM)
+        active.scrollX = Math.max(Math.min(active.scrollX + e.deltaX, 0), -right)
+        active.scrollY = Math.max(Math.min(active.scrollY + e.deltaY, 0), -bottom)
+        screen.setDirty(active)
+        screen.main.render()
+      })
       active.events.add('onMouseMove', mouse => {
         if (lastMouse) {
           dx = mouse.x - lastMouse.x

@@ -4,6 +4,8 @@ export default screen => {
   const getMouse = (e, name) => ({
     x: e.x * screen.canvas.getRatio(),
     y: e.y * screen.canvas.getRatio(),
+    deltaX : e.deltaX,
+    deltaY : e.deltaY,
     name
   })
 
@@ -68,6 +70,10 @@ export default screen => {
     if (moved < 5) {
       call(e, 'onClick')
     }
+  })
+
+  screen.canvas.onScroll(e => {
+    call(e, 'onScroll')
   })
 
   const mouseOver = (mouse, view) => {
