@@ -92,4 +92,8 @@ export default screen => {
       view.events.add('onMouseOut', onMouseOut)
     }
   })
+
+  screen.plugins.aria.push((view, aria) => Object.assign({}, aria, view.isEnabled && view.events.events.onClick ? {
+    onClick : (() => view.events.call("onClick"))
+  } : {}))
 }

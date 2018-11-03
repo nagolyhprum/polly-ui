@@ -48,6 +48,7 @@ export const push = (data, ...path) => {
 export const getter = (data, ...path) => path.reduce((obj, path) => obj[path], data)
 
 export const equals = (a, b) => {
+  if(a === b) return true
   if (typeof a === 'object' && typeof b === 'object') {
     let i
     for (i in a) {
@@ -62,7 +63,7 @@ export const equals = (a, b) => {
     }
     return true
   }
-  return a === b
+  return false
 }
 
 const echo = _ => _

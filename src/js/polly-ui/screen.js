@@ -76,6 +76,23 @@ function Screen (state$, resources, canvas, ...plugins) {
   this.BOTTOM = 2
   this.LEFT = 3
   this.EMPTY_ARRAY = [0, 0, 0, 0]
+  this.ARIA = {
+    title : {
+      type : "h1"
+    },
+    section : {
+      type : "section"
+    },
+    header : {
+      type : "h2"
+    },
+    ul : {
+      type : "ul"
+    },
+    li : {
+      type : "li"
+    }
+  }
   this.isInBounds = true
   this.canvas = canvas
   this.plugins = {
@@ -83,7 +100,10 @@ function Screen (state$, resources, canvas, ...plugins) {
     prerender: [],
     render: [],
     view: [],
-    reposition: []
+    reposition: [],
+    aria: [(view, aria) => Object.assign({}, aria, view.aria ? {
+      aria : view.aria
+    } : {})]
   }
   this.resources = resources
   PLUGINS.concat(plugins).map(plugin => plugin(this))
@@ -409,11 +429,11 @@ Screen.prototype = {
       }
       const start = Date.now()
       this.plugins.prerender.forEach(plugin => plugin(this))
-      // this.canvas.clear() //test proper drawing here
       this.children.slice(this.children.length - 2).forEach(child => {
         this.layoutView(child)
         this.renderView(child)
       })
+      this.canvas.aria(this.generateAria(this.children[this.children.length - 1]))
       const diff = Date.now() - start
       if (diff >= 1000 / 60) {
         console.log('slow draw', diff, 'ms')
@@ -424,6 +444,19 @@ Screen.prototype = {
     } else {
       this.renderTimeout = setTimeout(render)
     }
+  },
+  aria (aria) {
+    this.active.aria = aria
+  },
+  generateAria(view) {
+    return this.plugins.aria.reduce((obj, aria) => aria(view, obj), {
+      view,
+      children : view.children.filter(
+        child => !child.hidden
+      ).map(
+        child => this.generateAria(child)
+      )
+    })
   },
   highlightArea (
     color,
@@ -488,9 +521,7 @@ Screen.prototype = {
     if (view.isInBounds) {
       this.canvas.save()
       this.plugins.render.forEach(plugin => plugin(view))
-      view.children.forEach((child, index) => {
-        this.renderView(child)
-      })
+      view.children.forEach((child, index) => this.renderView(child))
       this.canvas.restore()
     }
     view.isDirty = false

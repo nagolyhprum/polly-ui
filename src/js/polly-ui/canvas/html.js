@@ -254,12 +254,40 @@ export default class Canvas extends Parent {
   stroke () {
     this.context.stroke(...arguments)
   }
+  aria(input) {
+    this.canvas.innerHTML = ""
+    this.generateAria(input, this.canvas)
+  }
+  generateAria(input, parent) {
+    const tag = input.aria && input.aria.type
+    const text = input.text || (typeof input.aria === "string" ? input.aria : "")
+    if(tag || text || input.onClick) {
+      if(input.onClick) {
+        const a = document.createElement("a")
+        if(text) {
+          a.innerHTML = text
+        } else {
+          input.children.forEach(child => this.generateAria(child, a))
+        }
+        a.href = "javascript:void(0)"
+        a.onclick = input.onClick
+        a.view = input.view
+        const wrap = document.createElement(tag || "div")
+        wrap.appendChild(a)
+        parent.appendChild(wrap)
+      } else {
+        const wrap = document.createElement(tag || "div")
+        wrap.innerHTML = text
+        parent.appendChild(wrap)
+        input.children.forEach(child => this.generateAria(child, wrap))
+      }
+    } else {
+      input.children.forEach(child => this.generateAria(child, parent))
+    }
+  }
   font (size, style, weight) {
     const font = `${weight} ${size}px ${style}`.trim()
     this.context.font = font
-  }
-  clear () {
-    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
   }
   measureText (text) {
     const lines = text.split('\n')

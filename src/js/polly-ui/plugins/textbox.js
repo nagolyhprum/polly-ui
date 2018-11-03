@@ -8,6 +8,9 @@ export default screen => {
       screen.main.render()
     }
   })
+  screen.plugins.aria.push((view, aria) => Object.assign({}, aria, view.placeholder ? {
+    text : view.placeholder
+  } : {}))
   screen.textbox.onInput((keyCode, value) => {
     const view = screen.textbox.view()
     if (view) {
@@ -23,6 +26,9 @@ export default screen => {
     }
   })
   screen.extend({
+    placeholder (view, placeholder) {
+      view.placeholder = placeholder
+    },
     bindText (view, text$) {
       screen.observe(text$, text => screen.text(text))
       screen.onTextChange(text => text$.set(text))

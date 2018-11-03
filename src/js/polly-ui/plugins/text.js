@@ -34,6 +34,9 @@ export default screen => {
       view.text.align = align
     }
   })
+  screen.plugins.aria.push((view, aria) => Object.assign({}, aria, view.text && view.text.display ? {
+    text : view.text.display
+  } : {}))
   screen.plugins.wrap.unshift((view, dim) => {
     if ((view.text && view.text.display) || view.input) {
       screen.canvas.font(view.text.size * screen.canvas.getRatio(), 'Polly, sans-serif', view.text.weight)

@@ -8,7 +8,7 @@ export default screen => {
   const { TOP, LEFT, EMPTY_ARRAY } = screen
   screen.extend({
     src (view, image, color = screen.resources.color.text) {
-      screen.canvas.image(image, color).then(image => {
+      image && screen.canvas.image(image, color).then(image => {
         view.image = image
         screen.setDirty(view)
         screen.main.render()
