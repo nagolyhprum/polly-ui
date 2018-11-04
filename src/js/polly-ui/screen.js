@@ -77,20 +77,20 @@ function Screen (state$, resources, canvas, ...plugins) {
   this.LEFT = 3
   this.EMPTY_ARRAY = [0, 0, 0, 0]
   this.ARIA = {
-    title : {
-      type : "h1"
+    title: {
+      type: 'h1'
     },
-    section : {
-      type : "section"
+    section: {
+      type: 'section'
     },
-    header : {
-      type : "h2"
+    header: {
+      type: 'h2'
     },
-    ul : {
-      type : "ul"
+    ul: {
+      type: 'ul'
     },
-    li : {
-      type : "li"
+    li: {
+      type: 'li'
     }
   }
   this.isInBounds = true
@@ -102,7 +102,7 @@ function Screen (state$, resources, canvas, ...plugins) {
     view: [],
     reposition: [],
     aria: [(view, aria) => Object.assign({}, aria, view.aria ? {
-      aria : view.aria
+      aria: view.aria
     } : {})]
   }
   this.resources = resources
@@ -448,10 +448,10 @@ Screen.prototype = {
   aria (aria) {
     this.active.aria = aria
   },
-  generateAria(view) {
+  generateAria (view) {
     return this.plugins.aria.reduce((obj, aria) => aria(view, obj), {
       view,
-      children : view.children.filter(
+      children: view.children.filter(
         child => !child.hidden
       ).map(
         child => this.generateAria(child)

@@ -9,7 +9,7 @@ export default screen => {
     }
   })
   screen.plugins.aria.push((view, aria) => Object.assign({}, aria, view.placeholder ? {
-    text : view.placeholder
+    text: view.placeholder
   } : {}))
   screen.textbox.onInput((keyCode, value) => {
     const view = screen.textbox.view()

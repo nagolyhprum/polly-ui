@@ -35,7 +35,7 @@ export default screen => {
     }
   })
   screen.plugins.aria.push((view, aria) => Object.assign({}, aria, view.text && view.text.display ? {
-    text : view.text.display
+    text: view.text.display
   } : {}))
   screen.plugins.wrap.unshift((view, dim) => {
     if ((view.text && view.text.display) || view.input) {

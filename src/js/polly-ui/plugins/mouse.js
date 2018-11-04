@@ -4,8 +4,8 @@ export default screen => {
   const getMouse = (e, name) => ({
     x: e.x * screen.canvas.getRatio(),
     y: e.y * screen.canvas.getRatio(),
-    deltaX : e.deltaX,
-    deltaY : e.deltaY,
+    deltaX: e.deltaX,
+    deltaY: e.deltaY,
     name
   })
 
@@ -100,6 +100,6 @@ export default screen => {
   })
 
   screen.plugins.aria.push((view, aria) => Object.assign({}, aria, view.isEnabled && view.events.events.onClick ? {
-    onClick : (() => view.events.call("onClick"))
+    onClick: () => view.events.call('onClick')
   } : {}))
 }
