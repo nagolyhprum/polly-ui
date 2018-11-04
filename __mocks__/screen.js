@@ -20,7 +20,8 @@ export default (extend = {}, self = {}) => Object.assign(self, {
     view: [],
     prerender: [],
     reposition: [],
-    wrap: []
+    wrap: [],
+    aria: []
   },
   calls: [],
   highlightArea () {

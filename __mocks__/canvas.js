@@ -5,6 +5,9 @@ export default extend => Object.assign({
   clear () {
     this.drawn = []
   },
+  onScroll () {
+
+  },
   cursor () {
 
   },
