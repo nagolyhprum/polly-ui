@@ -131,7 +131,7 @@ Screen.prototype = {
     if ((view && !view.isDirty) || view === this) {
       view.isDirty = true
       view.events.call('onDirty')
-      if (!view.background) {
+      if (!view.background || view.hidden) {
         this.setDirty(view.parent)
       }
       view.children.forEach(child => this.setDirty(child))
@@ -240,6 +240,7 @@ Screen.prototype = {
         typeof height === 'function' ? height('height') : () => ({ height: height * this.canvas.getRatio() }),
         this.reposition
       ],
+      intersection : {},
       isEnabled: true,
       events: new Events(),
       parent,
