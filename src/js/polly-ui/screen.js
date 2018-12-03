@@ -4,6 +4,7 @@ import {
 import Observable from 'polly-ui/observable'
 import Events from '../events'
 // plugins
+import keyboard from 'plugins/keyboard'
 import link from 'plugins/link'
 import layout from 'plugins/layout'
 import shadow from 'plugins/shadow'
@@ -23,8 +24,10 @@ import round from 'plugins/round'
 import circle from 'plugins/circle'
 import colorPI from 'plugins/color'
 import screen from 'plugins/screen'
+import rotation from 'plugins/rotation'
 
 const PLUGINS = [
+  rotation,
   alpha,
   shadow,
   background,
@@ -37,6 +40,7 @@ const PLUGINS = [
   screen,
   layout(false),
   // not drawn
+  keyboard,
   link,
   textbox,
   components,
@@ -240,7 +244,7 @@ Screen.prototype = {
         typeof height === 'function' ? height('height') : () => ({ height: height * this.canvas.getRatio() }),
         this.reposition
       ],
-      intersection : {},
+      intersection: {},
       isEnabled: true,
       events: new Events(),
       parent,

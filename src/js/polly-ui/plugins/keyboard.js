@@ -1,0 +1,45 @@
+const KEYS = {
+  37: 'left',
+  38: 'up',
+  39: 'right',
+  40: 'down'
+}
+
+const getKey = keycode => KEYS[keycode] || String.fromCharCode(keycode)
+
+export default screen => {
+  const { canvas } = screen
+  const intervals = {}
+  screen.extend({
+    onKeyDown (view, object) {
+      canvas.onKeyDown(keycode => {
+        const key = getKey(keycode)
+        if (object[key]) {
+          object[key]()
+        }
+      })
+    },
+    onKeyUp (view, object) {
+      canvas.onKeyUp(keycode => {
+        const key = getKey(keycode)
+        if (object[key]) {
+          object[key]()
+        }
+      })
+    },
+    onKeyPressed (view, object) {
+      canvas.onKeyDown(keycode => {
+        const key = getKey(keycode)
+        if (object[key] && !intervals[key]) {
+          object[key]()
+          intervals[key] = setInterval(object[key], 1000 / 60)
+        }
+      })
+      canvas.onKeyUp(keycode => {
+        const key = getKey(keycode)
+        clearInterval(intervals[key])
+        delete intervals[key]
+      })
+    }
+  })
+}

@@ -38,6 +38,12 @@ export default class Canvas extends Parent {
     canvas.onmousedown = e => {
       this.events.call('onmousedown', this.getMouse(e))
     }
+    document.body.onkeydown = e => {
+      this.events.call('onkeydown', e.which)
+    }
+    document.body.onkeyup = e => {
+      this.events.call('onkeyup', e.which)
+    }
   }
   colorPicker () {
     const cp = document.createElement('input')
@@ -144,6 +150,9 @@ export default class Canvas extends Parent {
         screen._input.type = type
       }
     }
+  }
+  rotate () {
+    this.context.rotate(...arguments)
   }
   arc () {
     this.context.arc(...arguments)

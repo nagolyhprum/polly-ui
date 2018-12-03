@@ -1,13 +1,11 @@
 export default screen => {
-  const { TOP, LEFT, EMPTY_ARRAY } = screen
+  const { EMPTY_ARRAY } = screen
   function renderRect (isRender) {
     const margin = this.margin || EMPTY_ARRAY
-    const x = this.bounds.x + margin[LEFT]
-    const y = this.bounds.y + margin[TOP]
     const wp = this.bounds.width - screen.getLeftRight(margin)
     const hp = this.bounds.height - screen.getTopBottom(margin)
     screen.canvas.beginPath()
-    screen.canvas.rect(x, y, wp, hp)
+    screen.canvas.rect(0, 0, wp, hp)
     const bg = isRender && screen.getValue(this, 'background')
     if (bg) {
       screen.canvas.fillStyle(bg)

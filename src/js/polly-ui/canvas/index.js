@@ -18,4 +18,13 @@ export default class Canvas {
   onMouseDown (cb) {
     this.events.add('onmousedown', cb)
   }
+  onKeyDown (cb) {
+    this.events.add('onkeydown', cb)
+  }
+  onKeyUp (cb) {
+    this.events.add('onkeyup', cb)
+  }
+  onKeyPressed (cb) {
+    this.events.add('onkeypressed', cb)
+  }
 }
