@@ -3,6 +3,9 @@ import Screen from 'polly-ui/screen'
 import Observable from 'polly-ui/observable'
 const SHADOW = 8
 const EMPTY_ARRAY = [0, 0, 0, 0]
+
+const animationTimeout = window.requestAnimationFrame
+
 export default class Canvas extends Parent {
   getRatio () {
     return window.devicePixelRatio || 1
@@ -44,6 +47,15 @@ export default class Canvas extends Parent {
     document.body.onkeyup = e => {
       this.events.call('onkeyup', e.which)
     }
+    this.last = new Date()
+    this.render()
+  }
+  render() {
+    animationTimeout(() => this.render())
+    const now = new Date()
+    const diff = now - this.last
+    this.last = now
+    this.events.call("onRender", diff)
   }
   colorPicker () {
     const cp = document.createElement('input')
@@ -316,14 +328,114 @@ export default class Canvas extends Parent {
       width: Math.max(...lines.map(line => this.context.measureText(line).width))
     }
   }
-  image (src, color) {
-    const key = `${src}_${color}`
-    this.images[key] = this.images[key] || fetch(src).then(res => res.text()).then(text => {
+  image (src, extra) {
+    const key = `${src}_${extra}`
+    this.images[key] = this.images[key] || fetch(src).then(res => res.arrayBuffer()).then(buffer => {
       const image = new Image()
-      if (color) {
-        image.src = `data:image/svg+xml;base64,${btoa(text.replace(/<path/g, '<path fill="' + color + '"'))}`
-      } else {
-        image.src = `data:image/svg+xml;base64,${btoa(text)}`
+      const ext = src.replace(/.*\.(.*)/g, "$1")
+      switch(ext) {
+        case "svg" :
+          const text = String.fromCharCode.apply(null, new Uint8Array(buffer))
+          if (extra) {
+            image.src = `data:image/svg+xml;base64,${btoa(text.replace(/<path/g, '<path fill="' + extra + '"'))}`
+          } else {
+            image.src = `data:image/svg+xml;base64,${btoa(text)}`
+          }
+          break;
+        case "png":
+        case "jpg":
+        case "jpeg":
+          var bytes = new Uint8Array(buffer);
+          var blob = new Blob([bytes.buffer]);
+          image.src = URL.createObjectURL(blob)
+          break
+      }
+      if(extra === "trim") {
+        const canvas = document.createElement("canvas")
+        const context = canvas.getContext("2d")
+        image.onload = function() {
+          canvas.width = this.naturalWidth
+          canvas.height = this.naturalHeight
+          context.drawImage(this, 0, 0)
+          const { data } = context.getImageData(0, 0, canvas.width, canvas.height)
+          let top = 0, right = this.naturalWidth, bottom = this.naturalHeight, left = 0
+          //TOP
+          let found = false
+          for(var i = 0; i < this.naturalHeight && !found; i++) {
+            for(var j = 0; j < this.naturalWidth && !found; j++) {
+              const offset = (i * this.naturalWidth + j) * 4,
+                r = data[offset],
+                g = data[offset + 1],
+                b = data[offset + 2],
+                a = data[offset + 3]
+              if(a && (r || g || b)) {
+                found = true
+              }
+            }
+            if(!found) {
+              top++
+            }
+          }
+          //BOTTOM
+          found = false
+          for(var i = this.naturalHeight - 1; i >= 0 && !found; i--) {
+            for(var j = 0; j < this.naturalWidth && !found; j++) {
+              const offset = (i * this.naturalWidth + j) * 4,
+                r = data[offset],
+                g = data[offset + 1],
+                b = data[offset + 2],
+                a = data[offset + 3]
+              if(a && (r || g || b)) {
+                console.log(a, r, g, b)
+                found = true
+              }
+            }
+            if(!found) {
+              bottom--
+            }
+          }
+          //LEFT
+          found = false
+          for(var i = 0; i < this.naturalWidth && !found; i++) {
+            for(var j = 0; j < this.naturalHeight && !found; j++) {
+              const offset = (i + j * this.naturalWidth) * 4,
+                r = data[offset],
+                g = data[offset + 1],
+                b = data[offset + 2],
+                a = data[offset + 3]
+              if(a && (r || g || b)) {
+                console.log(a, r, g, b)
+                found = true
+              }
+            }
+            if(!found) {
+              left++
+            }
+          }
+          //RIGHT
+          found = false
+          for(var i = this.naturalWidth - 1; i >= 0 && !found; i--) {
+            for(var j = 0; j < this.naturalHeight && !found; j++) {
+              const offset = (i + j * this.naturalWidth) * 4,
+                r = data[offset],
+                g = data[offset + 1],
+                b = data[offset + 2],
+                a = data[offset + 3]
+              if(a && (r || g || b)) {
+                console.log(a, r, g, b)
+                found = true
+              }
+            }
+            if(!found) {
+              right--
+            }
+          }
+          canvas.width = right - left
+          canvas.height = bottom - top
+          context.drawImage(this, -left, -top)
+          canvas.complete = true
+        }
+        return canvas
       }
       return image
     })

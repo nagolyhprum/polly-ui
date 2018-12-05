@@ -25,8 +25,8 @@ export default screen => {
   const { TOP, LEFT, EMPTY_ARRAY } = screen
   function renderRoundRect (isRender) {
     const margin = this.margin || EMPTY_ARRAY
-    const x = this.bounds.x + margin[LEFT]
-    const y = this.bounds.y + margin[TOP]
+    const x = 0
+    const y = 0
     const wp = this.bounds.width - screen.getLeftRight(margin)
     const hp = this.bounds.height - screen.getTopBottom(margin)
     roundRect(

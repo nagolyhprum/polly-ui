@@ -11,6 +11,17 @@ export default screen => {
     }
   } = screen
   screen.extend({
+    fps (view) {
+      const fps$ = new Observable(0)
+      screen.container(screen.WRAP, screen.WRAP, () => {
+        screen.padding(8)
+        screen.onRender(ms => fps$.set(Math.floor(1000 / ms)))
+        screen.anchor(1, 1)
+        screen.position(1, 1)
+        screen.textColor("white")
+        screen.observe(fps$, screen.text)
+      })
+    },
     pager (view, tab$, page) {
       screen.container(screen.MATCH, screen.MATCH, pager => {
         page()

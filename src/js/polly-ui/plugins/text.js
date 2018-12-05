@@ -20,7 +20,7 @@ export default screen => {
     },
     text (view, display) {
       init(view)
-      view.text.display = display
+      view.text.display = display + ""
       if (view.textbox) {
         view.textbox.value(display)
       }
@@ -52,25 +52,23 @@ export default screen => {
       const margin = view.margin || EMPTY_ARRAY
       const padding = view.padding || EMPTY_ARRAY
       const scroll = view.textbox ? view.textbox.scroll() : [0, 0]
-      const x = view.bounds.x - scroll[0]
-      const y = view.bounds.y - scroll[1] + padding[TOP] + margin[TOP]
       const wpm = view.bounds.width
       screen.canvas.fillStyle(view.text.color)
       screen.canvas.font(view.text.size * screen.canvas.getRatio(), 'Polly, sans-serif', view.text.weight)
       screen.canvas.textBaseline('top')
       screen.canvas.textAlign(view.text.align)
-      let offsetX = padding[LEFT] + margin[LEFT]
+      let offsetX = padding[LEFT]
       switch (view.text.align) {
         case 'right' : offsetX = wpm - padding[RIGHT] - margin[RIGHT]; break
         case 'center' : offsetX = wpm / 2; break
       }
       const display = view.input === 'password' ? view.text.display.split('').map(it => '\u2022').join('') : view.text.display
-      const cy = (view.text.size * SCALE * screen.canvas.getRatio() / 2) - (view.text.size * screen.canvas.getRatio() / 2)
+      const cy = padding[TOP]//(view.text.size * SCALE * screen.canvas.getRatio() / 2) - (view.text.size * screen.canvas.getRatio() / 2)
       display.split('\n').forEach((line, index) => {
         screen.canvas.fillText(
           line,
-          x + offsetX,
-          y + cy + view.text.size * SCALE * screen.canvas.getRatio() * index
+          offsetX,
+          cy + view.text.size * SCALE * screen.canvas.getRatio() * index
         )
       })
     }

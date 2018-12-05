@@ -73,7 +73,7 @@ const DIMENSIONS = {
 function Screen (state$, resources, canvas, ...plugins) {
   this.events = new Events()
   this.main = this
-  this.bounds = {}
+  this.bounds = {}  
   this.state$ = state$
   this.TOP = 0
   this.RIGHT = 1
@@ -125,6 +125,11 @@ const childrenWrapper = (view, dim) => {
 }
 
 Screen.prototype = {
+  onRender(onRender) {
+    const remove = this.canvas.events.add("onRender", onRender)
+    this.active.events.add('onRemove', remove)
+    return remove
+  },
   modal (width, height, callback) {
     return this.container(width, height, view => {
       view.events.add('onDirty', () => this.setDirty())
@@ -132,14 +137,14 @@ Screen.prototype = {
     })
   },
   setDirty (view = this) {
-    if ((view && !view.isDirty) || view === this) {
+    if(!view.isDirty || view === this) {
       view.isDirty = true
       view.events.call('onDirty')
       if (!view.background || view.hidden) {
         this.setDirty(view.parent)
       }
-      view.children.forEach(child => this.setDirty(child))
     }
+    view.children.forEach(child => this.setDirty(child))
   },
   id (id) {
     this.active.id = id
@@ -149,9 +154,13 @@ Screen.prototype = {
       return active || (child.id === id && child) || this.find(id, child.children)
     }, null)
   },
-  adapter (list$, generator) {
+  adapter (list$, generator, layout = () => {
     this.scrollable()
     this.linear()
+  }) {
+    if(layout) {
+      layout()
+    }
     this.observe(list$, list => {
       this.clear()
       list && list.forEach((it, index) => generator(this, it, index))

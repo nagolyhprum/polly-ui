@@ -37,8 +37,8 @@ export default screen => {
       screen.canvas.shadow(false)
       const margin = view.margin || EMPTY_ARRAY
       const padding = view.padding || EMPTY_ARRAY
-      const x = view.bounds.x
-      const y = view.bounds.y
+      const x = 0
+      const y = 0
       const w = view.bounds.width - screen.getLeftRight(margin) - screen.getLeftRight(padding)
       const h = view.bounds.height - screen.getTopBottom(margin) - screen.getTopBottom(padding)
       screen.canvas.fillStyle('white')

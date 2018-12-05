@@ -31,14 +31,15 @@ export default screen => {
       canvas.onKeyDown(keycode => {
         const key = getKey(keycode)
         if (object[key] && !intervals[key]) {
-          object[key]()
-          intervals[key] = setInterval(object[key], 1000 / 60)
+          intervals[key] = screen.onRender(object[key])
         }
       })
       canvas.onKeyUp(keycode => {
         const key = getKey(keycode)
-        clearInterval(intervals[key])
-        delete intervals[key]
+        if(intervals[key]) {          
+          intervals[key]()
+          delete intervals[key]
+        }
       })
     }
   })
