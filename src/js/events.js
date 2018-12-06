@@ -10,7 +10,7 @@ export default class Events {
   call (name, ...args) {
     (this.events[name] || []).forEach(event => event(...args))
   }
-  remove(name, cb) {
+  remove (name, cb) {
     this.events[name] = (this.events[name] || []).filter(it => it !== cb)
   }
 }

@@ -2,7 +2,8 @@ const KEYS = {
   37: 'left',
   38: 'up',
   39: 'right',
-  40: 'down'
+  40: 'down',
+  32: 'space'
 }
 
 const getKey = keycode => KEYS[keycode] || String.fromCharCode(keycode)
@@ -36,7 +37,7 @@ export default screen => {
       })
       canvas.onKeyUp(keycode => {
         const key = getKey(keycode)
-        if(intervals[key]) {          
+        if (intervals[key]) {
           intervals[key]()
           delete intervals[key]
         }

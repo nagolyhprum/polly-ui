@@ -18,7 +18,7 @@ export default screen => {
         screen.onRender(ms => fps$.set(Math.floor(1000 / ms)))
         screen.anchor(1, 1)
         screen.position(1, 1)
-        screen.textColor("white")
+        screen.textColor('white')
         screen.observe(fps$, screen.text)
       })
     },

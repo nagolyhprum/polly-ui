@@ -50,12 +50,12 @@ export default class Canvas extends Parent {
     this.last = new Date()
     this.render()
   }
-  render() {
+  render () {
     animationTimeout(() => this.render())
     const now = new Date()
     const diff = now - this.last
     this.last = now
-    this.events.call("onRender", diff)
+    this.events.call('onRender', diff)
   }
   colorPicker () {
     const cp = document.createElement('input')
@@ -332,101 +332,114 @@ export default class Canvas extends Parent {
     const key = `${src}_${extra}`
     this.images[key] = this.images[key] || fetch(src).then(res => res.arrayBuffer()).then(buffer => {
       const image = new Image()
-      const ext = src.replace(/.*\.(.*)/g, "$1")
-      switch(ext) {
-        case "svg" :
+      const ext = src.replace(/.*\.(.*)/g, '$1')
+      switch (ext) {
+        case 'svg' :
           const text = String.fromCharCode.apply(null, new Uint8Array(buffer))
           if (extra) {
             image.src = `data:image/svg+xml;base64,${btoa(text.replace(/<path/g, '<path fill="' + extra + '"'))}`
           } else {
             image.src = `data:image/svg+xml;base64,${btoa(text)}`
           }
-          break;
-        case "png":
-        case "jpg":
-        case "jpeg":
-          var bytes = new Uint8Array(buffer);
-          var blob = new Blob([bytes.buffer]);
+          break
+        case 'png':
+        case 'jpg':
+        case 'jpeg':
+          var bytes = new Uint8Array(buffer)
+          var blob = new Blob([bytes.buffer])
           image.src = URL.createObjectURL(blob)
           break
       }
-      if(extra === "trim") {
-        const canvas = document.createElement("canvas")
-        const context = canvas.getContext("2d")
-        image.onload = function() {
+      if (extra === 'trim') {
+        const canvas = document.createElement('canvas')
+        const context = canvas.getContext('2d')
+        image.onload = function () {
           canvas.width = this.naturalWidth
           canvas.height = this.naturalHeight
           context.drawImage(this, 0, 0)
           const { data } = context.getImageData(0, 0, canvas.width, canvas.height)
-          let top = 0, right = this.naturalWidth, bottom = this.naturalHeight, left = 0
-          //TOP
+          let top = 0; let right = this.naturalWidth; let bottom = this.naturalHeight; let left = 0
+          // TOP
           let found = false
-          for(var i = 0; i < this.naturalHeight && !found; i++) {
-            for(var j = 0; j < this.naturalWidth && !found; j++) {
-              const offset = (i * this.naturalWidth + j) * 4,
-                r = data[offset],
-                g = data[offset + 1],
-                b = data[offset + 2],
-                a = data[offset + 3]
-              if(a && (r || g || b)) {
+          for (var i = 0; i < this.naturalHeight && !found; i++) {
+            for (var j = 0; j < this.naturalWidth && !found; j++) {
+              const offset = (i * this.naturalWidth + j) * 4
+
+              const r = data[offset]
+
+              const g = data[offset + 1]
+
+              const b = data[offset + 2]
+
+              const a = data[offset + 3]
+              if (a && (r || g || b)) {
                 found = true
               }
             }
-            if(!found) {
+            if (!found) {
               top++
             }
           }
-          //BOTTOM
+          // BOTTOM
           found = false
-          for(var i = this.naturalHeight - 1; i >= 0 && !found; i--) {
-            for(var j = 0; j < this.naturalWidth && !found; j++) {
-              const offset = (i * this.naturalWidth + j) * 4,
-                r = data[offset],
-                g = data[offset + 1],
-                b = data[offset + 2],
-                a = data[offset + 3]
-              if(a && (r || g || b)) {
-                console.log(a, r, g, b)
+          for (var i = this.naturalHeight - 1; i >= 0 && !found; i--) {
+            for (var j = 0; j < this.naturalWidth && !found; j++) {
+              const offset = (i * this.naturalWidth + j) * 4
+
+              const r = data[offset]
+
+              const g = data[offset + 1]
+
+              const b = data[offset + 2]
+
+              const a = data[offset + 3]
+              if (a && (r || g || b)) {
                 found = true
               }
             }
-            if(!found) {
+            if (!found) {
               bottom--
             }
           }
-          //LEFT
+          // LEFT
           found = false
-          for(var i = 0; i < this.naturalWidth && !found; i++) {
-            for(var j = 0; j < this.naturalHeight && !found; j++) {
-              const offset = (i + j * this.naturalWidth) * 4,
-                r = data[offset],
-                g = data[offset + 1],
-                b = data[offset + 2],
-                a = data[offset + 3]
-              if(a && (r || g || b)) {
-                console.log(a, r, g, b)
+          for (var i = 0; i < this.naturalWidth && !found; i++) {
+            for (var j = 0; j < this.naturalHeight && !found; j++) {
+              const offset = (i + j * this.naturalWidth) * 4
+
+              const r = data[offset]
+
+              const g = data[offset + 1]
+
+              const b = data[offset + 2]
+
+              const a = data[offset + 3]
+              if (a && (r || g || b)) {
                 found = true
               }
             }
-            if(!found) {
+            if (!found) {
               left++
             }
           }
-          //RIGHT
+          // RIGHT
           found = false
-          for(var i = this.naturalWidth - 1; i >= 0 && !found; i--) {
-            for(var j = 0; j < this.naturalHeight && !found; j++) {
-              const offset = (i + j * this.naturalWidth) * 4,
-                r = data[offset],
-                g = data[offset + 1],
-                b = data[offset + 2],
-                a = data[offset + 3]
-              if(a && (r || g || b)) {
-                console.log(a, r, g, b)
+          for (var i = this.naturalWidth - 1; i >= 0 && !found; i--) {
+            for (var j = 0; j < this.naturalHeight && !found; j++) {
+              const offset = (i + j * this.naturalWidth) * 4
+
+              const r = data[offset]
+
+              const g = data[offset + 1]
+
+              const b = data[offset + 2]
+
+              const a = data[offset + 3]
+              if (a && (r || g || b)) {
                 found = true
               }
             }
-            if(!found) {
+            if (!found) {
               right--
             }
           }

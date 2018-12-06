@@ -73,7 +73,7 @@ const DIMENSIONS = {
 function Screen (state$, resources, canvas, ...plugins) {
   this.events = new Events()
   this.main = this
-  this.bounds = {}  
+  this.bounds = {}
   this.state$ = state$
   this.TOP = 0
   this.RIGHT = 1
@@ -125,8 +125,8 @@ const childrenWrapper = (view, dim) => {
 }
 
 Screen.prototype = {
-  onRender(onRender) {
-    const remove = this.canvas.events.add("onRender", onRender)
+  onRender (onRender) {
+    const remove = this.canvas.events.add('onRender', onRender)
     this.active.events.add('onRemove', remove)
     return remove
   },
@@ -137,7 +137,7 @@ Screen.prototype = {
     })
   },
   setDirty (view = this) {
-    if(!view.isDirty || view === this) {
+    if (!view.isDirty || view === this) {
       view.isDirty = true
       view.events.call('onDirty')
       if (!view.background || view.hidden) {
@@ -158,7 +158,7 @@ Screen.prototype = {
     this.scrollable()
     this.linear()
   }) {
-    if(layout) {
+    if (layout) {
       layout()
     }
     this.observe(list$, list => {

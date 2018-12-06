@@ -20,7 +20,7 @@ export default screen => {
     },
     text (view, display) {
       init(view)
-      view.text.display = display + ""
+      view.text.display = display + ''
       if (view.textbox) {
         view.textbox.value(display)
       }
@@ -63,7 +63,7 @@ export default screen => {
         case 'center' : offsetX = wpm / 2; break
       }
       const display = view.input === 'password' ? view.text.display.split('').map(it => '\u2022').join('') : view.text.display
-      const cy = padding[TOP]//(view.text.size * SCALE * screen.canvas.getRatio() / 2) - (view.text.size * screen.canvas.getRatio() / 2)
+      const cy = padding[TOP]// (view.text.size * SCALE * screen.canvas.getRatio() / 2) - (view.text.size * screen.canvas.getRatio() / 2)
       display.split('\n').forEach((line, index) => {
         screen.canvas.fillText(
           line,
