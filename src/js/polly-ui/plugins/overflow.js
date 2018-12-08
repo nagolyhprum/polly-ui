@@ -4,4 +4,9 @@ export default screen => {
       screen.canvas.clip()
     }
   })
+  screen.extend({
+    clip(view, clip = true) {
+      view.overflow = !clip
+    }
+  })
 }

@@ -34,10 +34,10 @@ export default screen => {
       screen.onTextChange(text => text$.set(text))
     },
     input (view, type = 'text') {
+      screen.clip()
       const textbox = screen.textbox
       view.cursor = 'text'
       view.input = type
-      view.overflow = false
       view.events.add('onClick', () => {
         view.textbox = textbox
         textbox.view(view)

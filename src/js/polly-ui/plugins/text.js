@@ -39,7 +39,7 @@ export default screen => {
   } : {}))
   screen.plugins.wrap.unshift((view, dim) => {
     if ((view.text && view.text.display) || view.input) {
-      screen.canvas.font(view.text.size * screen.canvas.getRatio(), 'Polly, sans-serif', view.text.weight)
+      screen.canvas.font(view.text.size, 'Polly, sans-serif', view.text.weight)
       const mt = screen.canvas.measureText(view.text.display)
       mt.height *= SCALE
       return {
@@ -54,7 +54,7 @@ export default screen => {
       const scroll = view.textbox ? view.textbox.scroll() : [0, 0]
       const wpm = view.bounds.width
       screen.canvas.fillStyle(view.text.color)
-      screen.canvas.font(view.text.size * screen.canvas.getRatio(), 'Polly, sans-serif', view.text.weight)
+      screen.canvas.font(view.text.size, 'Polly, sans-serif', view.text.weight)
       screen.canvas.textBaseline('top')
       screen.canvas.textAlign(view.text.align)
       let offsetX = padding[LEFT]
@@ -68,7 +68,7 @@ export default screen => {
         screen.canvas.fillText(
           line,
           offsetX,
-          cy + view.text.size * SCALE * screen.canvas.getRatio() * index
+          cy + view.text.size * SCALE * index
         )
       })
     }

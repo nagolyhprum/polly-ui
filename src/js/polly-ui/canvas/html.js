@@ -7,9 +7,6 @@ const EMPTY_ARRAY = [0, 0, 0, 0]
 const animationTimeout = window.requestAnimationFrame
 
 export default class Canvas extends Parent {
-  getRatio () {
-    return window.devicePixelRatio || 1
-  }
   onScroll (onscroll) {
     this.canvas.onmousewheel = e => {
       e.preventDefault && e.preventDefault()
@@ -137,12 +134,12 @@ export default class Canvas extends Parent {
       },
       bounds (bounds, padding = EMPTY_ARRAY, margin = EMPTY_ARRAY) {
         inputs.forEach(textbox => {
-          textbox.style.left = `${bounds.x / screen.getRatio()}px`
-          textbox.style.top = `${bounds.y / screen.getRatio()}px`
-          textbox.style.width = `${bounds.width / screen.getRatio()}px`
-          textbox.style.height = `${bounds.height / screen.getRatio()}px`
-          textbox.style.padding = padding.map(it => `${it / screen.getRatio()}px`).join(' ')
-          textbox.style.margin = margin.map(it => `${it / screen.getRatio()}px`).join(' ')
+          textbox.style.left = `${bounds.x}px`
+          textbox.style.top = `${bounds.y}px`
+          textbox.style.width = `${bounds.width}px`
+          textbox.style.height = `${bounds.height}px`
+          textbox.style.padding = padding.map(it => `${it}px`).join(' ')
+          textbox.style.margin = margin.map(it => `${it}px`).join(' ')
         })
       },
       focus () {
@@ -466,9 +463,8 @@ export default class Canvas extends Parent {
     )
 
     const setSize = () => {
-      const ratio = canvas.getRatio() || 1
-      canvas.canvas.width = window.innerWidth * ratio
-      canvas.canvas.height = window.innerHeight * ratio
+      canvas.canvas.width = window.innerWidth
+      canvas.canvas.height = window.innerHeight
       canvas.canvas.style.position = 'absolute'
       canvas.canvas.style.left = 0
       canvas.canvas.style.top = 0

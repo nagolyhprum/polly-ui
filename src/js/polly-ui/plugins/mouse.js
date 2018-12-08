@@ -2,8 +2,8 @@ import { contains } from 'utils'
 export default screen => {
   const canvas = screen.canvas
   const getMouse = (e, name) => ({
-    x: e.x * screen.canvas.getRatio(),
-    y: e.y * screen.canvas.getRatio(),
+    x: e.x,
+    y: e.y,
     deltaX: e.deltaX,
     deltaY: e.deltaY,
     name

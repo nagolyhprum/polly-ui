@@ -192,8 +192,8 @@ Screen.prototype = {
         y: position.y + translate.y
       }
     }, {
-      x: view.parent.bounds.x + padding[this.LEFT] + margin[this.LEFT] + view.x,
-      y: view.parent.bounds.y + padding[this.TOP] + margin[this.TOP] + view.y
+      x: view.parent.bounds.x + (padding[this.LEFT] + margin[this.LEFT] + view.x),
+      y: view.parent.bounds.y + (padding[this.TOP] + margin[this.TOP] + view.y)
     })
   },
   getValue (view, dim) {
@@ -249,8 +249,8 @@ Screen.prototype = {
     return this.plugins.view.reduce((view, plugin) => plugin(view), {
       render: _ => _,
       managers: [
-        typeof width === 'function' ? width('width') : () => ({ width: width * this.canvas.getRatio() }),
-        typeof height === 'function' ? height('height') : () => ({ height: height * this.canvas.getRatio() }),
+        typeof width === 'function' ? width('width') : () => ({ width }),
+        typeof height === 'function' ? height('height') : () => ({ height }),
         this.reposition
       ],
       intersection: {},
@@ -337,18 +337,16 @@ Screen.prototype = {
   },
   margin (...margin) {
     if (margin.length === 1) {
-      const scaled = margin[0] * this.canvas.getRatio()
-      this.active.margin = [scaled, scaled, scaled, scaled]
+      this.active.margin = [margin[0], margin[0], margin[0], margin[0]]
     } else {
-      this.active.margin = margin.map(it => it * this.canvas.getRatio())
+      this.active.margin = margin
     }
   },
   padding (...padding) {
     if (padding.length === 1) {
-      const scaled = padding[0] * this.canvas.getRatio()
-      this.active.padding = [scaled, scaled, scaled, scaled]
+      this.active.padding = [padding[0], padding[0], padding[0], padding[0]]
     } else {
-      this.active.padding = padding.map(it => it * this.canvas.getRatio())
+      this.active.padding = padding
     }
   },
   setInterval (interval, ms) {

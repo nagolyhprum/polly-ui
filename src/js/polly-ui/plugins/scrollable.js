@@ -45,7 +45,7 @@ export default screen => {
       const margin = active.margin || screen.EMPTY_ARRAY
       active.scrollX = 0
       active.scrollY = 0
-      active.overflow = false
+      screen.clip()
       let lastMouse; let dx = 0; let dy = 0
       // TODO : DO SOMETHING WITH DATE
       // let lastTs = Date.now();
