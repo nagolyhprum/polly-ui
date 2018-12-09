@@ -67,8 +67,8 @@ export default screen => {
       display.split('\n').forEach((line, index) => {
         screen.canvas.fillText(
           line,
-          offsetX,
-          cy + view.text.size * SCALE * index
+          view.bounds.x + offsetX,
+          view.bounds.y + cy + view.text.size * SCALE * index
         )
       })
     }
