@@ -1,9 +1,9 @@
 const SCALE = 1.25
 
-const init = view => {
+const init = (view, scale) => {
   view.text = view.text || {
     display: '',
-    size: 12,
+    size: 12 * scale,
     color: 'black',
     weight: '',
     align: 'left'
@@ -13,24 +13,29 @@ export default screen => {
   const { EMPTY_ARRAY, LEFT, RIGHT, TOP } = screen
   screen.extend({
     style (view, text) {
-      init(view)
+      init(view, screen.canvas.getRatio())
       for (let i in text) {
-        view.text[i] = text[i]
+        console.log(i, text[i])
+        if(typeof text[i] === "number") {
+          view.text[i] = text[i] * screen.canvas.getRatio()
+        } else {
+          view.text[i] = text[i]
+        }
       }
     },
     text (view, display) {
-      init(view)
+      init(view, screen.canvas.getRatio())
       view.text.display = display + ''
       if (view.textbox) {
         view.textbox.value(display)
       }
     },
     textColor (view, textColor) {
-      init(view)
+      init(view, screen.canvas.getRatio())
       view.text.color = textColor
     },
     textAlign (view, align) {
-      init(view)
+      init(view, screen.canvas.getRatio())
       view.text.align = align
     }
   })

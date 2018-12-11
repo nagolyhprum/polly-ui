@@ -337,16 +337,18 @@ Screen.prototype = {
   },
   margin (...margin) {
     if (margin.length === 1) {
-      this.active.margin = [margin[0], margin[0], margin[0], margin[0]]
+      const scaledMargin = margin[0] * this.canvas.getRatio()
+      this.active.margin = [scaledMargin, scaledMargin, scaledMargin, scaledMargin]
     } else {
-      this.active.margin = margin
+      this.active.margin = margin.map(it => it * this.canvas.getRatio())
     }
   },
   padding (...padding) {
     if (padding.length === 1) {
-      this.active.padding = [padding[0], padding[0], padding[0], padding[0]]
+      const scaledPadding = padding[0] * this.canvas.getRatio()
+      this.active.padding = [scaledPadding, scaledPadding, scaledPadding, scaledPadding]
     } else {
-      this.active.padding = padding
+      this.active.padding = padding.map(it => this.canvas.getRatio())
     }
   },
   setInterval (interval, ms) {

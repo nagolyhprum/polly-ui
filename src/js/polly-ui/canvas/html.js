@@ -7,6 +7,9 @@ const EMPTY_ARRAY = [0, 0, 0, 0]
 const animationTimeout = window.requestAnimationFrame
 
 export default class Canvas extends Parent {
+  getRatio() {
+    return window.devicePixelRatio || 1
+  }
   onScroll (onscroll) {
     this.canvas.onmousewheel = e => {
       e.preventDefault && e.preventDefault()
@@ -463,8 +466,8 @@ export default class Canvas extends Parent {
     )
 
     const setSize = () => {
-      canvas.canvas.width = window.innerWidth
-      canvas.canvas.height = window.innerHeight
+      canvas.canvas.width = window.innerWidth * canvas.getRatio()
+      canvas.canvas.height = window.innerHeight * canvas.getRatio()
       canvas.canvas.style.position = 'absolute'
       canvas.canvas.style.left = 0
       canvas.canvas.style.top = 0
